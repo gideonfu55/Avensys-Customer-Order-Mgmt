@@ -1,4 +1,4 @@
-package com.pomanage.pomanagement.user;
+package com.example.OJTPO.model;
 
 import java.sql.Timestamp;
 
