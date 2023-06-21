@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-PoManagementApplication<po-management>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.pomanage.pomanagement.PoManagementApplication",
+      "projectName": "po-management",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
