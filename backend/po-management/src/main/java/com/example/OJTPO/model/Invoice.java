@@ -1,38 +1,20 @@
 package com.example.OJTPO.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.google.cloud.firestore.DocumentReference;
 
-@Entity
-@Table(name = "Invoices")
 public class Invoice {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(name = "invoiceNumber", nullable = false)
+    private String id;
     private String invoiceNumber;
-
-    @Column(name = "amount", nullable = false)
     private int amount;
+    private DocumentReference purchaseOrderRef;
 
-    @ManyToOne
-    @JoinColumn(name = "poNumber")
-    private PurchaseOrder purchaseOrder;
+    // Constructors, getters, and setters
 
-    // Getters and setters
-
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -52,11 +34,11 @@ public class Invoice {
         this.amount = amount;
     }
 
-    public PurchaseOrder getPurchaseOrder() {
-        return purchaseOrder;
+    public DocumentReference getPurchaseOrderRef() {
+        return purchaseOrderRef;
     }
 
-    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
+    public void setPurchaseOrderRef(DocumentReference purchaseOrderRef) {
+        this.purchaseOrderRef = purchaseOrderRef;
     }
 }

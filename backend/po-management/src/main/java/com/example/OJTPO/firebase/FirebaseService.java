@@ -116,83 +116,78 @@ public class FirebaseService {
         return completableFuture;
     }
 
-        public Invoice saveInvoice(Invoice invoice) {
-        int invoiceKey = generateNumericKey();
-        
-        while (isInvoiceKeyExists(invoiceKey)) {
-            invoiceKey = generateNumericKey();
-        }
-        
-        Map<String, Object> invoiceMap = convertInvoiceToMap(invoice);
+    public CompletableFuture<Invoice> createInvoice(Invoice invoice) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
 
-        firebase.child("invoices").child(String.valueOf(invoiceKey)).setValueAsync(invoiceMap);
-
-        return invoice;
-    }
-
-    private boolean isInvoiceKeyExists(int invoiceKey) {
-        DatabaseReference invoiceRef = firebase.child(String.valueOf(invoiceKey));
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
-        invoiceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                completableFuture.complete(dataSnapshot.exists());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                completableFuture.completeExceptionally(databaseError.toException());
+        invoiceRef.push().setValue(invoice, (error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(invoice);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
             }
         });
 
-        try {
-            return completableFuture.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return completableFuture;
     }
 
+    public CompletableFuture<Invoice> updateInvoice(Invoice invoice, String id) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
 
-    private int generateNumericKey() {
-        Random random = new Random();
-        return random.nextInt(100000); // Adjust the range based on your needs
+        DatabaseReference specificInvoiceRef = invoiceRef.child(id);
+        specificInvoiceRef.setValue(invoice, (error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(invoice);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
     }
 
-    private Map<String, Object> convertInvoiceToMap(Invoice invoice) {
-        Map<String, Object> invoiceMap = new HashMap<>();
-        invoiceMap.put("id", invoice.getId());
-        invoiceMap.put("invoiceNumber", invoice.getInvoiceNumber());
-        invoiceMap.put("amount", invoice.getAmount());
-        invoiceMap.put("poNumber", invoice.getPurchaseOrder().getPoNumber());
-        return invoiceMap;
+    public CompletableFuture<Invoice> deleteInvoice(String id) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
+
+        DatabaseReference specificInvoiceRef = invoiceRef.child(id);
+        specificInvoiceRef.removeValue((error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(null);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
     }
 
-    public Invoice updateInvoice(Invoice invoice) {
-        String invoiceId = invoice.getId();
+    public CompletableFuture<Invoice> getInvoiceById(String id) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
 
-        if (invoiceId != null) {
-            database.child(invoiceId).setValue(invoice);
-            return invoice;
-        } else {
-            return null;
-        }
-    }
+        invoiceRef.orderByChild("id")
+                .equalTo(id)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+                                Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
+                                completableFuture.complete(invoice);
+                                return;
+                            }
+                        }
+                        completableFuture.complete(null);
+                    }
 
-    public Invoice getInvoiceById(String id) {
-        DataSnapshot snapshot = database.child(id).getSnapshot();
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        completableFuture.completeExceptionally(databaseError.toException());
+                    }
+                });
 
-        if (snapshot.exists()) {
-            // Convert the snapshot value to an Invoice object
-            Invoice invoice = snapshot.getValue(Invoice.class);
-            return invoice;
-        } else {
-            return null;
-        }
-    }
-
-    public void deleteInvoice(String id) {
-        // Delete the invoice from the database
-        database.child(id).removeValue();
+        return completableFuture;
     }
 }

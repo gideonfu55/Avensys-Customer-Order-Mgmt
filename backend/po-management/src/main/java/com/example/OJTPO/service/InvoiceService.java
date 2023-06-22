@@ -18,19 +18,19 @@ public class InvoiceService {
     @Autowired
     private FirebaseService firebaseService;
 
-    public void saveInvoice(Invoice invoice) {
-        firebaseService.saveInvoice(invoice);
+    public CompletableFuture<Invoice> createInvoice(Invoice invoice) {
+        return firebaseService.createInvoice(invoice);
     }
 
-    public void updateInvoice(Invoice invoice) {
-        firebaseService.updateInvoice(invoice);
+    public CompletableFuture<Invoice> updateInvoice(Invoice invoice, String id) {
+        return firebaseService.updateInvoice(invoice, id);
     }
 
-    public void getInvoiceById(String id) {
-        firebaseService.getInvoiceById(id);
+    public CompletableFuture<Invoice> getInvoiceById(String id) {
+        return firebaseService.getInvoiceById(id);
     }
 
-    public void deleteInvoice(String id) {
-        firebaseService.deleteInvoice(id);
+    public CompletableFuture<Invoice> deleteInvoice(String id) {
+        return firebaseService.deleteInvoice(id);
     }
 }
