@@ -79,6 +79,21 @@ public class FirebaseService {
         return completableFuture;
     }
 
+    public CompletableFuture<User> createUser(User user) {
+        CompletableFuture<User> completableFuture = new CompletableFuture<>();
+        DatabaseReference usersRef = firebase.child("users");
+
+        usersRef.push().setValue(user, (error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(user);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
     public CompletableFuture<Boolean> existsByUsername(String username) {
         CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
         DatabaseReference userRef = firebase.child("users").child(username);
