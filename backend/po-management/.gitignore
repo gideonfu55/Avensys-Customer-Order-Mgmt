@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 src/main/resources/application.properties
 pom.xml
+firebaseKey2.json
 
 ### STS ###
 .apt_generated
