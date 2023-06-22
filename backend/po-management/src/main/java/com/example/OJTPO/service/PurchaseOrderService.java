@@ -2,6 +2,7 @@ package com.example.OJTPO.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ public class PurchaseOrderService {
   }
 
   // Get all Billable Purchase Orders:
-  public List<PurchaseOrder> getBillablePOs() {
+  public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
+    CompletableFuture<List<PurchaseOrder>> future = new CompletableFuture<>();
     final List<PurchaseOrder> billablePOs = new ArrayList<>();
 
     getPOReference().orderByChild("status").equalTo("Billable")
@@ -61,15 +63,16 @@ public class PurchaseOrderService {
             PurchaseOrder purchaseOrder = postSnapshot.getValue(PurchaseOrder.class);
             billablePOs.add(purchaseOrder);
           }
+          future.complete(billablePOs);
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-          System.out.println(databaseError.getMessage());
+          future.completeExceptionally(databaseError.toException());
         }
       });
 
-    return billablePOs;
+    return future;
   }
 
   // Get Purchase Order by Id:

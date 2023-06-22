@@ -1,6 +1,7 @@
 package com.example.OJTPO.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class POcontroller {
     }
 
     // For sales team to forward PO to finance:
-    @PostMapping("/po/forward")
+    @PatchMapping("/po/forward")
     public ResponseEntity<PurchaseOrder> forwardPO(@RequestBody PurchaseOrder purchaseOrder) throws ExecutionException, InterruptedException {
       PurchaseOrder purchaseOrderResponse = purchaseOrderService.forwardPO(purchaseOrder);
       if (purchaseOrder != null) {
@@ -49,12 +50,14 @@ public class POcontroller {
 
     // For finance team to get all billable POs:
     @GetMapping("/po/billable")
-    public ResponseEntity<List<PurchaseOrder>> getBillablePOs() {
-        List<PurchaseOrder> billablePOs = purchaseOrderService.getBillablePOs();
+    public CompletableFuture<ResponseEntity<List<PurchaseOrder>>> getBillablePOs() {
+      return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
         if (!billablePOs.isEmpty()) {
-            return new ResponseEntity<>(billablePOs, HttpStatus.FOUND);
+            return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+      });
     }
 
     // To populate fields of one PO in the update/delete form:
