@@ -1,37 +1,15 @@
 package com.example.OJTPO.model;
 
-import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "Users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private int id;
-
-    @Column(name = "username", nullable = false)
     private String username;
-
-    @Column(name = "password_hash", nullable = false)
     private String password;
-
-    @Column(name = "email", nullable = false)
     private String email;
-
-    @Column(name = "role", nullable = false)
-    private String role = "User";
-
-    @Column(name = "created_at")
-    private Timestamp createdAt;
+    private String role;
+    private String createdAt;
 
     // Getter and Setter methods
     public int getId() {
@@ -74,11 +52,12 @@ public class User {
         this.role = role;
     }
 
-    public Timestamp getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 }
+
