@@ -144,15 +144,42 @@ public class PurchaseOrderService {
   }
 
   // Delete Purchase Order:
-  public String deletePO(Long id) {
+  public CompletableFuture<String> deletePO(Long id) {
     String idString = String.valueOf(id);
     if (idString == null || idString.equals("null")) {
       throw new IllegalArgumentException("Purchase Order id cannot be null");
     }
 
-    getPOReference().child(idString).removeValueAsync();
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
-    return "Purchase Order with id " + idString + " has been deleted.";
+    getPOReference().child(idString).addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        if (dataSnapshot.exists()) {
+          ApiFuture<Void> future = getPOReference().child(idString).removeValueAsync();
+          ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+              completableFuture.complete("Purchase Order with id " + idString + " has been deleted.");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+              completableFuture.completeExceptionally(t);
+            }
+          }, MoreExecutors.directExecutor());
+        } else {
+          completableFuture.complete(null);
+        }
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        completableFuture.completeExceptionally(databaseError.toException());
+      }
+    });
+
+    return completableFuture;
   }
 
 }

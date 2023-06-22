@@ -25,77 +25,82 @@ import com.example.OJTPO.service.PurchaseOrderService;
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
 public class POcontroller {
 
-    @Autowired
-    PurchaseOrderService purchaseOrderService;
+  @Autowired
+  PurchaseOrderService purchaseOrderService;
 
-    // For sales team to create PO:
-    @PostMapping("/po/create")
-    public ResponseEntity<PurchaseOrder> createPO(@RequestBody PurchaseOrder purchaseOrder) throws Exception {
-      PurchaseOrder purchaseOrderResponse = purchaseOrderService.createPO(purchaseOrder);
-      if (purchaseOrder != null) {
-        return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.CREATED);
-      }
-      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+  // For sales team to create PO:
+  @PostMapping("/po/create")
+  public ResponseEntity<PurchaseOrder> createPO(@RequestBody PurchaseOrder purchaseOrder) throws Exception {
+    PurchaseOrder purchaseOrderResponse = purchaseOrderService.createPO(purchaseOrder);
+    if (purchaseOrder != null) {
+      return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.CREATED);
     }
+    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+  }
 
-    // For sales team to forward PO to finance:
-    @PatchMapping("/po/forward")
-    public ResponseEntity<PurchaseOrder> forwardPO(@RequestBody PurchaseOrder purchaseOrder) throws ExecutionException, InterruptedException {
-      PurchaseOrder purchaseOrderResponse = purchaseOrderService.forwardPO(purchaseOrder);
-      if (purchaseOrder != null) {
-        return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
-      }
-      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+  // For sales team to forward PO to finance:
+  @PatchMapping("/po/forward")
+  public ResponseEntity<PurchaseOrder> forwardPO(@RequestBody PurchaseOrder purchaseOrder) throws ExecutionException, InterruptedException {
+    PurchaseOrder purchaseOrderResponse = purchaseOrderService.forwardPO(purchaseOrder);
+    if (purchaseOrder != null) {
+      return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
     }
+    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+  }
 
-    // For finance team to get all billable POs:
-    @GetMapping("/po/billable")
-    public CompletableFuture<ResponseEntity<List<PurchaseOrder>>> getBillablePOs() {
-      return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
-        if (!billablePOs.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-      });
-    }
-
-    // Get PO by id for sales/finance team to view PO:
-    @GetMapping("/po/{id}")
-    public CompletableFuture<ResponseEntity<PurchaseOrder>> getPOById(@PathVariable Long id) {
-      return purchaseOrderService.getPOById(id).thenApply(purchaseOrder -> {
-        if (purchaseOrder != null) {
-          return ResponseEntity.status(HttpStatus.FOUND).body(purchaseOrder);
-        } else {
+  // For finance team to get all billable POs:
+  @GetMapping("/po/billable")
+  public CompletableFuture<ResponseEntity<List<PurchaseOrder>>> getBillablePOs() {
+    return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
+      if (!billablePOs.isEmpty()) {
+          return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
+      } else {
           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-      });
-    }
-
-    // For finance team to update PO:
-    @PatchMapping("/po/update/{id}")
-    public ResponseEntity<PurchaseOrder> updatePO(@PathVariable Long id, @RequestBody PurchaseOrder purchaseOrder) {
-      CompletableFuture<PurchaseOrder> future = purchaseOrderService.updatePO(id, purchaseOrder);
-      try {
-        PurchaseOrder purchaseOrderResponse = future.get();
-        if (purchaseOrderResponse != null) {
-          return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
-        } else {
-          return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-      } catch (InterruptedException | ExecutionException e) {
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-    }
+    });
+  }
 
-    // For finance team to delete PO:
-    @DeleteMapping("/po/delete/{id}")
-    public ResponseEntity<String> deletePO(@PathVariable("id") Long id) {
-      String purchaseOrderResponse = purchaseOrderService.deletePO(id);
+  // Get PO by id for sales/finance team to view PO:
+  @GetMapping("/po/{id}")
+  public CompletableFuture<ResponseEntity<PurchaseOrder>> getPOById(@PathVariable Long id) {
+    return purchaseOrderService.getPOById(id).thenApply(purchaseOrder -> {
+      if (purchaseOrder != null) {
+        return ResponseEntity.status(HttpStatus.FOUND).body(purchaseOrder);
+      } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      }
+    });
+  }
+
+  // For sales/finance team to update PO:
+  @PatchMapping("/po/update/{id}")
+  public ResponseEntity<PurchaseOrder> updatePO(@PathVariable Long id, @RequestBody PurchaseOrder purchaseOrder) {
+    CompletableFuture<PurchaseOrder> future = purchaseOrderService.updatePO(id, purchaseOrder);
+    try {
+      PurchaseOrder purchaseOrderResponse = future.get();
       if (purchaseOrderResponse != null) {
-        return new ResponseEntity<String>("PO has been deleted successfully.", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
       }
-      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    } catch (InterruptedException | ExecutionException e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  // For sales/finance team to delete PO:
+  @DeleteMapping("/po/delete/{id}")
+  public ResponseEntity<String> deletePO(@PathVariable("id") Long id) {
+    CompletableFuture<String> future = purchaseOrderService.deletePO(id);
+    try {
+      String purchaseOrderResponse = future.get();
+      if (purchaseOrderResponse != null) {
+        return new ResponseEntity<String>(purchaseOrderResponse, HttpStatus.NO_CONTENT);
+      }
+      return new ResponseEntity<>("Purchase Order not found", HttpStatus.NOT_FOUND);
+    } catch (InterruptedException | ExecutionException e) {
+      return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
 }
