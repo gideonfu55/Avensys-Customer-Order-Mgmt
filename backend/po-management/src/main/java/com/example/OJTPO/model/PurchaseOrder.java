@@ -1,57 +1,26 @@
 package com.example.OJTPO.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "PurchaseOrders")
 public class PurchaseOrder {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
   private Long id;
-
-  @Column(name = "vendor_name", nullable = false)
   private String vendorName;
 
-  @Column(name = "start_date", nullable = false)
-  private LocalDateTime startDate;
+  // @JsonSerialize(using = CustomLocalDateSerializer.class)
+  private String startDate;
 
-  @Column(name = "end_date", nullable = false)
-  private LocalDateTime endDate;
-
-  @Column(name = "total_value", nullable = false)
+  // @JsonSerialize(using = CustomLocalDateSerializer.class)
+  private String endDate;
+  
   private double totalValue;
-
-  @Column(name = "bal_value", nullable = false)
   private double balValue;
-
-  @Column(name = "milestone", nullable = true)
   private String milestone;
-
-  @Column(name = "type", nullable = false)
   private String type;
-
-  @Column(name = "status", nullable = false)
   private String status;
-
-  // @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
-
 
   public PurchaseOrder() {
   }
 
-  public PurchaseOrder(Long id, String vendorName, LocalDateTime startDate, LocalDateTime endDate, double totalValue, double balValue, String milestone, String type, String status) {
+  public PurchaseOrder(Long id, String vendorName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
     this.id = id;
     this.vendorName = vendorName;
     this.startDate = startDate;
@@ -79,19 +48,19 @@ public class PurchaseOrder {
     this.vendorName = vendorName;
   }
 
-  public LocalDateTime getStartDate() {
+  public String getStartDate() {
     return this.startDate;
   }
 
-  public void setStartDate(LocalDateTime startDate) {
+  public void setStartDate(String startDate) {
     this.startDate = startDate;
   }
 
-  public LocalDateTime getEndDate() {
+  public String getEndDate() {
     return this.endDate;
   }
 
-  public void setEndDate(LocalDateTime endDate) {
+  public void setEndDate(String endDate) {
     this.endDate = endDate;
   }
 
