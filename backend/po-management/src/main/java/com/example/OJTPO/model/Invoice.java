@@ -3,18 +3,17 @@ package com.example.OJTPO.model;
 import com.google.cloud.firestore.DocumentReference;
 
 public class Invoice {
-    private String id;
+    private int id;
     private String invoiceNumber;
     private int amount;
-    private DocumentReference purchaseOrderRef;
+    private int purchaseOrderRef;
+    // private DocumentReference purchaseOrderRef;
 
-    // Constructors, getters, and setters
-
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -34,11 +33,19 @@ public class Invoice {
         this.amount = amount;
     }
 
-    public DocumentReference getPurchaseOrderRef() {
+    public int getPurchaseOrderRef() {
         return purchaseOrderRef;
     }
 
-    public void setPurchaseOrderRef(DocumentReference purchaseOrderRef) {
+    public void setPurchaseOrderRef(int purchaseOrderRef) {
         this.purchaseOrderRef = purchaseOrderRef;
     }
+
+    // public DocumentReference getPurchaseOrderRef() {
+    //     return purchaseOrderRef;
+    // }
+
+    // public void setPurchaseOrderRef(DocumentReference purchaseOrderRef) {
+    //     this.purchaseOrderRef = purchaseOrderRef;
+    // }
 }

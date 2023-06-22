@@ -4,9 +4,6 @@ import com.example.OJTPO.firebase.FirebaseService;
 import com.example.OJTPO.model.Invoice;
 import com.google.firebase.database.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
