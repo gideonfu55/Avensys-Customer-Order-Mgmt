@@ -37,24 +37,18 @@ public class FirebaseService {
 
     public CompletableFuture<User> validateUser(String username, String password) {
         CompletableFuture<User> completableFuture = new CompletableFuture<>();
-        DatabaseReference userRef = firebase.child("users").child(username);
 
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                if (user != null && user.getPassword().equals(password)) {
-                    completableFuture.complete(user);
-                } else {
-                    completableFuture.complete(null);
-                }
+        getUserByUsername(username).thenAccept(user -> {
+            if (user != null && user.getPassword().equals(password)) {
+                completableFuture.complete(user);
+            } else {
+                completableFuture.complete(null);
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                completableFuture.completeExceptionally(databaseError.toException());
-            }
+        }).exceptionally(ex -> {
+            completableFuture.completeExceptionally(ex);
+            return null;
         });
+
         return completableFuture;
     }
 
