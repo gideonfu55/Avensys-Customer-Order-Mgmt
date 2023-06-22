@@ -1,41 +1,36 @@
 package com.example.OJTPO.service;
 
+import com.example.OJTPO.firebase.FirebaseService;
+import com.example.OJTPO.model.Invoice;
+import com.google.firebase.database.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-<<<<<<< HEAD
-
-=======
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546
-import com.example.OJTPO.repository.InvoiceRepository;
 
 @Service
 public class InvoiceService {
 
     @Autowired
-    private InvoiceRepository invoiceRepository;
-<<<<<<< HEAD
-    
-}
-=======
+    private FirebaseService firebaseService;
 
-    public Invoice saveInvoice(Invoice invoice) {
-        return invoiceRepository.save(invoice);
+    public void saveInvoice(Invoice invoice) {
+        firebaseService.saveInvoice(invoice);
     }
 
-    public Invoice updateInvoice(Invoice invoice) {
-        if (invoiceRepository.existsById(invoice.getId())) {
-            return invoiceRepository.save(invoice);
-        } else {
-            return null;
-        }
+    public void updateInvoice(Invoice invoice) {
+        firebaseService.updateInvoice(invoice);
     }
 
-    public Invoice getInvoiceById(int id) {
-        return invoiceRepository.findById(id).orElse(null);
+    public void getInvoiceById(String id) {
+        firebaseService.getInvoiceById(id);
     }
 
-    public void deleteInvoice(int id) {
-        invoiceRepository.deleteById(id);
+    public void deleteInvoice(String id) {
+        firebaseService.deleteInvoice(id);
     }
 }
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546

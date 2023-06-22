@@ -1,32 +1,20 @@
 package com.example.OJTPO.model;
 
-<<<<<<< HEAD
-import java.sql.Timestamp;
-
-=======
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-<<<<<<< HEAD
-@Table(name = "Invoice")
-public class Invoice {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-=======
 @Table(name = "Invoices")
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546
-    private int id;
+    private long id;
 
     @Column(name = "invoiceNumber", nullable = false)
     private String invoiceNumber;
@@ -34,23 +22,17 @@ public class Invoice {
     @Column(name = "amount", nullable = false)
     private int amount;
 
-<<<<<<< HEAD
-    
-
-    // Getter and Setter methods
-=======
     @ManyToOne
     @JoinColumn(name = "poNumber")
     private PurchaseOrder purchaseOrder;
 
     // Getters and setters
 
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -66,12 +48,6 @@ public class Invoice {
         return amount;
     }
 
-<<<<<<< HEAD
-    public void setPassword(int amount) {
-        this.amount = amount;
-    }
-}
-=======
     public void setAmount(int amount) {
         this.amount = amount;
     }
@@ -84,4 +60,3 @@ public class Invoice {
         this.purchaseOrder = purchaseOrder;
     }
 }
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546

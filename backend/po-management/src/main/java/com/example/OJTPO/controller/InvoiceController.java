@@ -1,20 +1,21 @@
 package com.example.OJTPO.controller;
 
-<<<<<<< HEAD
-public class InvoiceController {
-    
-}
-=======
+import com.example.OJTPO.model.Invoice;
+import com.example.OJTPO.service.InvoiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
+@CrossOrigin(origins = {    "http://localhost:3000", "http://127.0.0.1:55 5 5 " })
+@RequestMapping("/invoice")
 public class InvoiceController {
 
-    @Autowired
-    private InvoiceService invoiceService;
+    private final InvoiceService invoiceService;
+
+    public InvoiceController(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
+    }
 
     @PostMapping
     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
@@ -22,21 +23,22 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInvoice);
     }
 
-    @PutMapping("/invoice/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id, @RequestBody Invoice invoice) {
-        invoice.setId(id);
-        Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
+@PutMapping("/{id}")
+public ResponseEntity<Invoice> updateInvoice(@PathVariable int id, @RequestBody Invoice invoice) {
+    invoice.setId(id);
+    Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
 
-        if (updatedInvoice != null) {
-            return ResponseEntity.ok(updatedInvoice);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    if (updatedInvoice != null) {
+        return ResponseEntity.ok(updatedInvoice);
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
 
-    @GetMapping("/invoice/{id}")
-    public ResponseEntity<Invoice> getInvoiceById(@PathVariable Long id) {
-        Invoice invoice = invoiceService.getInvoiceById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<Invoice> getInvoiceById(@PathVariable int id) {
+        String invoiceId = String.valueOf(id);
+        Invoice invoice = invoiceService.getInvoiceById(invoiceId);
 
         if (invoice != null) {
             return ResponseEntity.ok(invoice);
@@ -45,10 +47,9 @@ public class InvoiceController {
         }
     }
 
-    @DeleteMapping("/invoice/{id}")
-    public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteInvoice(@PathVariable String id) {
         invoiceService.deleteInvoice(id);
         return ResponseEntity.noContent().build();
     }
 }
->>>>>>> 769f0af95eeda2abe1140d25078a2a00eb83d546
