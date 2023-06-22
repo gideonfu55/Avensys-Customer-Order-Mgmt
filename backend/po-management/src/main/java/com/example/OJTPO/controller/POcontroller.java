@@ -60,14 +60,16 @@ public class POcontroller {
       });
     }
 
-    // To populate fields of one PO in the update/delete form:
+    // Get PO by id for sales/finance team to view PO:
     @GetMapping("/po/{id}")
-    public ResponseEntity<PurchaseOrder> getPOById(@PathVariable("id") Long id) throws ExecutionException, InterruptedException {
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPOById(id);
+    public CompletableFuture<ResponseEntity<PurchaseOrder>> getPOById(@PathVariable Long id) {
+      return purchaseOrderService.getPOById(id).thenApply(purchaseOrder -> {
         if (purchaseOrder != null) {
-            return new ResponseEntity<>(purchaseOrder, HttpStatus.FOUND);
+          return ResponseEntity.status(HttpStatus.FOUND).body(purchaseOrder);
+        } else {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+      });
     }
 
     // For finance team to update PO:

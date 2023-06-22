@@ -76,8 +76,8 @@ public class PurchaseOrderService {
   }
 
   // Get Purchase Order by Id:
-  public PurchaseOrder getPOById(Long id) throws ExecutionException, InterruptedException {
-    final PurchaseOrder[] purchaseOrder = new PurchaseOrder[1];
+  public CompletableFuture<PurchaseOrder> getPOById(Long id) {
+    CompletableFuture<PurchaseOrder> future = new CompletableFuture<>();
     String idString = String.valueOf(id);
     if (idString == null || idString.equals("null")) {
       throw new IllegalArgumentException("Purchase Order id cannot be null");
@@ -87,16 +87,17 @@ public class PurchaseOrderService {
       .addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-          purchaseOrder[0] = dataSnapshot.getValue(PurchaseOrder.class);
+          PurchaseOrder purchaseOrder = dataSnapshot.getValue(PurchaseOrder.class);
+          future.complete(purchaseOrder);
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-          System.out.println(databaseError.getMessage());
+          future.completeExceptionally(databaseError.toException());
         }
       });
 
-    return purchaseOrder[0];
+    return future;
   }
 
   // Update Purchase Order:
