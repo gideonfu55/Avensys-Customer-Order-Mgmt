@@ -29,6 +29,18 @@ public class POcontroller {
                 });
     }
 
+    @PostMapping("/createUser") // Add the createUser endpoint
+    public CompletableFuture<ResponseEntity<User>> createUser(@RequestBody User user) {
+        return firebaseService.createUser(user)
+                .thenApply(createdUser -> {
+                    if (createdUser != null) {
+                        return ResponseEntity.ok(createdUser);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                    }
+                });
+    }
+
     @GetMapping("/user/{username}")
     public CompletableFuture<ResponseEntity<User>> getUserByUsername(@PathVariable String username) {
         return firebaseService.getUserByUsername(username)
