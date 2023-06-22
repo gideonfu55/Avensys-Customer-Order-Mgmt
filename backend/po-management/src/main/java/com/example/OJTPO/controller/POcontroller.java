@@ -73,13 +73,19 @@ public class POcontroller {
     }
 
     // For finance team to update PO:
-    @PatchMapping("/po/update")
-    public ResponseEntity<PurchaseOrder> updatePO(@RequestBody PurchaseOrder purchaseOrder) throws ExecutionException, InterruptedException {
-      PurchaseOrder purchaseOrderResponse = purchaseOrderService.updatePO(purchaseOrder);
-      if (purchaseOrder != null) {
-        return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
+    @PatchMapping("/po/update/{id}")
+    public ResponseEntity<PurchaseOrder> updatePO(@PathVariable Long id, @RequestBody PurchaseOrder purchaseOrder) {
+      CompletableFuture<PurchaseOrder> future = purchaseOrderService.updatePO(id, purchaseOrder);
+      try {
+        PurchaseOrder purchaseOrderResponse = future.get();
+        if (purchaseOrderResponse != null) {
+          return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
+        } else {
+          return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+      } catch (InterruptedException | ExecutionException e) {
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     // For finance team to delete PO:

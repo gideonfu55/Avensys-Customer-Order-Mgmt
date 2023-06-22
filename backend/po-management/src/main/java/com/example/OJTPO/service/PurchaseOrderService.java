@@ -3,11 +3,13 @@ package com.example.OJTPO.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import org.springframework.stereotype.Service;
 
 import com.example.OJTPO.model.PurchaseOrder;
+import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -101,15 +103,44 @@ public class PurchaseOrderService {
   }
 
   // Update Purchase Order:
-  public PurchaseOrder updatePO(PurchaseOrder purchaseOrder) {
-    String idString = String.valueOf(purchaseOrder.getId());
+  public CompletableFuture<PurchaseOrder> updatePO(Long id, PurchaseOrder newPurchaseOrder) {
+    String idString = String.valueOf(id);
     if (idString == null || idString.equals("null")) {
       throw new IllegalArgumentException("Purchase Order id cannot be null");
     }
 
-    getPOReference().child(idString).setValueAsync(purchaseOrder);
+    CompletableFuture<PurchaseOrder> completableFuture = new CompletableFuture<>();
 
-    return purchaseOrder;
+    getPOReference().child(idString)
+      .addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          if (dataSnapshot.exists()) {
+            PurchaseOrder existingPO = dataSnapshot.getValue(PurchaseOrder.class);
+            existingPO.updateWith(newPurchaseOrder);
+            ApiFuture<Void> future = getPOReference().child(idString).setValueAsync(existingPO);
+            ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
+              @Override
+              public void onSuccess(Void result) {
+                completableFuture.complete(existingPO);
+              }
+              @Override
+              public void onFailure(Throwable t) {
+                completableFuture.completeExceptionally(t);
+              }
+            }, MoreExecutors.directExecutor());
+          } else {
+            completableFuture.complete(null);
+          }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          completableFuture.completeExceptionally(databaseError.toException());
+        }
+      });
+
+    return completableFuture;
   }
 
   // Delete Purchase Order:
