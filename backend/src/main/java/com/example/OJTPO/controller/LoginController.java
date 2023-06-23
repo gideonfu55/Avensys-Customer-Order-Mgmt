@@ -1,6 +1,6 @@
 package com.example.OJTPO.controller;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,26 +19,42 @@ import com.example.OJTPO.service.UserService;
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
 public class LoginController {
 
-  @Autowired
-  private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  @PostMapping("/login")
-  public ResponseEntity<User> login(@RequestBody User loginUser) throws ExecutionException, InterruptedException {
-    User user = userService.validateUser(loginUser.getUsername(), loginUser.getPassword());
-
-    if (user != null) {
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    @PostMapping("/login")
+    public CompletableFuture<ResponseEntity<User>> login(@RequestBody User loginUser) {
+        return userService.validateUser(loginUser.getUsername(), loginUser.getPassword())
+                .thenApply(user -> {
+                    if (user != null) {
+                        return ResponseEntity.ok(user);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                    }
+                });
     }
-    return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-  }
 
-  @GetMapping("/user/{username}")
-  public ResponseEntity<User> getUserByUsername(@PathVariable String username) throws ExecutionException, InterruptedException {
-    User user = userService.getUserByUsername(username);
-    if (user != null) {
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    @PostMapping("/createUser") // Add the createUser endpoint
+    public CompletableFuture<ResponseEntity<User>> createUser(@RequestBody User user) {
+        return userService.createUser(user)
+                .thenApply(createdUser -> {
+                    if (createdUser != null) {
+                        return ResponseEntity.ok(createdUser);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                    }
+                });
     }
-    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-  }
-  
+
+    @GetMapping("/user/{username}")
+    public CompletableFuture<ResponseEntity<User>> getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username)
+                .thenApply(user -> {
+                    if (user != null) {
+                        return ResponseEntity.ok(user);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    }
+                });
+    }
 }
