@@ -4,13 +4,8 @@ public class PurchaseOrder {
 
   private Long id;
   private String vendorName;
-
-  // @JsonSerialize(using = CustomLocalDateSerializer.class)
   private String startDate;
-
-  // @JsonSerialize(using = CustomLocalDateSerializer.class)
   private String endDate;
-  
   private double totalValue;
   private double balValue;
   private String milestone;
