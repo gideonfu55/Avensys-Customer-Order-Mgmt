@@ -1,7 +1,3 @@
-* {
-    transition: all 0.2s ease-in;
-}
-
 .dashboard-body {
     display: flex;
     background-color: #202020;

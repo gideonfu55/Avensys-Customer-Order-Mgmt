@@ -15,7 +15,7 @@
 
 .side-nav {
   height: 100vh;
-  width: 15%;
+  width: 25%;
   background-color: #202020;
 }
 
@@ -56,38 +56,7 @@ td {
   padding-top: 90px;
 }
 
-/* .navbar-brand,
-.nav-link {
-  display: flex;
-  align-items: center;
+.nav-bar-link {
+  text-decoration: none;
+  color: inherit; 
 }
-
-.nav-link:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 4px; 
-  padding-bottom: 20px; 
-}
-
-.dropdown {
-  position: relative;
-  transform: translateY(20%);
-}
-
-.dropdown-toggle {
-    align-items: center;
-    padding-left: 8px;
-  }
-  
-  
-.dropdown-toggle-img {
-    width: 24px; 
-    height: 24px; 
-    object-fit: cover;
-    margin-right: 5px;
-  }
-
-  .navbar-logo {
-    max-width: 80px; 
-    height: auto;
-    padding-right: 10px;
-  } */

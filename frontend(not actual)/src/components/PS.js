@@ -3,11 +3,11 @@ import NavBar from './NavBar';
 import { Modal } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
-import './ES.css';
+import './ES.css'; 
 import axios from 'axios';
 
-function ES() {
-  const [ES, setES] = useState([]);
+function PS() { 
+  const [PS, setPS] = useState([]); 
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -28,26 +28,26 @@ function ES() {
     axios
       .get("http://localhost:8080/api/po/all", { maxRedirects: 5 })
       .then((response) => {
-        setES(response.data);
+        setPS(response.data); 
       })
       .catch((error) => {
         console.error(error);
       });
 
-    console.log("ES POs: ", ES);
+    console.log("PS POs: ", PS); 
   }, []);
 
-  const filteredES = selectedStatus
-    ? ES.filter(po => po.status === selectedStatus && po.type === 'Enterprise Service')
-    : ES.filter(po => po.type === 'Enterprise Service');
+  const filteredPS = selectedStatus
+    ? PS.filter(po => po.status === selectedStatus && po.type === 'Professional Service') 
+    : PS.filter(po => po.type === 'Professional Service'); 
 
   return (
     <div className='dashboard-body'>
       <NavBar />
       <div className='dashboard-content'>
-        <div className='es-intro'>
+        <div className='ps-intro'>
           <h2>
-            <span style={{ fontWeight: '800' }}>Essential Services:</span>{' '}
+            <span style={{ fontWeight: '800' }}>Professional Services:</span>{' '} 
             <span style={{ fontWeight: '200' }}>Purchase Orders</span>
           </h2>
           <button type='button' className='btn btn-dark'>
@@ -75,7 +75,7 @@ function ES() {
         <form>
           <input type='text' className='form-control search' placeholder='Search..' />
         </form>
-        {/* Table of ES PO's */}
+        {/* Table of PS PO's */}
         <table className='table table-light table-hover'>
           <thead>
             <tr>
@@ -95,7 +95,7 @@ function ES() {
             </tr>
           </thead>
           <tbody>
-            {filteredES.map((po) => (
+            {filteredPS.map((po) => ( 
               <tr key={po.id}>
                 <td className='text-center'>{po.id}</td>
                 <td className='text-center'>{po.vendorName}</td>
@@ -115,38 +115,31 @@ function ES() {
                   </button>
                 </td>
                 <td>
-                  <button
-                    className='btn btn-dark'
-                    onClick={() => setShowInvoiceModal(true)}
-                  >
-                    Add Invoice
-                  </button>
+                  <button className='btn btn-dark'>Add Invoice</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          {/* View PO Modal */}
-          <Modal show={showPOModal} onHide={handleShowPOModalClose} dialogClassName='custom-modal'>
-            <Modal.Header closeButton>
-              <Modal.Title>Purchase Order</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO closeModal={handleShowPOModalClose} />}</Modal.Body>
-          </Modal>
+        {/* View PO Modal */}
+        <Modal show={showPOModal} onHide={handleShowPOModalClose} dialogClassName='custom-modal'>
+          <Modal.Header closeButton>
+            <Modal.Title>Purchase Order</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{showPOModal && <ViewPO closeModal={handleShowPOModalClose} />}</Modal.Body>
+        </Modal>
 
-          {/* Create Invoice Modal */}
-          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
-            <Modal.Header closeButton>
-              <Modal.Title>Create Invoice</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>{showInvoiceModal && <CreateInvoice closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
-          </Modal>
-        </div>
+        {/* Create Invoice Modal */}
+        <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
+          <Modal.Header closeButton>
+            <Modal.Title>Create Invoice</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{showInvoiceModal && <CreateInvoice closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
+        </Modal>
       </div>
     </div>
   );
 }
 
-export default ES;
+export default PS; 

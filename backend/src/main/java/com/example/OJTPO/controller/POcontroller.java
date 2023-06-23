@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.OJTPO.model.PurchaseOrder;
 import com.example.OJTPO.service.PurchaseOrderService;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api")
@@ -51,12 +50,12 @@ public class POcontroller {
 
   // For finance team to get all billable POs:
   @GetMapping("/po/all")
-  public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
+  public CompletableFuture<ResponseEntity<List<PurchaseOrder>>> getBillablePOs() {
     return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
       if (!billablePOs.isEmpty()) {
-        return billablePOs;
+        return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
       } else {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No billable purchase orders found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
     });
   }

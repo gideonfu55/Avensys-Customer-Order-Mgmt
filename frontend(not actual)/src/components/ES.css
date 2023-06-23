@@ -1,16 +1,47 @@
-* {
-    transition: all 0.2s ease-in;
-}
 
-.dashboard-body {
+
+.transition {
+    transition: all 0.2s ease-in;
+  }
+  
+  .dashboard-body {
     display: flex;
     background-color: #202020;
-}
-
-.dashboard-content {
+  }
+  
+  .dashboard-content {
     background-color: white;
     display: flex;
     flex-direction: column;
     row-gap: 2rem;
     padding: 2rem;
-}
+  }
+  
+  .es-intro {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .custom-modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    max-width: none;
+    height: 100%;
+    width: 75%;
+    z-index: 1050;
+    overflow-y: auto;
+  }
+  
+  .custom-modal .modal-dialog {
+    height: 100%;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
