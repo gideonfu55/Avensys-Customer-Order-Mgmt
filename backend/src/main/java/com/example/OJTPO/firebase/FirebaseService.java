@@ -20,12 +20,12 @@ public class FirebaseService {
     @PostConstruct
     public void initialize() {
         try {
-            FileInputStream serviceAccount = new FileInputStream("./firebase-key.json");
+            FileInputStream serviceAccount = new FileInputStream("./firebaseKey.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl("https://avensys-ojt-default-rtdb.asia-southeast1.firebasedatabase.app")
-                    .build();
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setDatabaseUrl("https://po-management-aaf79-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
