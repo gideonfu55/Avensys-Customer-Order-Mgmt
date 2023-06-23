@@ -3,6 +3,7 @@ package com.example.OJTPO.model;
 public class PurchaseOrder {
 
   private Long id;
+  private String poNumber;
   private String vendorName;
   private String startDate;
   private String endDate;
@@ -15,8 +16,9 @@ public class PurchaseOrder {
   public PurchaseOrder() {
   }
 
-  public PurchaseOrder(Long id, String vendorName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
+  public PurchaseOrder(Long id, String poNumber, String vendorName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
     this.id = id;
+    this.poNumber = poNumber;
     this.vendorName = vendorName;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -33,6 +35,14 @@ public class PurchaseOrder {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getPoNumber() {
+    return this.poNumber;
+  }
+
+  public void setPoNumber(String poNumber) {
+    this.poNumber = poNumber;
   }
 
   public String getVendorName() {
@@ -101,6 +111,7 @@ public class PurchaseOrder {
 
   public void updateWith(PurchaseOrder newPurchaseOrder) {
     this.vendorName = newPurchaseOrder.vendorName != null ? newPurchaseOrder.vendorName : this.vendorName;
+    this.poNumber = newPurchaseOrder.poNumber != null ? newPurchaseOrder.poNumber : this.poNumber;
     this.startDate = newPurchaseOrder.startDate != null ? newPurchaseOrder.startDate : this.startDate;
     this.endDate = newPurchaseOrder.endDate != null ? newPurchaseOrder.endDate : this.endDate;
     this.totalValue = newPurchaseOrder.totalValue != 0 ? newPurchaseOrder.totalValue : this.totalValue;
