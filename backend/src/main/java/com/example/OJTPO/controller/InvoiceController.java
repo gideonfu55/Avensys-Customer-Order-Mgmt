@@ -1,12 +1,10 @@
 package com.example.OJTPO.controller;
 
 import com.example.OJTPO.model.Invoice;
-import com.example.OJTPO.model.PurchaseOrder;
 import com.example.OJTPO.service.InvoiceService;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +19,6 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    // @PostMapping("/invoices/{id}")
-    // public CompletableFuture<Invoice> createInvoice(@RequestBody Invoice invoice) {
-    //     return invoiceService.createInvoice(invoice);
-    // }
-
-    // @PatchMapping("/invoices/{id}")
-    // public CompletableFuture<Invoice> updateInvoice(@RequestBody Invoice invoice, @PathVariable String id) {
-    //     return invoiceService.updateInvoice(invoice, id);
-    // }
-
     @GetMapping("/invoices/{id}")
     public CompletableFuture<ResponseEntity<Invoice>> getInvoiceById(@PathVariable Long id) {
         return invoiceService.getInvoiceById(id).thenApply(invoice -> {
@@ -41,6 +29,16 @@ public class InvoiceController {
             }
         });
     }
+
+    // @PostMapping("/invoices/{id}")
+    // public CompletableFuture<Invoice> createInvoice(@RequestBody Invoice invoice) {
+    //     return invoiceService.createInvoice(invoice);
+    // }
+
+    // @PatchMapping("/invoices/{id}")
+    // public CompletableFuture<Invoice> updateInvoice(@RequestBody Invoice invoice, @PathVariable String id) {
+    //     return invoiceService.updateInvoice(invoice, id);
+    // }
 
     // @DeleteMapping("/invoices/{id}")
     // public CompletableFuture<Invoice> deleteInvoice(@PathVariable String id) {
