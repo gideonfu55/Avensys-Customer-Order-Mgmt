@@ -10,6 +10,8 @@ import Adminpanel from './components/Adminpanel';
 import Explore from './components/Explore';
 import Profile from './components/Profile';
 import PageNotFound from './components/PageNotFound';
+import Dashboard from './components/Dashboard';
+import ES from './components/ES';
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -43,6 +45,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path='/ES' element={<ES/>} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/profile" element={<Profile />} />
           {isAdmin ? (

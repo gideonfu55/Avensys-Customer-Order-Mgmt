@@ -16,7 +16,7 @@ function Login() {
     event.preventDefault();
 
     if (!username || !password) {
-      setError('Please enter your Username and Password');
+      setError('Please enter your username and password!');
       return;
     }
 
@@ -45,8 +45,31 @@ function Login() {
   }, []);
 
   return (
-    <div className="login-page">
-      <Container>
+    <div className="login-body">
+      <div className='login-card'>
+        <form className='login-form' noValidate onSubmit={handleSubmit}>
+          <h2 className='text-light'>Sign In</h2>
+          {/* Username */}
+          <div className='form-group'>
+            <input type='text' className='form-control login-input' placeholder='Username' onChange={e => setUsername(e.target.value)} />
+          </div>
+          {/* Password */}
+          <div className='form-group'>
+            <input type='password' className='form-control login-input' placeholder='Password' onChange={e => setPassword(e.target.value)} />
+          </div>
+          {/* Validation */}
+          {error && <Alert variant="danger">{error}</Alert>}
+          {successMessage && <Alert variant="success">{successMessage}</Alert>}
+          {/* Button */}
+          <input type='submit' className='signin-btn' value={'SIGN IN'} />
+          <a href='#' className='forgot-pw'>FORGOT PASSWORD?</a>
+        </form>
+      </div>
+      <div className='side-image'>
+        <h4 style={{ fontWeight: '100', color: '#f1f1f1' }}>Avensys</h4>
+        <h1 style={{ fontWeight: '900', color: '#f1f1f1' }}>PO Manager System</h1>
+      </div>
+      {/* <Container>
         <Row className="justify-content-center align-items-center" style={{ height: '100vh' }}>
           <Col md={4}>
             <Card className="my-5 mx-auto" style={{ borderRadius: '1rem' }}>
@@ -92,7 +115,7 @@ function Login() {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
     </div>
   );
 }

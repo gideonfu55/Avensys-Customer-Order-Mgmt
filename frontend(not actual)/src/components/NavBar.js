@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Navbar, Nav, Image, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './NavBar.css';
@@ -16,13 +16,49 @@ function NavBar() {
 
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
+    console.log(loggedUser.role)
     setUser(loggedUser);
   }, [location]);
 
   return (
     location.pathname !== '/login' && location.pathname !== '/register' && user && (
       <div>
-        <Navbar bg="dark" variant="dark" expand="lg" className="fixed-top">
+        <div className='side-nav'>
+          <table>
+            <tbody>
+              <Link to='/dashboard' className='nav-link'>
+                <tr >
+                  <td><i class="fi fi-sr-house-chimney"></i></td>
+                  <td>Home</td>
+                </tr>
+              </Link>
+              <tr className='nav-link'>
+                <td><i class="fi fi-br-search"></i></td>
+                <td>Search</td>
+              </tr>
+              <tr className='nav-link'>
+                <td><i class="fi fi-br-stats"></i></td>
+                <td>Insights</td>
+              </tr>
+              <tr className='nav-link'>
+                <td><i class="fi fi-sr-settings"></i></td>
+                <td>Settings</td>
+              </tr>
+              <tr className='nav-link'>
+                <td><i class="fi fi-br-sign-out-alt"></i></td>
+                <td onClick={handleLogout}>Logout</td>
+              </tr>
+              {user.role === 'Sales' || user.role === 'Finance' ?
+                (<Link to='/adminpanel' className='nav-link'>
+                  <tr>
+                    <td><i class="fi fi-sr-user"></i></td>
+                    <td>Admin Control</td>
+                  </tr>
+                </Link>) : null}
+            </tbody>
+          </table>
+        </div>
+        {/* <Navbar bg="dark" variant="dark" expand="lg" className="fixed-top">
           <Navbar.Brand className="navbar-brand" href="/Welcome">
             <Image src="/logo.png" className='navbar-logo' style={{ paddingLeft: '30px' }}/> TweGram
           </Navbar.Brand>
@@ -45,8 +81,9 @@ function NavBar() {
               </Dropdown.Menu>
             </Dropdown>
           </Navbar.Collapse>
-        </Navbar>
-        <div className="content" style={{ paddingTop: '90px' }}> {/* Apply padding to the top */}
+        </Navbar> */}
+        <div className="content">
+          {/* Apply padding to the top */}
           {/* Your page content here */}
         </div>
       </div>
