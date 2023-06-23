@@ -3,9 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-src/main/resources/application.properties
-pom.xml
 firebaseKey.json
+firebase-key.json
 
 ### STS ###
 .apt_generated
