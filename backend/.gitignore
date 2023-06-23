@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 src/main/resources/application.properties
 firebaseKey.json
+firebase-key.json
 
 ### STS ###
 .apt_generated
