@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FirebaseService {
-    private DatabaseReference firebase;
+    public DatabaseReference firebase;
 
     @PostConstruct
     public void initialize() {
@@ -113,7 +113,6 @@ public class FirebaseService {
         return completableFuture;
     }
 
-    
     public CompletableFuture<Invoice> createInvoice(Invoice invoice) {
         CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
         DatabaseReference invoiceRef = firebase.child("invoices");
