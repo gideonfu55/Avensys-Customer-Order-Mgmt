@@ -1,48 +1,41 @@
 package com.example.OJTPO.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.example.OJTPO.model.Invoice;
+import com.example.OJTPO.service.InvoiceService;
+
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:55 5 5 " })
 public class InvoiceController {
 
+    private final InvoiceService invoiceService;
+
     @Autowired
-    private InvoiceService invoiceService;
-
-    @PostMapping
-    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-        Invoice createdInvoice = invoiceService.saveInvoice(invoice);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdInvoice);
+    public InvoiceController(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
     }
 
-    @PutMapping("/invoice/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id, @RequestBody Invoice invoice) {
-        invoice.setId(id);
-        Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
-
-        if (updatedInvoice != null) {
-            return ResponseEntity.ok(updatedInvoice);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PostMapping("/invoices/{id}")
+    public CompletableFuture<Invoice> createInvoice(@RequestBody Invoice invoice) {
+        return invoiceService.createInvoice(invoice);
     }
 
-    @GetMapping("/invoice/{id}")
-    public ResponseEntity<Invoice> getInvoiceById(@PathVariable Long id) {
-        Invoice invoice = invoiceService.getInvoiceById(id);
-
-        if (invoice != null) {
-            return ResponseEntity.ok(invoice);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PatchMapping("/invoices/{id}")
+    public CompletableFuture<Invoice> updateInvoice(@RequestBody Invoice invoice, @PathVariable String id) {
+        return invoiceService.updateInvoice(invoice, id);
     }
 
-    @DeleteMapping("/invoice/{id}")
-    public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
-        invoiceService.deleteInvoice(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/invoices/{id}")
+    public CompletableFuture<Invoice> getInvoiceById(@PathVariable String id) {
+        return invoiceService.getInvoiceById(id);
+    }
+
+    @DeleteMapping("/invoices/{id}")
+    public CompletableFuture<Invoice> deleteInvoice(@PathVariable String id) {
+        return invoiceService.deleteInvoice(id);
     }
 }

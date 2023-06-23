@@ -1,5 +1,6 @@
 package com.example.OJTPO.firebase;
 
+import com.example.OJTPO.model.Invoice;
 import com.example.OJTPO.model.User;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -109,6 +110,82 @@ public class FirebaseService {
                 completableFuture.completeExceptionally(databaseError.toException());
             }
         });
+        return completableFuture;
+    }
+
+    
+    public CompletableFuture<Invoice> createInvoice(Invoice invoice) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
+
+        invoiceRef.push().setValue(invoice, (error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(invoice);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    public CompletableFuture<Invoice> updateInvoice(Invoice invoice, String id) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
+
+        DatabaseReference specificInvoiceRef = invoiceRef.child(id);
+        specificInvoiceRef.setValue(invoice, (error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(invoice);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    public CompletableFuture<Invoice> deleteInvoice(String id) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
+
+        DatabaseReference specificInvoiceRef = invoiceRef.child(id);
+        specificInvoiceRef.removeValue((error, ref) -> {
+            if (error == null) {
+                completableFuture.complete(null);
+            } else {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    public CompletableFuture<Invoice> getInvoiceById(String id) {
+        CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
+        DatabaseReference invoiceRef = firebase.child("invoices");
+
+        invoiceRef.orderByChild("id")
+                .equalTo(id)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+                                Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
+                                completableFuture.complete(invoice);
+                                return;
+                            }
+                        }
+                        completableFuture.complete(null);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        completableFuture.completeExceptionally(databaseError.toException());
+                    }
+                });
+
         return completableFuture;
     }
 }

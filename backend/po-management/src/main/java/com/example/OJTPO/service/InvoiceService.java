@@ -1,32 +1,33 @@
 package com.example.OJTPO.service;
 
+import com.example.OJTPO.firebase.FirebaseService;
+import com.example.OJTPO.model.Invoice;
+import com.google.firebase.database.*;
+
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.OJTPO.repository.InvoiceRepository;
 
 @Service
 public class InvoiceService {
 
     @Autowired
-    private InvoiceRepository invoiceRepository;
+    private FirebaseService firebaseService;
 
-    public Invoice saveInvoice(Invoice invoice) {
-        return invoiceRepository.save(invoice);
+    public CompletableFuture<Invoice> createInvoice(Invoice invoice) {
+        return firebaseService.createInvoice(invoice);
     }
 
-    public Invoice updateInvoice(Invoice invoice) {
-        if (invoiceRepository.existsById(invoice.getId())) {
-            return invoiceRepository.save(invoice);
-        } else {
-            return null;
-        }
+    public CompletableFuture<Invoice> updateInvoice(Invoice invoice, String id) {
+        return firebaseService.updateInvoice(invoice, id);
     }
 
-    public Invoice getInvoiceById(int id) {
-        return invoiceRepository.findById(id).orElse(null);
+    public CompletableFuture<Invoice> getInvoiceById(String id) {
+        return firebaseService.getInvoiceById(id);
     }
 
-    public void deleteInvoice(int id) {
-        invoiceRepository.deleteById(id);
+    public CompletableFuture<Invoice> deleteInvoice(String id) {
+        return firebaseService.deleteInvoice(id);
     }
 }
