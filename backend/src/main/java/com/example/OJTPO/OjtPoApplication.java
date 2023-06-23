@@ -9,5 +9,4 @@ public class OjtPoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OjtPoApplication.class, args);
 	}	
-
 }
