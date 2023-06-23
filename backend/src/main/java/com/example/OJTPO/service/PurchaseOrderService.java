@@ -52,12 +52,13 @@ public class PurchaseOrderService {
     return purchaseOrder;
   }
 
-  // Get all Billable Purchase Orders:
+  // Get list of all Purchase Orders:
   public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
     CompletableFuture<List<PurchaseOrder>> future = new CompletableFuture<>();
     final List<PurchaseOrder> billablePOs = new ArrayList<>();
 
-    getPOReference().orderByChild("status").equalTo("Billable")
+    // getPOReference().orderByChild("status").equalTo("Billable")
+    getPOReference()
       .addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
