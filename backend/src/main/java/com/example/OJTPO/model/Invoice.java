@@ -3,17 +3,27 @@ package com.example.OJTPO.model;
 import com.google.cloud.firestore.DocumentReference;
 
 public class Invoice {
-    private int id;
+    private Long id;
     private String invoiceNumber;
-    private int amount;
-    private int purchaseOrderRef;
+    private double amount;
+    private double purchaseOrderRef;
     // private DocumentReference purchaseOrderRef;
 
-    public int getId() {
+    public Invoice() {
+    }
+
+    public Invoice(Long id, String invoiceNumber, double amount, double purchaseOrderRef) {
+        this.id = id;
+        this.invoiceNumber = invoiceNumber;
+        this.amount = amount;
+        this.purchaseOrderRef = purchaseOrderRef;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -25,27 +35,33 @@ public class Invoice {
         this.invoiceNumber = invoiceNumber;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public int getPurchaseOrderRef() {
+    public double getPurchaseOrderRef() {
         return purchaseOrderRef;
     }
 
-    public void setPurchaseOrderRef(int purchaseOrderRef) {
+    public void setPurchaseOrderRef(double purchaseOrderRef) {
         this.purchaseOrderRef = purchaseOrderRef;
     }
 
     // public DocumentReference getPurchaseOrderRef() {
-    //     return purchaseOrderRef;
+    // return purchaseOrderRef;
     // }
 
     // public void setPurchaseOrderRef(DocumentReference purchaseOrderRef) {
-    //     this.purchaseOrderRef = purchaseOrderRef;
+    // this.purchaseOrderRef = purchaseOrderRef;
     // }
+
+    public void updateWith(Invoice newInvoice) {
+        this.invoiceNumber = newInvoice.invoiceNumber != null ? newInvoice.invoiceNumber : this.invoiceNumber;
+        this.amount = newInvoice.amount != 0 ? newInvoice.amount : this.amount;
+        this.purchaseOrderRef = newInvoice.purchaseOrderRef != 0 ? newInvoice.purchaseOrderRef : this.purchaseOrderRef;
+    }
 }
