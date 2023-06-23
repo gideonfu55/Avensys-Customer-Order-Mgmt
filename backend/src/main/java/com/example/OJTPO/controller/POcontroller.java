@@ -49,13 +49,13 @@ public class POcontroller {
   }
 
   // For finance team to get all billable POs:
-  @GetMapping("/po/billable")
+  @GetMapping("/po/all")
   public CompletableFuture<ResponseEntity<List<PurchaseOrder>>> getBillablePOs() {
     return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
       if (!billablePOs.isEmpty()) {
-          return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
+        return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
       } else {
-          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
     });
   }
