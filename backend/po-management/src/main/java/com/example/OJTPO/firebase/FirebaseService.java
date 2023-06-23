@@ -82,17 +82,40 @@ public class FirebaseService {
     public CompletableFuture<User> createUser(User user) {
         CompletableFuture<User> completableFuture = new CompletableFuture<>();
         DatabaseReference usersRef = firebase.child("users");
+        DatabaseReference idRef = firebase.child("lastUserId");
 
-        usersRef.push().setValue(user, (error, ref) -> {
-            if (error == null) {
-                completableFuture.complete(user);
-            } else {
-                completableFuture.completeExceptionally(error.toException());
+        idRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData currentData) {
+                if (currentData.getValue() == null) {
+                    currentData.setValue(1);
+                } else {
+                    currentData.setValue((Long) currentData.getValue() + 1);
+                }
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (committed) {
+                	user.setId(dataSnapshot.getValue(Long.class).intValue());
+
+                    usersRef.push().setValue(user, (error, ref) -> {
+                        if (error == null) {
+                            completableFuture.complete(user);
+                        } else {
+                            completableFuture.completeExceptionally(error.toException());
+                        }
+                    });
+                } else {
+                    completableFuture.completeExceptionally(databaseError.toException());
+                }
             }
         });
 
         return completableFuture;
     }
+
 
     public CompletableFuture<Boolean> existsByUsername(String username) {
         CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
