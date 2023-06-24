@@ -6,13 +6,13 @@ public class Invoice {
     private Long id;
     private String invoiceNumber;
     private double amount;
-    private double purchaseOrderRef;
+    private String purchaseOrderRef;
     // private DocumentReference purchaseOrderRef;
 
     public Invoice() {
     }
 
-    public Invoice(Long id, String invoiceNumber, double amount, double purchaseOrderRef) {
+    public Invoice(Long id, String invoiceNumber, double amount, String purchaseOrderRef) {
         this.id = id;
         this.invoiceNumber = invoiceNumber;
         this.amount = amount;
@@ -43,11 +43,11 @@ public class Invoice {
         this.amount = amount;
     }
 
-    public double getPurchaseOrderRef() {
+    public String getPurchaseOrderRef() {
         return purchaseOrderRef;
     }
 
-    public void setPurchaseOrderRef(double purchaseOrderRef) {
+    public void setPurchaseOrderRef(String purchaseOrderRef) {
         this.purchaseOrderRef = purchaseOrderRef;
     }
 
@@ -62,6 +62,6 @@ public class Invoice {
     public void updateWith(Invoice newInvoice) {
         this.invoiceNumber = newInvoice.invoiceNumber != null ? newInvoice.invoiceNumber : this.invoiceNumber;
         this.amount = newInvoice.amount != 0 ? newInvoice.amount : this.amount;
-        this.purchaseOrderRef = newInvoice.purchaseOrderRef != 0 ? newInvoice.purchaseOrderRef : this.purchaseOrderRef;
+        this.purchaseOrderRef = newInvoice.purchaseOrderRef != null ? newInvoice.purchaseOrderRef : this.purchaseOrderRef;
     }
 }

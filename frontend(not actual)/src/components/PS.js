@@ -110,7 +110,10 @@ function PS() {
                   <button
                     type='button'
                     className='btn btn-dark'
-                    onClick={() => setShowPOModal(true)}
+                    onClick={() => {
+                      setSelectedPO(po)
+                      setShowPOModal(true)
+                    }}
                   >
                     View PO
                   </button>
@@ -137,7 +140,7 @@ function PS() {
           <Modal.Header closeButton>
             <Modal.Title>Purchase Order</Modal.Title>
           </Modal.Header>
-          <Modal.Body>{showPOModal && <ViewPO closeModal={handleShowPOModalClose} />}</Modal.Body>
+          <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
         </Modal>
 
         {/* Create Invoice Modal */}

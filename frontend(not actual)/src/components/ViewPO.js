@@ -1,7 +1,24 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './ViewPO.css'
+import axios from 'axios';
 
-function ViewPO() {
+function ViewPO({ selectedPO }) {
+
+    const [invoices, setInvoices] = useState([]);
+
+    useEffect(() => {
+        axios
+            .get("http://localhost:8080/api/invoices/all")
+            .then((response) => {
+                // Get filtered invoices using the purchaseOrderRef in each invoice that's corresponding to the selected PO's number
+                const filteredInvoices = response.data.filter(invoice => invoice.purchaseOrderRef === selectedPO.poNumber);
+                setInvoices(filteredInvoices);
+            })
+            .catch((error) => {
+                console.error("Error fetching data: ", error);
+            });
+    }, [selectedPO]);
+
     return (
         <div className='modal-fade'>
             <div className="modal-dialog modal-dialog-expanded">
@@ -37,6 +54,28 @@ function ViewPO() {
                 {/* All Invoices */}
                 <div>
                     <h5>Invoices</h5>
+                    <table className='table table-light table-hover'>
+                        <thead>
+                            <tr>
+                                <th scope="col">Invoice #</th>
+                                <th scope="col">PO Number Ref</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Date Billed</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {invoices.map((invoice) => (
+                                <tr key={invoice.id}>
+                                    <td>{invoice.invoiceNumber}</td>
+                                    <td>{invoice.purchaseOrderRef}</td>
+                                    <td>{invoice.amount}</td>
+                                    {/* <td>{invoice.status}</td> */}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
                 {/* Update PO? */}
                 <div>
