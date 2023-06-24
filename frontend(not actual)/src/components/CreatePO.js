@@ -4,6 +4,7 @@ import './CreateUser.css'
 
 function CreatePO() {
   const [poData, setPoData] = useState({
+    poNumber: '',
     clientName: '',
     startDate: '',
     endDate: '',
@@ -33,6 +34,7 @@ function CreatePO() {
         // Reset the form
         setPoData({
             clientName: '',
+            poNumber: '',
             startDate: '',
             endDate: '',
             totalValue: '',

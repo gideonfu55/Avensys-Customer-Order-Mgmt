@@ -97,7 +97,7 @@ function ES() {
           <tbody>
             {filteredES.map((po) => (
               <tr key={po.id}>
-                <td className='text-center'>{po.id}</td>
+                <td className='text-center'>{po.poNumber}</td>
                 <td className='text-center'>{po.clientName}</td>
                 <td className='text-center'>{po.type}</td>
                 <td className='text-center'>{po.startDate}</td>
@@ -137,7 +137,7 @@ function ES() {
           </Modal>
 
           {/* Create Invoice Modal */}
-          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
+          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal w-50'>
             <Modal.Header closeButton>
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>

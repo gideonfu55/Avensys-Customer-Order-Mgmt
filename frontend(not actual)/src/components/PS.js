@@ -38,8 +38,8 @@ function PS() {
   }, []);
 
   const filteredPS = selectedStatus
-    ? PS.filter(po => po.status === selectedStatus && po.type === 'Professional Service') 
-    : PS.filter(po => po.type === 'Professional Service'); 
+    ? PS.filter(po => po.status === selectedStatus && po.type === 'Talent Service') 
+    : PS.filter(po => po.type === 'Talent Service');
 
   return (
     <div className='dashboard-body'>
@@ -97,7 +97,7 @@ function PS() {
           <tbody>
             {filteredPS.map((po) => ( 
               <tr key={po.id}>
-                <td className='text-center'>{po.id}</td>
+                <td className='text-center'>{po.poNumber}</td>
                 <td className='text-center'>{po.clientName}</td>
                 <td className='text-center'>{po.type}</td>
                 <td className='text-center'>{po.startDate}</td>
@@ -115,7 +115,13 @@ function PS() {
                   </button>
                 </td>
                 <td>
-                  <button className='btn btn-dark'>Add Invoice</button>
+                  <button
+                    type='button'
+                    className='btn btn-dark'
+                    onClick={() => setShowInvoiceModal(true)}
+                  >
+                    Add Invoice
+                  </button>
                 </td>
               </tr>
             ))}
@@ -131,11 +137,11 @@ function PS() {
         </Modal>
 
         {/* Create Invoice Modal */}
-        <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
+        <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal w-50'>
           <Modal.Header closeButton>
             <Modal.Title>Create Invoice</Modal.Title>
           </Modal.Header>
-          <Modal.Body>{showInvoiceModal && <CreateInvoice closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
+          <Modal.Body className='w-50'>{showInvoiceModal && <CreateInvoice closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
         </Modal>
       </div>
     </div>

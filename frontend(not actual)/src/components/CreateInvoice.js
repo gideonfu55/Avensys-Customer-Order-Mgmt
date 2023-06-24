@@ -1,10 +1,13 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useState } from 'react'
+import './CreateInvoice.css'
 
 function CreateInvoice() {
 
   const [invoiceData, setInvoiceData] = useState({
     invoiceNumber: '',
     amount: '',
+    purchaseOrderRef: '',
   })
 
   const handleChange = (event) => {
@@ -15,10 +18,10 @@ function CreateInvoice() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const createdAt = new Date().toISOString();
-    const newInvoice = { ...invoiceData, createAt };
+    const newInvoice = { ...invoiceData, createdAt };
 
     // Submit invoice data to REST API:
-    console.log(invoiceNumber, amount, purchaseOrderRef);
+    console.log(invoiceData);
 
     axios
       .post('http://localhost:8080/api/invoices/create', newInvoice)
@@ -29,6 +32,7 @@ function CreateInvoice() {
         setInvoiceData({
           invoiceNumber: '',
           amount: '',
+          purchaseOrderRef: '',
         });
       })
       .catch((error) => {
@@ -37,8 +41,8 @@ function CreateInvoice() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className='create-user-model'>
+    <div className='invoice-container'>
+      <form onSubmit={handleSubmit} className='create-invoice-model'>
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
           <input
@@ -63,10 +67,23 @@ function CreateInvoice() {
             className='form-control'
           />
         </div>
+        <div>
+          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
+          <input
+            type="text"
+            id="purchaseOrderRef"
+            name="purchaseOrderRef"
+            value={invoiceData.purchaseOrderRef}
+            onChange={handleChange}
+            placeholder='Enter Purchase Order Reference'
+            className='form-control'
+          />
+        </div>
+
         <button type="submit" className='btn btn-primary'>Create Invoice</button>
       </form>
     </div>
-  )
+  );
 }
 
 export default CreateInvoice
