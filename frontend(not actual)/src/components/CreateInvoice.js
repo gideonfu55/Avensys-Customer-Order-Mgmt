@@ -1,14 +1,24 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './CreateInvoice.css'
 
-function CreateInvoice() {
+function CreateInvoice({ selectedPO }) {
 
   const [invoiceData, setInvoiceData] = useState({
     invoiceNumber: '',
     amount: '',
     purchaseOrderRef: '',
   })
+
+  // For updating purchaseOrderRef field when a PO is selected:
+  useEffect(() => {
+    if (selectedPO) {
+      setInvoiceData((prevState) => ({
+        ...prevState,
+        purchaseOrderRef: selectedPO.poNumber,
+      }));
+    }
+  }, [selectedPO]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;

@@ -10,6 +10,7 @@ function PS() {
   const [PS, setPS] = useState([]); 
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedPO, setSelectedPO] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
 
   function handleShowPOModalClose() {
@@ -118,7 +119,10 @@ function PS() {
                   <button
                     type='button'
                     className='btn btn-dark'
-                    onClick={() => setShowInvoiceModal(true)}
+                    onClick={() => {
+                      setSelectedPO(po)
+                      setShowInvoiceModal(true)
+                    }}
                   >
                     Add Invoice
                   </button>
@@ -141,7 +145,7 @@ function PS() {
           <Modal.Header closeButton>
             <Modal.Title>Create Invoice</Modal.Title>
           </Modal.Header>
-          <Modal.Body className='w-50'>{showInvoiceModal && <CreateInvoice closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
+          <Modal.Body className='w-50'>{showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
         </Modal>
       </div>
     </div>
