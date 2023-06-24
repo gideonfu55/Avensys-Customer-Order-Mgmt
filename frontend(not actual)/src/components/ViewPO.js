@@ -71,7 +71,9 @@ function ViewPO({ selectedPO }) {
                                     <td>{invoice.invoiceNumber}</td>
                                     <td>{invoice.purchaseOrderRef}</td>
                                     <td>{invoice.amount}</td>
-                                    {/* <td>{invoice.status}</td> */}
+                                    <td>{invoice.dateBilled}</td>
+                                    <td>{invoice.dueDate}</td>
+                                    <td>{invoice.status}</td>
                                 </tr>
                             ))}
                         </tbody>
