@@ -16,14 +16,9 @@ public class PurchaseOrder {
   public PurchaseOrder() {
   }
 
-<<<<<<< HEAD
   public PurchaseOrder(Long id, String poNumber, String vendorName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
     this.id = id;
     this.poNumber = poNumber;
-=======
-  public PurchaseOrder(Long id, String vendorName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
-    this.id = id;
->>>>>>> 5732c82502a79580f57b6edf6a80274be1a8ba34
     this.vendorName = vendorName;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -42,7 +37,6 @@ public class PurchaseOrder {
     this.id = id;
   }
 
-<<<<<<< HEAD
   public String getPoNumber() {
     return this.poNumber;
   }
@@ -51,8 +45,6 @@ public class PurchaseOrder {
     this.poNumber = poNumber;
   }
 
-=======
->>>>>>> 5732c82502a79580f57b6edf6a80274be1a8ba34
   public String getVendorName() {
     return this.vendorName;
   }
@@ -119,10 +111,7 @@ public class PurchaseOrder {
 
   public void updateWith(PurchaseOrder newPurchaseOrder) {
     this.vendorName = newPurchaseOrder.vendorName != null ? newPurchaseOrder.vendorName : this.vendorName;
-<<<<<<< HEAD
     this.poNumber = newPurchaseOrder.poNumber != null ? newPurchaseOrder.poNumber : this.poNumber;
-=======
->>>>>>> 5732c82502a79580f57b6edf6a80274be1a8ba34
     this.startDate = newPurchaseOrder.startDate != null ? newPurchaseOrder.startDate : this.startDate;
     this.endDate = newPurchaseOrder.endDate != null ? newPurchaseOrder.endDate : this.endDate;
     this.totalValue = newPurchaseOrder.totalValue != 0 ? newPurchaseOrder.totalValue : this.totalValue;

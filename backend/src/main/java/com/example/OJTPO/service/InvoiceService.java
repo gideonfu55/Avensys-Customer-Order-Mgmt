@@ -1,7 +1,5 @@
 package com.example.OJTPO.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.stereotype.Service;
 

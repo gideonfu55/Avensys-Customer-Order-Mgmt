@@ -51,15 +51,15 @@ public class POcontroller {
 
   // For finance team to get all billable POs:
   @GetMapping("/po/all")
-    public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
-      return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
-        if (!billablePOs.isEmpty()) {
-          return billablePOs;
-        } else {
-          throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No billable purchase orders found");
-        }
-      });
-    }
+  public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
+    return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
+      if (!billablePOs.isEmpty()) {
+        return billablePOs;
+      } else {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No billable purchase orders found");
+      }
+    });
+  }
 
   // Get PO by id for sales/finance team to view PO:
   @GetMapping("/po/{id}")
