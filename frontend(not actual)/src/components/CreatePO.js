@@ -4,7 +4,7 @@ import './CreateUser.css'
 
 function CreatePO() {
   const [poData, setPoData] = useState({
-    vendorName: '',
+    clientName: '',
     startDate: '',
     endDate: '',
     totalValue: '',
@@ -32,7 +32,7 @@ function CreatePO() {
         console.log('Purchase order created successfully:', response.data);
         // Reset the form
         setPoData({
-            vendorName: '',
+            clientName: '',
             startDate: '',
             endDate: '',
             totalValue: '',
@@ -51,14 +51,14 @@ function CreatePO() {
     <div>
       <form onSubmit={handleSubmit} className='create-user-model'>
         <div>
-          <label htmlFor="vendorName">Vendor Name</label>
+          <label htmlFor="clientName">Client Name</label>
           <input
             type="text"
-            id="vendorName"
-            name="vendorName"
-            value={poData.vendorName}
+            id="clientName"
+            name="clientName"
+            value={poData.clientName}
             onChange={handleChange}
-            placeholder='Enter Vendor Name'
+            placeholder='Enter Client Name'
             className='form-control'
           />
         </div>

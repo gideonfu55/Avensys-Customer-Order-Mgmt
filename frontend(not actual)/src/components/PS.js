@@ -80,7 +80,7 @@ function PS() {
           <thead>
             <tr>
               <th scope='col' className='text-center'>PO #</th>
-              <th scope='col' className='text-center'>Vendor</th>
+              <th scope='col' className='text-center'>Client</th>
               <th scope='col' className='text-center'>Type</th>
               <th scope='col' className='text-center'>Start Date</th>
               <th scope='col' className='text-center'>End Date</th>
@@ -98,7 +98,7 @@ function PS() {
             {filteredPS.map((po) => ( 
               <tr key={po.id}>
                 <td className='text-center'>{po.id}</td>
-                <td className='text-center'>{po.vendorName}</td>
+                <td className='text-center'>{po.clientName}</td>
                 <td className='text-center'>{po.type}</td>
                 <td className='text-center'>{po.startDate}</td>
                 <td className='text-center'>{po.endDate}</td>

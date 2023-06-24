@@ -11,7 +11,7 @@ function ViewPO() {
                         <thead>
                             <tr>
                                 <th scope="col">PO #</th>
-                                <th scope="col">Vendor</th>
+                                <th scope="col">Client</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Start Date</th>
                                 <th scope="col">End Date</th>
