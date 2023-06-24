@@ -53,11 +53,11 @@ public class POcontroller {
   @GetMapping("/po/all")
     public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
       return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
-          if (!billablePOs.isEmpty()) {
-            return billablePOs;
-          } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No billable purchase orders found");
-          }
+        if (!billablePOs.isEmpty()) {
+          return billablePOs;
+        } else {
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No billable purchase orders found");
+        }
       });
     }
 
