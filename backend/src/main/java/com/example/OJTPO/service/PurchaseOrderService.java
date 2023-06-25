@@ -38,31 +38,32 @@ public class PurchaseOrderService {
     DatabaseReference indexRef = getLastPOId();
 
     // Read the lastPOIndex from the database
-    // indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
-    //   @Override
-    //   public void onDataChange(DataSnapshot dataSnapshot) {
-    //     Long lastPOIndex = dataSnapshot.getValue(Long.class);
-    //     if (lastPOIndex == null) {
-    //       lastPOIndex = 0;
-    //     }
+    indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        Long lastPOId = dataSnapshot.getValue(Long.class);
+        if (lastPOId == null) {
+          lastPOId = 0L;
+        }
 
-    //     // Increment the lastPOIndex and use it for the new PO's ID
-    //     Integer newPOIndex = lastPOIndex + 1;
-    //     purchaseOrder.setId(newPOIndex);
+        // Increment the last PO id: and use it for the new PO's id:
+        purchaseOrder.setId(lastPOId + 1);
+        indexRef.setValueAsync(lastPOId + 1);
 
-    //     // Save the new Purchase Order to the database
-    //     poRef.child(String.valueOf(newPOIndex)).setValueAsync(purchaseOrder);
+        // Add the new PO to the database:
+        String idString = String.valueOf(purchaseOrder.getId());
+        if (idString == null || idString.equals("null")) {
+          throw new IllegalArgumentException("Purchase Order id cannot be null");
+        }
 
-    //     // Update the lastPOIndex in the database
-    //     indexRef.setValueAsync(newPOIndex);
-    //   }
+        getPOReference().child(idString).setValueAsync(purchaseOrder);
+      }
 
-    String idString = String.valueOf(purchaseOrder.getId());
-    if (idString == null || idString.equals("null")) {
-      throw new IllegalArgumentException("Purchase Order id cannot be null");
-    }
-
-    getPOReference().child(idString).setValueAsync(purchaseOrder);
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        throw databaseError.toException();
+      }
+    });
 
     return purchaseOrder;
   }

@@ -3,6 +3,7 @@ import axios from 'axios';
 import './CreateUser.css'
 
 function CreatePO() {
+
   const [poData, setPoData] = useState({
     poNumber: '',
     clientName: '',
@@ -15,11 +16,12 @@ function CreatePO() {
     status: ''
   })
 
+  const [showModal, setShowModal] = useState(false);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setPoData((prevState) => ({ ...prevState, [name]: value }));
   };
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -43,6 +45,9 @@ function CreatePO() {
             type: '',
             status: ''
         });
+
+        // Close the modal:
+        setShowModal(false);
       })
       .catch((error) => {
         console.error('Error creating purchase order:', error);
@@ -53,17 +58,6 @@ function CreatePO() {
     <div>
       <form onSubmit={handleSubmit} className='create-user-model'>
         <div>
-          <label htmlFor="id">Id</label>
-          <input
-            type="number"
-            id="id"
-            name="id"
-            value={poData.id}
-            onChange={handleChange}
-            className='form-control'
-          />
-        </div>
-        <div>
           <label htmlFor="clientName">Client Name</label>
           <input
             type="text"
@@ -72,6 +66,18 @@ function CreatePO() {
             value={poData.clientName}
             onChange={handleChange}
             placeholder='Enter Client Name'
+            className='form-control'
+          />
+        </div>
+        <div>
+          <label htmlFor="poNumber">Purchase Order Number</label>
+          <input
+            type="text"
+            id="poNumber"
+            name="poNumber"
+            value={poData.poNumber}
+            onChange={handleChange}
+            placeholder='Enter Purchase Order Number'
             className='form-control'
           />
         </div>
