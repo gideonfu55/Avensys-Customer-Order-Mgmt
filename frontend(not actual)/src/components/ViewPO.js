@@ -6,6 +6,7 @@ import axios from 'axios';
 function ViewPO({ selectedPO }) {
 
     const [invoices, setInvoices] = useState([]);
+    const [updatedPO, setUpdatedPO] = useState({...selectedPO});
 
     useEffect(() => {
         axios
@@ -19,6 +20,36 @@ function ViewPO({ selectedPO }) {
                 console.error("Error fetching data: ", error);
             });
     }, [selectedPO]);
+
+    const updatePO = () => {
+        axios
+            .put(`http://localhost:8080/api/po/update/${selectedPO.id}`, updatedPO)
+            .then((response) => {
+                console.log('Purchase order updated successfully:', response.data);
+            })
+            .catch((error) => {
+                console.error('Error updating purchase order:', error);
+            });
+    };
+
+    const deletePO = () => {
+        axios
+            .delete(`http://localhost:8080/api/po/delete/${selectedPO.id}`)
+            .then((response) => {
+                console.log('Purchase order deleted successfully:', response.data);
+            })
+            .catch((error) => {
+                console.error('Error deleting purchase order:', error);
+            });
+    };
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setUpdatedPO(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     return (
         <div className='modal-fade'>
@@ -37,6 +68,7 @@ function ViewPO({ selectedPO }) {
                                 <th scope="col">Total Value</th>
                                 <th scope="col">Total Balance</th>
                                 <th scope="col">Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,6 +82,14 @@ function ViewPO({ selectedPO }) {
                                 <td>{selectedPO.totalValue}</td>
                                 <td>{selectedPO.balValue}</td>
                                 <td>{selectedPO.status}</td>
+                                <td>
+                                    <button className='update-btn p-1'>
+                                        <i className="fi fi-sr-file-edit p-1"></i>
+                                    </button>
+                                    <button className='delete-btn p-1'>
+                                        <i className="fi fi-sr-trash delete p-1"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
