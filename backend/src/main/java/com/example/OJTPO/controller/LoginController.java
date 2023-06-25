@@ -19,42 +19,42 @@ import com.example.OJTPO.service.UserService;
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
 public class LoginController {
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @PostMapping("/login")
-    public CompletableFuture<ResponseEntity<User>> login(@RequestBody User loginUser) {
-        return userService.validateUser(loginUser.getUsername(), loginUser.getPassword())
-                .thenApply(user -> {
-                    if (user != null) {
-                        return ResponseEntity.ok(user);
-                    } else {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                    }
-                });
-    }
+  @PostMapping("/login")
+  public CompletableFuture<ResponseEntity<User>> login(@RequestBody User loginUser) {
+    return userService.validateUser(loginUser.getUsername(), loginUser.getPassword())
+      .thenApply(user -> {
+        if (user != null) {
+          return ResponseEntity.ok(user);
+        } else {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+      });
+  }
 
-    @PostMapping("/createUser") // Add the createUser endpoint
-    public CompletableFuture<ResponseEntity<User>> createUser(@RequestBody User user) {
-        return userService.createUser(user)
-                .thenApply(createdUser -> {
-                    if (createdUser != null) {
-                        return ResponseEntity.ok(createdUser);
-                    } else {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-                    }
-                });
-    }
+  @PostMapping("/createUser") // Add the createUser endpoint
+  public CompletableFuture<ResponseEntity<User>> createUser(@RequestBody User user) {
+    return userService.createUser(user)
+      .thenApply(createdUser -> {
+        if (createdUser != null) {
+          return ResponseEntity.ok(createdUser);
+        } else {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+      });
+  }
 
-    @GetMapping("/user/{username}")
-    public CompletableFuture<ResponseEntity<User>> getUserByUsername(@PathVariable String username) {
-        return userService.getUserByUsername(username)
-                .thenApply(user -> {
-                    if (user != null) {
-                        return ResponseEntity.ok(user);
-                    } else {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                    }
-                });
-    }
+  @GetMapping("/user/{username}")
+  public CompletableFuture<ResponseEntity<User>> getUserByUsername(@PathVariable String username) {
+    return userService.getUserByUsername(username)
+      .thenApply(user -> {
+        if (user != null) {
+          return ResponseEntity.ok(user);
+        } else {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+      });
+  }
 }
