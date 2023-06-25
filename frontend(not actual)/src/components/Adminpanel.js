@@ -88,15 +88,22 @@ function Adminpanel() {
   }
 
   return (
-    <div>
+    <div className='dashboard-body'>
       <NavBar />
-      <div className='container'>
+      <div className='admin-container'>
         <h3>Admin Panel</h3>
+        <div className='create-user-card'>
+          Got a new user to add? Create a new user account here.
+          <button onClick={() => setShowCreateUserModal(true)} className='btn btn-dark'>
+            Create User
+          </button>
+        </div>
+
         <div className='row'>
           <h3>Post Records</h3>
           <input
             type='text'
-            className='search-input'
+            className='form-control search'
             placeholder='Search posts...'
             onChange={(event) => setSearchTermPost(event.target.value)}
           />
@@ -150,7 +157,7 @@ function Adminpanel() {
           <input
             type='text'
             placeholder='Search users...'
-            className='search-input'
+            className='form-control search'
             onChange={(event) => setSearchTermUser(event.target.value)}
           />
           <table className='table admin-table'>
@@ -201,11 +208,9 @@ function Adminpanel() {
               )}
             </tbody>
           </table>
-          <div className='text-center'>
-            <button onClick={() => setShowCreateUserModal(true)} className='btn btn-primary'>
-              Create User
-            </button>
-          </div>
+
+
+
         </div>
       </div>
 
@@ -236,7 +241,10 @@ function Adminpanel() {
       {/* Create User Modal */}
       <Modal show={showCreateUserModal} onHide={handleCreateUserModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Create User</Modal.Title>
+          <Modal.Title>
+            <i class="fi fi-rr-users-medical"></i>
+            <span style={{fontWeight: '300'}}>Create User</span>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {showCreateUserModal && <CreateUser closeModal={handleCreateUserModalClose} />}

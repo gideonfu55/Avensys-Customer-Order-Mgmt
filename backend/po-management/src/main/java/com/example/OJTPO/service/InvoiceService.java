@@ -3,8 +3,6 @@ package com.example.OJTPO.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.OJTPO.model.Invoice;
@@ -39,31 +37,6 @@ public class InvoiceService {
     getInvoiceReference().child(idString).setValueAsync(invoice);
 
     return invoice;
-  }
-
-  // Get all invoices:
-  public CompletableFuture<List<Invoice>> getAllInvoices() {
-    CompletableFuture<List<Invoice>> future = new CompletableFuture<>();
-    final List<Invoice> invoices = new ArrayList<>();
-
-    getInvoiceReference()
-      .addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-          for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
-            Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
-            invoices.add(invoice);
-          }
-          future.complete(invoices);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-          future.completeExceptionally(databaseError.toException());
-        }
-      });
-
-    return future;
   }
 
   // Get Invoice by Id:

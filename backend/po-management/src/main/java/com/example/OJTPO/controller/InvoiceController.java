@@ -3,14 +3,12 @@ package com.example.OJTPO.controller;
 import com.example.OJTPO.model.Invoice;
 import com.example.OJTPO.service.InvoiceService;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:55 5 5 " })
@@ -30,17 +28,6 @@ public class InvoiceController {
             return new ResponseEntity<>(invoiceResponse, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-    }
-
-    @GetMapping("/invoices/all")
-    public CompletableFuture<List<Invoice>> getAllInvoices() {
-        return invoiceService.getAllInvoices().thenApply(invoices -> {
-            if (invoices != null) {
-                return invoices;
-            } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoices not found");
-            }
-        });
     }
 
     @GetMapping("/invoices/{id}")

@@ -36,25 +36,25 @@ public class UserService {
         DatabaseReference usersRef = firebaseService.getFirebase().child("users");
 
         usersRef.orderByChild("username")
-                .equalTo(username)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                User user = userSnapshot.getValue(User.class);
-                                completableFuture.complete(user);
-                                return;
-                            }
+            .equalTo(username)
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                            User user = userSnapshot.getValue(User.class);
+                            completableFuture.complete(user);
+                            return;
                         }
-                        completableFuture.complete(null);
                     }
+                    completableFuture.complete(null);
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        completableFuture.completeExceptionally(databaseError.toException());
-                    }
-                });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    completableFuture.completeExceptionally(databaseError.toException());
+                }
+            });
         return completableFuture;
     }
 
