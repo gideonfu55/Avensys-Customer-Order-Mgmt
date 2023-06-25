@@ -34,19 +34,21 @@ function ViewPO({ selectedPO }) {
                                 <th scope="col">End Date</th>
                                 <th scope="col">Milestone (%)</th>
                                 <th scope="col">Total Value</th>
+                                <th scope="col">Total Balance</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>1</td>
-                                <td>Avensys Consulting</td>
-                                <td>Enterprise Service</td>
-                                <td>01-01-2023</td>
-                                <td>01-02-2024</td>
-                                <td>60%</td>
-                                <td>$200,000</td>
-                                <td>Outstanding</td>
+                                <td>{selectedPO.poNumber}</td>
+                                <td>{selectedPO.clientName}</td>
+                                <td>{selectedPO.type}</td>
+                                <td>{selectedPO.startDate}</td>
+                                <td>{selectedPO.endDate}</td>
+                                <td>{selectedPO.milestone}</td>
+                                <td>{selectedPO.totalValue}</td>
+                                <td>{selectedPO.balValue}</td>
+                                <td>{selectedPO.status}</td>
                             </tr>
                         </tbody>
                     </table>
