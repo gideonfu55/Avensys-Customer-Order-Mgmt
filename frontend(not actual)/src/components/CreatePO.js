@@ -143,7 +143,6 @@ function CreatePO(props) {
         <div>
           <label htmlFor="type">Type</label>
           <select
-            type="test"
             id="type"
             name="type"
             value={poData.type}
@@ -158,15 +157,18 @@ function CreatePO(props) {
         </div>
         <div>
           <label htmlFor="status">Status</label>
-          <input
-            type="test"
+          <select
             id="status"
             name="status"
             value={poData.status}
             onChange={handleChange}
             className='form-control'
-            placeholder='Enter Status'
-          />
+          >
+            <option value="" disabled>Select Status</option>
+            <option value="Outstanding">Outstanding</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
         </div>
         
         <button type="submit" className='btn btn-primary'>Create Purchase Order</button>

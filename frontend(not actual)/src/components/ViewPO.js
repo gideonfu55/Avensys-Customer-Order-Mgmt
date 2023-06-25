@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './ViewPO.css'
 import axios from 'axios';
 
@@ -65,6 +66,7 @@ function ViewPO({ selectedPO }) {
                                 <th scope="col">Date Billed</th>
                                 <th scope="col">Due Date</th>
                                 <th scope="col">Status</th>
+                                <th scope='col'>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,6 +78,14 @@ function ViewPO({ selectedPO }) {
                                     <td>{invoice.dateBilled}</td>
                                     <td>{invoice.dueDate}</td>
                                     <td>{invoice.status}</td>
+                                    <td>
+                                        <button className='update-btn p-1'>
+                                            <i className="fi fi-sr-file-edit p-1"></i>
+                                        </button>
+                                        <button className='delete-btn p-1'>
+                                            <i className="fi fi-sr-trash delete p-1"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
