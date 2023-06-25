@@ -148,7 +148,7 @@ function PS() {
           <Modal.Header closeButton>
             <Modal.Title>Create Invoice</Modal.Title>
           </Modal.Header>
-          <Modal.Body className='w-50'>{showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
+          <Modal.Body>{showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
         </Modal>
       </div>
     </div>

@@ -53,6 +53,17 @@ function CreatePO() {
     <div>
       <form onSubmit={handleSubmit} className='create-user-model'>
         <div>
+          <label htmlFor="id">Id</label>
+          <input
+            type="number"
+            id="id"
+            name="id"
+            value={poData.id}
+            onChange={handleChange}
+            className='form-control'
+          />
+        </div>
+        <div>
           <label htmlFor="clientName">Client Name</label>
           <input
             type="text"
@@ -98,18 +109,6 @@ function CreatePO() {
             onChange={handleChange}
             className='form-control'
             placeholder='Enter Total Value'
-          />
-        </div>
-        <div>
-          <label htmlFor="totalValue">Balance Value</label>
-          <input
-            type="number"
-            id="balValue"
-            name="balValue"
-            value={poData.balValue}
-            onChange={handleChange}
-            className='form-control'
-            placeholder='Enter Balance Value'
           />
         </div>
         <div>

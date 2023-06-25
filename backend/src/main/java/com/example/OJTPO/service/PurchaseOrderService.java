@@ -27,8 +27,36 @@ public class PurchaseOrderService {
     return getDatabaseInstance().child("PurchaseOrders");
   }
 
+  private DatabaseReference getLastPOId() {
+    return getDatabaseInstance().child("lastPOId");
+  }
+
   // Create new Purchase Order:
   public PurchaseOrder createPO(PurchaseOrder purchaseOrder) {
+
+    // Get last PO id:
+    DatabaseReference indexRef = getLastPOId();
+
+    // Read the lastPOIndex from the database
+    // indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    //   @Override
+    //   public void onDataChange(DataSnapshot dataSnapshot) {
+    //     Long lastPOIndex = dataSnapshot.getValue(Long.class);
+    //     if (lastPOIndex == null) {
+    //       lastPOIndex = 0;
+    //     }
+
+    //     // Increment the lastPOIndex and use it for the new PO's ID
+    //     Integer newPOIndex = lastPOIndex + 1;
+    //     purchaseOrder.setId(newPOIndex);
+
+    //     // Save the new Purchase Order to the database
+    //     poRef.child(String.valueOf(newPOIndex)).setValueAsync(purchaseOrder);
+
+    //     // Update the lastPOIndex in the database
+    //     indexRef.setValueAsync(newPOIndex);
+    //   }
+
     String idString = String.valueOf(purchaseOrder.getId());
     if (idString == null || idString.equals("null")) {
       throw new IllegalArgumentException("Purchase Order id cannot be null");
