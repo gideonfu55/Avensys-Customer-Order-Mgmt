@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
 
-function CreatePO() {
+function CreatePO(props) {
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -15,8 +15,6 @@ function CreatePO() {
     type: '',
     status: ''
   })
-
-  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -47,7 +45,8 @@ function CreatePO() {
         });
 
         // Close the modal:
-        setShowModal(false);
+        props.closeModal();
+        
       })
       .catch((error) => {
         console.error('Error creating purchase order:', error);

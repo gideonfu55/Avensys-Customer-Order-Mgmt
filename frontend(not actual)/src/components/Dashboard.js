@@ -38,13 +38,12 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log("Fetching POs...");
     axios
       .get("http://localhost:8080/api/po/all")
       .then(response => {
         const data = response.data;
         if (Array.isArray(data)) {
-          const outstandingCount = data.filter(po => po.status === "Outstanding").length;
+          const outstandingCount = data.filter(po => po.status.toLowerCase() === "outstanding").length;
           setOutstandingCount(outstandingCount);
         }
       })
@@ -62,7 +61,6 @@ function Dashboard() {
   };
 
   if (!user) {
-    console.log('Loading user and posts...');
     return <p>Loading...</p>;
   }
 

@@ -16,7 +16,6 @@ function NavBar() {
 
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    console.log(loggedUser.role)
     setUser(loggedUser);
   }, [location]);
 
