@@ -25,12 +25,12 @@
   .custom-modal {
     position: fixed;
     max-width: none;
-    width: 1000px;
+    width: 1300px;
     height: 100%;
     left: 50%;
     display: flex;
     align-items: center;
-    margin-left: -500px;
+    margin-left: -650px;
   }
   
   .custom-modal .modal-dialog {

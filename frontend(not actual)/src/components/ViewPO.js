@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ViewPO.css'
 import axios from 'axios';
+import UpdateInvoice from './UpdateInvoice';
 
 function ViewPO({ selectedPO }) {
 
     const [invoices, setInvoices] = useState([]);
-    const [updatedPO, setUpdatedPO] = useState({...selectedPO});
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [updatedPO, setUpdatedPO] = useState({ ...selectedPO });
 
     useEffect(() => {
         axios
@@ -21,25 +25,15 @@ function ViewPO({ selectedPO }) {
             });
     }, [selectedPO]);
 
-    const updatePO = () => {
+    const handleDeleteInvoice = (id) => {
         axios
-            .put(`http://localhost:8080/api/po/update/${selectedPO.id}`, updatedPO)
+            .delete(`http://localhost:8080/api/invoices/delete/${id}`)
             .then((response) => {
-                console.log('Purchase order updated successfully:', response.data);
+                setInvoices((prevInvoices) => prevInvoices.filter((invoice) => invoice.id !== id));
+                console.log('Invoice deleted successfully')
             })
             .catch((error) => {
-                console.error('Error updating purchase order:', error);
-            });
-    };
-
-    const deletePO = () => {
-        axios
-            .delete(`http://localhost:8080/api/po/delete/${selectedPO.id}`)
-            .then((response) => {
-                console.log('Purchase order deleted successfully:', response.data);
-            })
-            .catch((error) => {
-                console.error('Error deleting purchase order:', error);
+                console.error(error);
             });
     };
 
@@ -59,44 +53,44 @@ function ViewPO({ selectedPO }) {
         <div className='modal-fade'>
             {/* Current PO */}
             <div>
-                    <table className='table table-light table-hover'>
-                        <thead>
-                            <tr>
-                                <th scope="col">PO #</th>
-                                <th scope="col">Client</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Start Date</th>
-                                <th scope="col">End Date</th>
-                                <th scope="col">Milestone (%)</th>
-                                <th scope="col">Total Value</th>
-                                <th scope="col">Total Balance</th>
-                                <th scope="col">Status</th>
-                                <th scope='col'>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{selectedPO.poNumber}</td>
-                                <td>{selectedPO.clientName}</td>
-                                <td>{selectedPO.type}</td>
-                                <td>{selectedPO.startDate}</td>
-                                <td>{selectedPO.endDate}</td>
-                                <td>{selectedPO.milestone}</td>
-                                <td>{selectedPO.totalValue}</td>
-                                <td>{selectedPO.balValue}</td>
-                                <td>{selectedPO.status}</td>
-                                <td>
-                                    <button className='update-btn p-1'>
-                                        <i className="fi fi-sr-file-edit p-1"></i>
-                                    </button>
-                                    <button className='delete-btn p-1'>
-                                        <i className="fi fi-sr-trash delete p-1"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table className='table table-light table-hover'>
+                    <thead>
+                        <tr>
+                            <th scope="col">PO #</th>
+                            <th scope="col">Client</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Start Date</th>
+                            <th scope="col">End Date</th>
+                            <th scope="col">Milestone (%)</th>
+                            <th scope="col">Total Value</th>
+                            <th scope="col">Total Balance</th>
+                            <th scope="col">Status</th>
+                            <th scope='col'>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{selectedPO.poNumber}</td>
+                            <td>{selectedPO.clientName}</td>
+                            <td>{selectedPO.type}</td>
+                            <td>{selectedPO.startDate}</td>
+                            <td>{selectedPO.endDate}</td>
+                            <td>{selectedPO.milestone}</td>
+                            <td>{selectedPO.totalValue}</td>
+                            <td>{selectedPO.balValue}</td>
+                            <td>{selectedPO.status}</td>
+                            <td>
+                                <button className='update-btn p-1'>
+                                    <i className="fi fi-sr-file-edit p-1"></i>
+                                </button>
+                                <button className='delete-btn p-1'>
+                                    <i className="fi fi-sr-trash delete p-1"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             {/* All Invoices */}
             <div>
                 <h5>Invoices</h5>
@@ -124,7 +118,7 @@ function ViewPO({ selectedPO }) {
                                 <td>
                                     <button
                                         type='button'
-                                        className='btn btn-dark'
+                                        className='update-btn p-1'
                                         onClick={() => {
                                             setSelectedInvoice(invoice)
                                             setShowInvoiceModal(true)
@@ -132,9 +126,14 @@ function ViewPO({ selectedPO }) {
                                     >
                                         <i className="fi fi-sr-file-edit p-1"></i>
                                     </button>
-                                    <button className='delete-btn p-1'>
-                                            <i className="fi fi-sr-trash delete p-1"></i>
-                                        </button>
+                                    <button 
+                                        className='delete-btn p-1'
+                                        onClick={() => {
+                                            handleDeleteInvoice(invoice.id)
+                                        }}
+                                    >
+                                        <i className="fi fi-sr-trash delete p-1"></i>
+                                    </button>
                                 </td>
                             </tr>
                         ))}
