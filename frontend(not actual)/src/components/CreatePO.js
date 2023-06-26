@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
 
-function CreatePO() {
+function CreatePO(props) {
+
   const [poData, setPoData] = useState({
     poNumber: '',
     clientName: '',
@@ -19,7 +20,6 @@ function CreatePO() {
     const { name, value } = event.target;
     setPoData((prevState) => ({ ...prevState, [name]: value }));
   };
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -43,6 +43,10 @@ function CreatePO() {
             type: '',
             status: ''
         });
+
+        // Close the modal:
+        props.closeModal();
+        
       })
       .catch((error) => {
         console.error('Error creating purchase order:', error);
@@ -53,17 +57,6 @@ function CreatePO() {
     <div>
       <form onSubmit={handleSubmit} className='create-user-model'>
         <div>
-          <label htmlFor="id">Id</label>
-          <input
-            type="number"
-            id="id"
-            name="id"
-            value={poData.id}
-            onChange={handleChange}
-            className='form-control'
-          />
-        </div>
-        <div>
           <label htmlFor="clientName">Client Name</label>
           <input
             type="text"
@@ -72,6 +65,18 @@ function CreatePO() {
             value={poData.clientName}
             onChange={handleChange}
             placeholder='Enter Client Name'
+            className='form-control'
+          />
+        </div>
+        <div>
+          <label htmlFor="poNumber">Purchase Order Number</label>
+          <input
+            type="text"
+            id="poNumber"
+            name="poNumber"
+            value={poData.poNumber}
+            onChange={handleChange}
+            placeholder='Enter Purchase Order Number'
             className='form-control'
           />
         </div>
@@ -137,27 +142,33 @@ function CreatePO() {
         </div>
         <div>
           <label htmlFor="type">Type</label>
-          <input
-            type="test"
+          <select
             id="type"
             name="type"
             value={poData.type}
             onChange={handleChange}
             className='form-control'
-            placeholder='Enter Type'
-          />
+          >
+            <option value="" disabled>Select Type</option>
+            <option value="Enterprise Service">Enterprise Service</option>
+            <option value="Talent Service">Talent Service</option>
+            <option value="Professional Service">Professional Service</option>
+          </select>
         </div>
         <div>
           <label htmlFor="status">Status</label>
-          <input
-            type="test"
+          <select
             id="status"
             name="status"
             value={poData.status}
             onChange={handleChange}
             className='form-control'
-            placeholder='Enter Status'
-          />
+          >
+            <option value="" disabled>Select Status</option>
+            <option value="Outstanding">Outstanding</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
         </div>
         
         <button type="submit" className='btn btn-primary'>Create Purchase Order</button>

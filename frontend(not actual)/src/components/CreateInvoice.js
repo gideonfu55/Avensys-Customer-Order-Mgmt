@@ -2,12 +2,15 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import './CreateInvoice.css'
 
-function CreateInvoice({ selectedPO }) {
+function CreateInvoice({ selectedPO, props }) {
 
   const [invoiceData, setInvoiceData] = useState({
+    purchaseOrderRef: '',
     invoiceNumber: '',
     amount: '',
-    purchaseOrderRef: '',
+    dateBilled: '',
+    dueDate: '',
+    status: ''
   })
 
   // For updating purchaseOrderRef field when a PO is selected:
@@ -40,10 +43,15 @@ function CreateInvoice({ selectedPO }) {
 
         // Reset form data:
         setInvoiceData({
+          purchaseOrderRef: '',
           invoiceNumber: '',
           amount: '',
-          purchaseOrderRef: '',
+          dateBilled: '',
+          dueDate: '',
+          status: ''
         });
+
+        props.closeModal();
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
@@ -54,9 +62,21 @@ function CreateInvoice({ selectedPO }) {
     <div className='invoice-container'>
       <form onSubmit={handleSubmit} className='create-invoice-model'>
         <div>
+          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
+          <input
+            type="text"
+            id="purchaseOrderRef"
+            name="purchaseOrderRef"
+            value={invoiceData.purchaseOrderRef}
+            onChange={handleChange}
+            placeholder='Enter Purchase Order Reference'
+            className='form-control'
+          />
+        </div>
+        <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
           <input
-            type="number"
+            type="text"
             id="invoiceNumber"
             name="invoiceNumber"
             value={invoiceData.invoiceNumber}
@@ -78,16 +98,40 @@ function CreateInvoice({ selectedPO }) {
           />
         </div>
         <div>
-          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
+          <label htmlFor="dateBilled">Date Billed</label>
           <input
-            type="text"
-            id="purchaseOrderRef"
-            name="purchaseOrderRef"
-            value={invoiceData.purchaseOrderRef}
+            type="date"
+            id="dateBilled"
+            name="dateBilled"
+            value={invoiceData.dateBilled}
             onChange={handleChange}
-            placeholder='Enter Purchase Order Reference'
             className='form-control'
           />
+        </div>
+        <div>
+          <label htmlFor="dueDate">Due Date</label>
+          <input
+            type="date"
+            id="dueDate"
+            name="dueDate"
+            value={invoiceData.dueDate}
+            onChange={handleChange}
+            className='form-control'
+          />
+        </div>
+        <div>
+          <label htmlFor="status">Payment Status</label>
+          <select
+            id="status"
+            name="status"
+            value={invoiceData.status}
+            onChange={handleChange}
+            className='form-control'
+          >
+            <option value="" disabled>Select Status</option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Paid">Paid</option>
+          </select>
         </div>
 
         <button type="submit" className='btn btn-primary'>Create Invoice</button>

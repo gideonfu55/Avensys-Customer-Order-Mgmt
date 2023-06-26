@@ -40,7 +40,7 @@ function PS() {
 
   const filteredPS = selectedStatus
     ? PS.filter(po => po.status === selectedStatus && po.type === 'Talent Service') 
-    : PS.filter(po => po.type === 'Talent Service');
+    : PS.filter(po => po.type === 'Talent Service' || po.type === 'Professional Service');
 
   return (
     <div className='dashboard-body'>
