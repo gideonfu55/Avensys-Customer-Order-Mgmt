@@ -16,6 +16,8 @@ function CreatePO(props) {
     status: ''
   })
 
+  // toast("Component Loaded!");
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setPoData((prevState) => ({ ...prevState, [name]: value }));
@@ -31,25 +33,27 @@ function CreatePO(props) {
       .post('http://localhost:8080/api/po/create', newPO)
       .then((response) => {
         console.log('Purchase order created successfully:', response.data);
+        props.onPoCreated(newPO.poNumber);
         // Reset the form
         setPoData({
-            clientName: '',
-            poNumber: '',
-            startDate: '',
-            endDate: '',
-            totalValue: '',
-            balValue: '',
-            milestone: '',
-            type: '',
-            status: ''
+          clientName: '',
+          poNumber: '',
+          startDate: '',
+          endDate: '',
+          totalValue: '',
+          balValue: '',
+          milestone: '',
+          type: '',
+          status: ''
         });
 
-        // Close the modal:
+        // Close the modal after creating po successfully:
         props.closeModal();
         
       })
       .catch((error) => {
         console.error('Error creating purchase order:', error);
+        props.onPoCreationError();
       });
   };
 

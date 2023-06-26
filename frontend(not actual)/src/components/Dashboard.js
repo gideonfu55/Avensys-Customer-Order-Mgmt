@@ -6,6 +6,8 @@ import CreatePO from './CreatePO';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -56,8 +58,16 @@ function Dashboard() {
     setShowPOForm(true);
   };
 
+  const handlePoCreated = (poNumber) => {
+    toast.success(`Purchase order ${poNumber} created successfully!`);
+  }
+
   const handlePOFormClose = () => {
     setShowPOForm(false);
+  };
+
+  const handlePoCreationError = () => {
+    toast.error(`Error creating purchase order. Please check again.`);
   };
 
   if (!user) {
@@ -66,6 +76,7 @@ function Dashboard() {
 
   return (
     <div className='dashboard-body'>
+      <ToastContainer />
       <NavBar />
       <div className='dashboard-content'>
         {/* Search Bar */}
@@ -122,7 +133,15 @@ function Dashboard() {
             <Modal.Title>Create Purchase Order</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {showPOForm && user && <CreatePO closeModal={handlePOFormClose} />}
+            {
+              showPOForm && 
+              user && 
+              <CreatePO 
+                onPoCreated={handlePoCreated} 
+                onPoCreationError={handlePoCreationError} 
+                closeModal={handlePOFormClose} 
+              />
+            }
           </Modal.Body>
         </Modal>
       )}
