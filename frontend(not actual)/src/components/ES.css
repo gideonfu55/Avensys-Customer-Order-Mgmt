@@ -45,3 +45,19 @@
     text-align: center;
   }
   
+  .btn-group {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-dark {
+    margin: 0 4px;  
+    padding: 8px;
+  }
+  

@@ -1,19 +1,17 @@
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import './CreateInvoice.css'
+import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, props }) {
-
+function CreateInvoice({ selectedPO, closeModal }) {
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
     invoiceNumber: '',
     amount: '',
     dateBilled: '',
     dueDate: '',
-    status: ''
-  })
+    status: '',
+  });
 
-  // For updating purchaseOrderRef field when a PO is selected:
   useEffect(() => {
     if (selectedPO) {
       setInvoiceData((prevState) => ({
@@ -26,32 +24,26 @@ function CreateInvoice({ selectedPO, props }) {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
-  }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
 
-    // Submit invoice data to REST API:
-    console.log(invoiceData);
-
     axios
       .post('http://localhost:8080/api/invoices/create', newInvoice)
       .then((response) => {
         console.log('New invoice created successfully: ', response.data);
-
-        // Reset form data:
         setInvoiceData({
           purchaseOrderRef: '',
           invoiceNumber: '',
           amount: '',
           dateBilled: '',
           dueDate: '',
-          status: ''
+          status: '',
         });
-
-        props.closeModal();
+        closeModal();
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
@@ -59,8 +51,8 @@ function CreateInvoice({ selectedPO, props }) {
   };
 
   return (
-    <div className='invoice-container'>
-      <form onSubmit={handleSubmit} className='create-invoice-model'>
+    <div className="invoice-container">
+      <form onSubmit={handleSubmit} className="create-invoice-model">
         <div>
           <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
           <input
@@ -69,8 +61,8 @@ function CreateInvoice({ selectedPO, props }) {
             name="purchaseOrderRef"
             value={invoiceData.purchaseOrderRef}
             onChange={handleChange}
-            placeholder='Enter Purchase Order Reference'
-            className='form-control'
+            placeholder="Enter Purchase Order Reference"
+            className="form-control"
           />
         </div>
         <div>
@@ -81,8 +73,8 @@ function CreateInvoice({ selectedPO, props }) {
             name="invoiceNumber"
             value={invoiceData.invoiceNumber}
             onChange={handleChange}
-            placeholder='Enter Invoice Number'
-            className='form-control'
+            placeholder="Enter Invoice Number"
+            className="form-control"
           />
         </div>
         <div>
@@ -93,8 +85,8 @@ function CreateInvoice({ selectedPO, props }) {
             name="amount"
             value={invoiceData.amount}
             onChange={handleChange}
-            placeholder='Enter Amount'
-            className='form-control'
+            placeholder="Enter Amount"
+            className="form-control"
           />
         </div>
         <div>
@@ -105,7 +97,7 @@ function CreateInvoice({ selectedPO, props }) {
             name="dateBilled"
             value={invoiceData.dateBilled}
             onChange={handleChange}
-            className='form-control'
+            className="form-control"
           />
         </div>
         <div>
@@ -116,7 +108,7 @@ function CreateInvoice({ selectedPO, props }) {
             name="dueDate"
             value={invoiceData.dueDate}
             onChange={handleChange}
-            className='form-control'
+            className="form-control"
           />
         </div>
         <div>
@@ -126,18 +118,22 @@ function CreateInvoice({ selectedPO, props }) {
             name="status"
             value={invoiceData.status}
             onChange={handleChange}
-            className='form-control'
+            className="form-control"
           >
-            <option value="" disabled>Select Status</option>
+            <option value="" disabled>
+              Select Status
+            </option>
             <option value="Unpaid">Unpaid</option>
             <option value="Paid">Paid</option>
           </select>
         </div>
 
-        <button type="submit" className='btn btn-primary'>Create Invoice</button>
+        <button type="submit" className="btn btn-primary">
+          Create Invoice
+        </button>
       </form>
     </div>
   );
 }
 
-export default CreateInvoice
+export default CreateInvoice;

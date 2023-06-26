@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.OJTPO.model.Invoice;
@@ -20,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 @Service
 public class InvoiceService {
+	
 
   private DatabaseReference getDatabaseInstance() {
     return FirebaseDatabase.getInstance().getReference();
@@ -28,18 +28,45 @@ public class InvoiceService {
   private DatabaseReference getInvoiceReference() {
     return getDatabaseInstance().child("Invoices");
   }
+  
+  private DatabaseReference getLastInvoiceId() {
+	    return getDatabaseInstance().child("lastInvoiceId");
+	  }
 
-  // Create new Invoice:
-  public Invoice createInvoice(Invoice invoice) {
-    String idString = String.valueOf(invoice.getId());
-    if (idString == null || idString.equals("null")) {
-      throw new IllegalArgumentException("Invoice id cannot be null");
-    }
+	//Create new Invoice:
+	public Invoice createInvoice(Invoice invoice) {
+	   DatabaseReference invoicesRef = getInvoiceReference();
+	
+	   // Get the last invoice ID
+	   DatabaseReference indexRef = getLastInvoiceId();
+	   indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
+	       @Override
+	       public void onDataChange(DataSnapshot dataSnapshot) {
+	           Long lastInvoiceId = dataSnapshot.getValue(Long.class);
+	           if (lastInvoiceId == null) {
+	               lastInvoiceId = 0L;
+	           }
+	
+	           // Increment the last invoice ID and use it for the new invoice's ID
+	           Long newInvoiceId = lastInvoiceId + 1;
+	           invoice.setId(newInvoiceId);
+	
+	           // Update the last invoice ID in the database
+	           indexRef.setValueAsync(newInvoiceId);
+	
+	           // Add the new invoice to the database
+	           invoicesRef.child(String.valueOf(newInvoiceId)).setValueAsync(invoice);
+	       }
+	
+	       @Override
+	       public void onCancelled(DatabaseError databaseError) {
+	           throw databaseError.toException();
+	       }
+	   });
+	
+	   return invoice;
+	}
 
-    getInvoiceReference().child(idString).setValueAsync(invoice);
-
-    return invoice;
-  }
 
   // Get all invoices:
   public CompletableFuture<List<Invoice>> getAllInvoices() {
