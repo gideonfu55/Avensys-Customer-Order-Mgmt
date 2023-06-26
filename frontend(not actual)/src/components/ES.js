@@ -91,9 +91,9 @@ function ES() {
       });
   };
 
-  // const handlePoUpdateError = () => {
-  //   toast.error('Error updating purchase order!');
-  // };
+  const handlePoUpdateError = () => {
+    toast.error('Error updating purchase order!');
+  };
 
   const handleInvoiceCreated = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
