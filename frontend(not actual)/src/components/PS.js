@@ -91,7 +91,7 @@ function PS() {
       });
   };
 
-  const handleInvoiceUpdate = () => {
+  const handleInvUpdate = () => {
     axios
     .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
     .then((response) => {
@@ -101,6 +101,18 @@ function PS() {
       console.error(error);
     });
   }
+  const handleInvoiceUpdate = (invoiceNumber) => {
+    toast.success(`Invoice ${invoiceNumber} created successfully!`);
+
+    axios
+    .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+    .then((response) => {
+      setPS(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  };
 
   const handlePoUpdateError = () => {
     toast.error('Error updating purchase order!');
@@ -249,7 +261,7 @@ function PS() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvoiceUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -258,7 +270,13 @@ function PS() {
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
+              {showInvoiceModal && (
+              <CreateInvoice 
+              selectedPO={selectedPO} 
+              closeModal={handleShowInvoiceModalClose} 
+              onInvUpdated={handleInvoiceUpdate}
+              />
+              )}
             </Modal.Body>
           </Modal>
 
