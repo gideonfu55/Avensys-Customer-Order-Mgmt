@@ -83,8 +83,16 @@ function ES() {
     toast.success(`Purchase order ${poNumber} updated successfully!`);
   };
 
-  const handlePoUpdateError = () => {
-    toast.error('Error updating purchase order!');
+  // const handlePoUpdateError = () => {
+  //   toast.error('Error updating purchase order!');
+  // };
+
+  const handleInvoiceCreated = (invoiceNumber) => {
+    toast.success(`Invoice ${invoiceNumber} created successfully!`);
+  };
+
+  const handleInvoiceCreatedError = () => {
+    toast.error('Error creating invoice!');
   };
 
   return (
@@ -239,7 +247,7 @@ function ES() {
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
+              {showInvoiceModal && <CreateInvoice onInvoiceCreated={handleInvoiceCreated} onInvoiceCreationError={handleInvoiceCreatedError} selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
             </Modal.Body>
           </Modal>
 
@@ -249,7 +257,14 @@ function ES() {
               <Modal.Title>Edit Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showEditModal && <EditPO onPoUpdated={handlePoUpdate} onPoUpdateError={handlePoUpdateError} selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+              {showEditModal && 
+                <EditPO
+                  onPoUpdated={handlePoUpdate}
+                  // onPoUpdateError={handlePoUpdateError}
+                  selectedPO={selectedPO} 
+                  closeModal={() => setShowEditModal(false)} 
+                />
+              }
             </Modal.Body>
           </Modal>
         </div>
