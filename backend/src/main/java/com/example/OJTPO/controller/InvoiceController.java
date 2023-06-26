@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555 " })
 @RequestMapping("/api")
 public class InvoiceController {
 
@@ -43,6 +43,10 @@ public class InvoiceController {
 //        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 //      }
 //    }
+
+    
+
+
 
     @GetMapping("/invoices/all")
     public CompletableFuture<List<Invoice>> getAllInvoices() {

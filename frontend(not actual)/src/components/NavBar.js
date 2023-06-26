@@ -22,53 +22,40 @@ function NavBar() {
 
   return (
     location.pathname !== '/login' && location.pathname !== '/register' && user && (
-      <div>
-        <div className='side-nav'>
-          <table>
-            <tbody>
-              
-              <tr className='nav-link'>
-                <td>
-                  <i className="fi fi-sr-house-chimney"></i>
-                </td>
-                <td>
-                      <Link to='/dashboard' className='nav-bar-link'>
-                          Dashboard
-                      </Link>
-                  </td>
-              </tr>
-              
-              <tr className='nav-link'>
-                <td><i className="fi fi-br-stats"></i></td>
-                <td>Insights</td>
-              </tr>
-              <tr className='nav-link'>
-                <td><i className="fi fi-sr-settings"></i></td>
-                <td>Settings</td>
-              </tr>
-              {user.role === 'Admin' || user.role === 'Management' ?
-                (<tr className='nav-link'>
-                  <td>
-                    <i className="fi fi-sr-user"></i>
-                  </td>
-                  <td>
-                      <Link to='/adminpanel' className='nav-bar-link'>
-                          Admin Control
-                      </Link>
-                  </td>
-                </tr>) : null}
-
-                <tr className='nav-link'>
-                <td><i className="fi fi-br-sign-out-alt"></i></td>
-                <td onClick={handleLogout}>Logout</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="content">
-          {/* Apply padding to the top */}
-          {/* Your page content here */}
-        </div>
+      <div className='side-nav'>
+        <ul className='nav flex-column'>
+          <div className='nav-group'>
+            <li>
+              <Link to='/dashboard' class="nav-item">
+                <i className="fi fi-sr-house-chimney"></i>
+                <span>Dashboard</span>
+              </Link>
+            </li>
+            {user.role === 'Admin' || user.role === 'Management'
+              ? (<li>
+                <Link to='/adminpanel' class="nav-item">
+                  <i className="fi fi-sr-user"></i>
+                  <span>Admin Panel</span>
+                </Link>
+              </li>)
+              : (null)
+            }
+            <li class="nav-item">
+              <i className="fi fi-br-stats"></i>
+              <span>Insights</span>
+            </li>
+            <li class="nav-item">
+              <i className="fi fi-sr-settings"></i>
+              <span>Settings</span>
+            </li>
+          </div>
+          <div className='nav-group'>
+            <li class="nav-item" onClick={handleLogout}>
+              <i className="fi fi-br-sign-out-alt"></i>
+              <span>Logout</span>
+            </li>
+          </div>
+        </ul>
       </div>
     )
   );

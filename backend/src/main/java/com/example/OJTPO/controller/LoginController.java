@@ -1,5 +1,6 @@
 package com.example.OJTPO.controller;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,4 +58,18 @@ public class LoginController {
         }
       });
   }
+  
+  @GetMapping("/users")
+  public ResponseEntity<List<User>> getAllUsers() {
+      CompletableFuture<List<User>> usersFuture = userService.getAllUsers();
+      try {
+          List<User> users = usersFuture.get();
+          return ResponseEntity.ok(users);
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      }
+  }
 }
+
+
+
