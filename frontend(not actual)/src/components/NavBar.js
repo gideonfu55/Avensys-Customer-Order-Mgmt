@@ -16,17 +16,45 @@ function NavBar() {
 
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    console.log(loggedUser.role)
     setUser(loggedUser);
   }, [location]);
 
   return (
     location.pathname !== '/login' && location.pathname !== '/register' && user && (
-      <div>
-        <div className='side-nav'>
-          <table>
+      <div className='side-nav'>
+        <ul className='nav flex-column'>
+          <div className='nav-group'>
+            <li>
+              <Link to='/dashboard' class="nav-item">
+                <i className="fi fi-sr-house-chimney"></i>
+                <span>Dashboard</span>
+              </Link>
+            </li>
+            <li>
+              <Link to='/adminpanel' class="nav-item">
+                <i className="fi fi-sr-user"></i>
+                <span>Admin Panel</span>
+              </Link>
+            </li>
+            <li class="nav-item">
+              <i className="fi fi-br-stats"></i>
+              <span>Insights</span>
+            </li>
+            <li class="nav-item">
+              <i className="fi fi-sr-settings"></i>
+              <span>Settings</span>
+            </li>
+          </div>
+          <div className='nav-group'>
+            <li class="nav-item" onClick={handleLogout}>
+              <i className="fi fi-br-sign-out-alt"></i>
+              <span>Logout</span>
+            </li>
+          </div>
+
+        </ul>
+        {/* <table>
             <tbody>
-              
               <tr className='nav-link'>
                 <td>
                   <i className="fi fi-sr-house-chimney"></i>
@@ -63,13 +91,9 @@ function NavBar() {
                 <td onClick={handleLogout}>Logout</td>
               </tr>
             </tbody>
-          </table>
-        </div>
-        <div className="content">
-          {/* Apply padding to the top */}
-          {/* Your page content here */}
-        </div>
+          </table> */}
       </div>
+
     )
   );
 }

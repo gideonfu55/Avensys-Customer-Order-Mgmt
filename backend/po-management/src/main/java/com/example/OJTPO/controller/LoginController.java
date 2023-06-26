@@ -1,16 +1,15 @@
 package com.example.OJTPO.controller;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import com.example.OJTPO.model.PurchaseOrder;
+import com.google.api.Http;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.OJTPO.model.User;
 import com.example.OJTPO.service.UserService;
@@ -56,5 +55,16 @@ public class LoginController {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                     }
                 });
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        CompletableFuture<List<User>> usersFuture = userService.getAllUsers();
+        try {
+            List<User> users = usersFuture.get();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

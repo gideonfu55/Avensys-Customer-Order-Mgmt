@@ -3,7 +3,8 @@ package com.example.OJTPO.model;
 public class PurchaseOrder {
 
   private Long id;
-  private String vendorName;
+  private String poNumber;
+  private String clientName;
   private String startDate;
   private String endDate;
   private double totalValue;
@@ -15,9 +16,10 @@ public class PurchaseOrder {
   public PurchaseOrder() {
   }
 
-  public PurchaseOrder(Long id, String vendorName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
+  public PurchaseOrder(Long id, String poNumber, String clientName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
     this.id = id;
-    this.vendorName = vendorName;
+    this.poNumber = poNumber;
+    this.clientName = clientName;
     this.startDate = startDate;
     this.endDate = endDate;
     this.totalValue = totalValue;
@@ -35,12 +37,20 @@ public class PurchaseOrder {
     this.id = id;
   }
 
-  public String getVendorName() {
-    return this.vendorName;
+  public String getPoNumber() {
+    return this.poNumber;
   }
 
-  public void setVendorName(String vendorName) {
-    this.vendorName = vendorName;
+  public void setPoNumber(String poNumber) {
+    this.poNumber = poNumber;
+  }
+
+  public String getClientName() {
+    return this.clientName;
+  }
+
+  public void setClientName(String clientName) {
+    this.clientName = clientName;
   }
 
   public String getStartDate() {
@@ -100,7 +110,8 @@ public class PurchaseOrder {
   }
 
   public void updateWith(PurchaseOrder newPurchaseOrder) {
-    this.vendorName = newPurchaseOrder.vendorName != null ? newPurchaseOrder.vendorName : this.vendorName;
+    this.clientName = newPurchaseOrder.clientName != null ? newPurchaseOrder.clientName : this.clientName;
+    this.poNumber = newPurchaseOrder.poNumber != null ? newPurchaseOrder.poNumber : this.poNumber;
     this.startDate = newPurchaseOrder.startDate != null ? newPurchaseOrder.startDate : this.startDate;
     this.endDate = newPurchaseOrder.endDate != null ? newPurchaseOrder.endDate : this.endDate;
     this.totalValue = newPurchaseOrder.totalValue != 0 ? newPurchaseOrder.totalValue : this.totalValue;

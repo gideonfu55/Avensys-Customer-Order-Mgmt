@@ -51,6 +51,7 @@ function CreateUser() {
             onChange={handleChange}
             placeholder='Enter Username'
             className='form-control'
+            required
           />
         </div>
         <div>
@@ -63,6 +64,7 @@ function CreateUser() {
             onChange={handleChange}
             placeholder='Enter Password'
             className='form-control'
+            required
           />
         </div>
         <div>
@@ -75,6 +77,7 @@ function CreateUser() {
             onChange={handleChange}
             className='form-control'
             placeholder='Enter Email'
+            required
           />
         </div>
         <div>
@@ -93,7 +96,7 @@ function CreateUser() {
             <option value='Sales'>Sales</option>
           </select>
         </div>
-        <button type="submit" className='btn btn-primary'>Create User</button>
+        <button type="submit" className='btn btn-dark'>Create User</button>
       </form>
     </div>
   );

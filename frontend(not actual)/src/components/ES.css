@@ -29,7 +29,7 @@
     margin: 0;
     max-width: none;
     height: 100%;
-    width: 75%;
+    width: 90%;
     z-index: 1050;
     overflow-y: auto;
   }
@@ -43,5 +43,21 @@
   
   .text-center {
     text-align: center;
+  }
+  
+  .btn-group {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-dark {
+    margin: 0 4px;  
+    padding: 8px;
   }
   
