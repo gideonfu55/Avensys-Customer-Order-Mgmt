@@ -69,7 +69,6 @@ function UpdateInvoice({ selectedInvoice }) {
             name="invoiceNumber"
             value={invoiceData.invoiceNumber}
             onChange={handleChange}
-            placeholder="Enter Invoice Number"
             className="form-control"
           />
         </div>
@@ -81,7 +80,6 @@ function UpdateInvoice({ selectedInvoice }) {
             name="amount"
             value={invoiceData.amount}
             onChange={handleChange}
-            placeholder="Enter Amount"
             className="form-control"
           />
         </div>
@@ -93,48 +91,49 @@ function UpdateInvoice({ selectedInvoice }) {
             name="purchaseOrderRef"
             value={invoiceData.purchaseOrderRef}
             onChange={handleChange}
-            placeholder="Enter Purchase Order Reference"
             className="form-control"
           />
         </div>
 
         <div>
-          <label htmlFor="purchaseOrderRef">Date Billed</label>
+          <label htmlFor="dateBilled">Date Billed</label>
           <input
             type="date"
-            id="purchaseOrderRef"
-            name="purchaseOrderRef"
+            id="dateBilled"
+            name="dateBilled"
             value={invoiceData.dateBilled}
             onChange={handleChange}
-            placeholder="Enter Purchase Order Reference"
             className="form-control"
           />
         </div>
 
         <div>
-          <label htmlFor="purchaseOrderRef">Due Date</label>
+          <label htmlFor="dueDate">Due Date</label>
           <input
             type="date"
-            id="purchaseOrderRef"
-            name="purchaseOrderRef"
+            id="dueDate"
+            name="dueDate"
             value={invoiceData.dueDate}
             onChange={handleChange}
-            placeholder="Enter Purchase Order Reference"
             className="form-control"
           />
         </div>
 
         <div>
-          <label htmlFor="purchaseOrderRef">Status</label>
-          <input
-            type="text"
-            id="purchaseOrderRef"
-            name="purchaseOrderRef"
+          <label htmlFor="status">Payment Status</label>
+          <select
+            id="status"
+            name="status"
             value={invoiceData.status}
             onChange={handleChange}
-            placeholder="Enter Purchase Order Reference"
             className="form-control"
-          />
+          >
+            <option value="" disabled>
+              Select Status
+            </option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Paid">Paid</option>
+          </select>
         </div>
 
         <button type="submit" className="btn btn-primary">
