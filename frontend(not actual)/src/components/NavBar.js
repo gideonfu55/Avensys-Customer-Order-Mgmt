@@ -30,12 +30,15 @@ function NavBar() {
                 <span>Dashboard</span>
               </Link>
             </li>
-            <li>
-              <Link to='/adminpanel' class="nav-item">
-                <i className="fi fi-sr-user"></i>
-                <span>Admin Panel</span>
-              </Link>
-            </li>
+            {user.role === 'Admin' || user.role === 'Management'
+              ? (<li>
+                <Link to='/adminpanel' class="nav-item">
+                  <i className="fi fi-sr-user"></i>
+                  <span>Admin Panel</span>
+                </Link>
+              </li>)
+              : (null)
+            }
             <li class="nav-item">
               <i className="fi fi-br-stats"></i>
               <span>Insights</span>
@@ -51,49 +54,8 @@ function NavBar() {
               <span>Logout</span>
             </li>
           </div>
-
         </ul>
-        {/* <table>
-            <tbody>
-              <tr className='nav-link'>
-                <td>
-                  <i className="fi fi-sr-house-chimney"></i>
-                </td>
-                <td>
-                      <Link to='/dashboard' className='nav-bar-link'>
-                          Dashboard
-                      </Link>
-                  </td>
-              </tr>
-              
-              <tr className='nav-link'>
-                <td><i className="fi fi-br-stats"></i></td>
-                <td>Insights</td>
-              </tr>
-              <tr className='nav-link'>
-                <td><i className="fi fi-sr-settings"></i></td>
-                <td>Settings</td>
-              </tr>
-              {user.role === 'Admin' || user.role === 'Management' ?
-                (<tr className='nav-link'>
-                  <td>
-                    <i className="fi fi-sr-user"></i>
-                  </td>
-                  <td>
-                      <Link to='/adminpanel' className='nav-bar-link'>
-                          Admin Control
-                      </Link>
-                  </td>
-                </tr>) : null}
-
-                <tr className='nav-link'>
-                <td><i className="fi fi-br-sign-out-alt"></i></td>
-                <td onClick={handleLogout}>Logout</td>
-              </tr>
-            </tbody>
-          </table> */}
       </div>
-
     )
   );
 }
