@@ -30,7 +30,7 @@ function CreateInvoice({ selectedPO, closeModal }) {
     event.preventDefault();
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
-
+  
     axios
       .post('http://localhost:8080/api/invoices/create', newInvoice)
       .then((response) => {
@@ -47,6 +47,22 @@ function CreateInvoice({ selectedPO, closeModal }) {
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
+      });
+  
+    const updatedBalValue = selectedPO.balValue - invoiceData.amount;
+    const patchData = {
+      balValue: updatedBalValue,
+    };
+  
+    axios
+      .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+      .then((response) => {
+        console.log('Purchase order updated successfully:', response.data);
+        closeModal();
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error('Error updating purchase order:', error);
       });
   };
 
