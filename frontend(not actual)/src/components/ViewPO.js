@@ -8,7 +8,7 @@ import UpdateInvoice from './UpdateInvoice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function ViewPO({ selectedPO }) {
+function ViewPO({ selectedPO, onInvUpdated }) {
 
     const [invoices, setInvoices] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -58,8 +58,25 @@ function ViewPO({ selectedPO }) {
             });
     };
 
-    const handleInvoiceUpdate = (invoiceNumber) => {
-        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
+    const handleInvoiceUpdate = (invoiceData, amount) => {
+        toast.success(`Invoice ${invoiceData.invoiceNumber} updated successfully!`);
+
+        const updatedBalValue = selectedPO.balValue + amount - invoiceData.amount;
+        const patchData = {
+            balValue: updatedBalValue,
+        };
+
+        axios
+            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+            .then((response) => {
+                console.log('Purchase order updated successfully:', response.data);
+                setUpdatedPO(response.data)
+                onInvUpdated()
+            })
+            .catch((error) => {
+                console.error('Error updating purchase order:', error);
+            });
+
         // Fetch updated data after successful update
         axios
             .get('http://localhost:8080/api/invoices/all', { maxRedirects: 5 })
@@ -108,7 +125,7 @@ function ViewPO({ selectedPO }) {
                             <td>{selectedPO.endDate}</td>
                             <td>{selectedPO.milestone}</td>
                             <td>{selectedPO.totalValue}</td>
-                            <td>{selectedPO.balValue}</td>
+                            <td>{updatedPO.balValue}</td>
                             <td>{selectedPO.status}</td>
                             <td>
                                 <button className='update-btn p-1' onClick={() => handleEditPO(selectedPO)}>

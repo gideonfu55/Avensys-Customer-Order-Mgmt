@@ -80,6 +80,7 @@ function ES() {
 
   const handlePoUpdate = (poNumber) => {
     toast.success(`Purchase order ${poNumber} updated successfully!`);
+    
     // Fetch updated data after successful update
     axios
       .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
@@ -90,6 +91,17 @@ function ES() {
         console.error(error);
       });
   };
+
+  const handleInvoiceUpdate = () => {
+    axios
+    .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+    .then((response) => {
+      setES(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
 
   const handlePoUpdateError = () => {
     toast.error('Error updating purchase order!');
@@ -238,7 +250,7 @@ function ES() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvoiceUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
