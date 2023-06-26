@@ -27,43 +27,14 @@ public class PurchaseOrderService {
     return getDatabaseInstance().child("PurchaseOrders");
   }
 
-  private DatabaseReference getLastPOId() {
-    return getDatabaseInstance().child("lastPOId");
-  }
-
   // Create new Purchase Order:
   public PurchaseOrder createPO(PurchaseOrder purchaseOrder) {
+    String idString = String.valueOf(purchaseOrder.getId());
+    if (idString == null || idString.equals("null")) {
+      throw new IllegalArgumentException("Purchase Order id cannot be null");
+    }
 
-    // Get last PO id:
-    DatabaseReference indexRef = getLastPOId();
-
-    // Read the lastPOIndex from the database
-    indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
-      @Override
-      public void onDataChange(DataSnapshot dataSnapshot) {
-        Long lastPOId = dataSnapshot.getValue(Long.class);
-        if (lastPOId == null) {
-          lastPOId = 0L;
-        }
-
-        // Increment the last PO id: and use it for the new PO's id:
-        purchaseOrder.setId(lastPOId + 1);
-        indexRef.setValueAsync(lastPOId + 1);
-
-        // Add the new PO to the database:
-        String idString = String.valueOf(purchaseOrder.getId());
-        if (idString == null || idString.equals("null")) {
-          throw new IllegalArgumentException("Purchase Order id cannot be null");
-        }
-
-        getPOReference().child(idString).setValueAsync(purchaseOrder);
-      }
-
-      @Override
-      public void onCancelled(DatabaseError databaseError) {
-        throw databaseError.toException();
-      }
-    });
+    getPOReference().child(idString).setValueAsync(purchaseOrder);
 
     return purchaseOrder;
   }
