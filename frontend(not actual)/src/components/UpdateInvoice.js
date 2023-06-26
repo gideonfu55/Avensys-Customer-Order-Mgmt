@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './CreateInvoice.css';
 
-function UpdateInvoice({ selectedInvoice }) {
+function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError }) {
   const [invoiceData, setInvoiceData] = useState({
     invoiceNumber: '',
     amount: '',
@@ -34,27 +34,15 @@ function UpdateInvoice({ selectedInvoice }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Submit invoice data to REST API:
-    console.log(invoiceData);
-
     axios
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
-        console.log('Invoice updated successfully: ', response.data);
-        
-        // Reset form data:
-        setInvoiceData({
-          invoiceNumber: '',
-          amount: '',
-          purchaseOrderRef: '',
-          dateBilled: '',
-          dueDate: '',
-          status: ''
-        });
-        window.location.reload()
+        onInvoiceUpdated(invoiceData.invoiceNumber)
+        closeModal()
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
+        onInvoiceUpdateError()
       });
   };
 
