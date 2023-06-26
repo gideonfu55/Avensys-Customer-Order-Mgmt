@@ -31,6 +31,18 @@ public class InvoiceController {
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
+    
+//    @PostMapping("/invoices/create")
+//    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
+//      try {
+//        Invoice createdInvoice = invoiceService.createInvoice(invoice);
+//        return new ResponseEntity<>(createdInvoice, HttpStatus.CREATED);
+//      } catch (IllegalArgumentException e) {
+//        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//      } catch (Exception e) {
+//        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//      }
+//    }
 
     @GetMapping("/invoices/all")
     public CompletableFuture<List<Invoice>> getAllInvoices() {
