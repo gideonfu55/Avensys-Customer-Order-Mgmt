@@ -3,12 +3,14 @@ import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ViewPO.css'
 import axios from 'axios';
+import EditPO from './EditPO';
 import UpdateInvoice from './UpdateInvoice';
 
 function ViewPO({ selectedPO }) {
 
     const [invoices, setInvoices] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [updatedPO, setUpdatedPO] = useState({ ...selectedPO });
 
@@ -24,6 +26,22 @@ function ViewPO({ selectedPO }) {
                 console.error("Error fetching data: ", error);
             });
     }, [selectedPO]);
+
+    const handleDeletePO = (id) => {
+        axios
+            .delete(`http://localhost:8080/api/po/delete/${id}`)
+            .then((response) => {
+                window.location.reload()
+                console.log('Invoice deleted successfully')
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    const handleEditPO = (po) => {
+        setShowEditModal(true);
+    };
 
     const handleDeleteInvoice = (id) => {
         axios
@@ -80,10 +98,10 @@ function ViewPO({ selectedPO }) {
                             <td>{selectedPO.balValue}</td>
                             <td>{selectedPO.status}</td>
                             <td>
-                                <button className='update-btn p-1'>
+                                <button className='update-btn p-1' onClick={() => handleEditPO(selectedPO)}>
                                     <i className="fi fi-sr-file-edit p-1"></i>
                                 </button>
-                                <button className='delete-btn p-1'>
+                                <button className='delete-btn p-1' onClick={() => handleDeletePO(selectedPO.id)}>
                                     <i className="fi fi-sr-trash delete p-1"></i>
                                 </button>
                             </td>
@@ -126,7 +144,7 @@ function ViewPO({ selectedPO }) {
                                     >
                                         <i className="fi fi-sr-file-edit p-1"></i>
                                     </button>
-                                    <button 
+                                    <button
                                         className='delete-btn p-1'
                                         onClick={() => {
                                             handleDeleteInvoice(invoice.id)
@@ -140,6 +158,16 @@ function ViewPO({ selectedPO }) {
                     </tbody>
                 </table>
             </div>
+            {/* Edit PO Modal */}
+            <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Purchase Order</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {showEditModal && <EditPO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+                </Modal.Body>
+            </Modal>
+
             {/* Update Invoice Modal */}
             <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
                 <Modal.Header closeButton>
