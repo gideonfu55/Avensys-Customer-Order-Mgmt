@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
-import { Modal } from 'react-bootstrap';
+import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
 import EditPO from './EditPO'; // Add this import statement
@@ -8,6 +8,9 @@ import './ES.css';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function ES() {
   const [ES, setES] = useState([]);
@@ -76,8 +79,17 @@ function ES() {
     setShowEditModal(true);
   };
 
+  const handlePoUpdate = (poNumber) => {
+    toast.success(`Purchase order ${poNumber} updated successfully!`);
+  };
+
+  const handlePoUpdateError = () => {
+    toast.error('Error updating purchase order!');
+  };
+
   return (
     <div className='dashboard-body'>
+      <ToastContainer />
       <NavBar />
       <div className='dashboard-content'>
         <div className='es-intro'>
@@ -237,7 +249,7 @@ function ES() {
               <Modal.Title>Edit Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showEditModal && <EditPO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+              {showEditModal && <EditPO onPoUpdated={handlePoUpdate} onPoUpdateError={handlePoUpdateError} selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
             </Modal.Body>
           </Modal>
         </div>
