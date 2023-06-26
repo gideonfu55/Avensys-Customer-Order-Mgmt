@@ -96,6 +96,10 @@ function PS() {
       });
   };
 
+  const handleInvoiceUpdate = (invoiceNumber) => {
+    toast.success(`Invoice ${invoiceNumber} created successfully!`);
+  };
+
   const handlePoUpdateError = () => {
     toast.error('Error updating purchase order!');
   };
@@ -252,7 +256,13 @@ function PS() {
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
+              {showInvoiceModal && (
+              <CreateInvoice 
+              selectedPO={selectedPO} 
+              closeModal={handleShowInvoiceModalClose} 
+              onInvUpdated={handleInvoiceUpdate}
+              />
+              )}
             </Modal.Body>
           </Modal>
 
