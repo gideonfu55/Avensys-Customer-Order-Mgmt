@@ -62,15 +62,20 @@ function PS() {
     ? filteredPS.filter((po) => po[searchType].toString().toLowerCase().includes(searchTerm.toLowerCase()))
     : filteredPS;
 
-  const handleDeletePO = (id) => {
-    axios
-      .delete(`http://localhost:8080/api/po/delete/${id}`)
-      .then((response) => {
+  const handleDeletePO = (id, poNumber) => {
+    if (window.confirm(`Are you sure you want to delete purchase order ${poNumber}?`)) {
+      axios
+        .delete(`http://localhost:8080/api/po/delete/${id}`)
+        .then((response) => {
         setPS((prevPS) => prevPS.filter((po) => po.id !== id));
+        toast.success(`Purchase order ${poNumber} deleted successfully!`);
       })
-      .catch((error) => {
+        .catch((error) => {
         console.error(error);
+        toast.error(`Error deleting purchase order ${poNumber}!`);
       });
+    }
+
   };
 
   const handleEditPO = (po) => {
@@ -222,7 +227,7 @@ function PS() {
                     >
                       <FontAwesomeIcon icon={faPlus} />
                     </button>
-                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id)}>
+                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id, po.poNumber)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </div>
