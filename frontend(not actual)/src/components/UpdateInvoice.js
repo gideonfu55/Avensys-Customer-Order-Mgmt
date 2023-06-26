@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, closeModal }) {
+function UpdateInvoice({ selectedInvoice }) {
   const [invoiceData, setInvoiceData] = useState({
-    purchaseOrderRef: '',
     invoiceNumber: '',
     amount: '',
+    purchaseOrderRef: '',
     dateBilled: '',
     dueDate: '',
-    status: '',
+    status: ''
   });
 
   useEffect(() => {
-    if (selectedPO) {
-      setInvoiceData((prevState) => ({
-        ...prevState,
-        purchaseOrderRef: selectedPO.poNumber,
-      }));
+    if (selectedInvoice) {
+      setInvoiceData({
+        invoiceNumber: selectedInvoice.invoiceNumber,
+        amount: selectedInvoice.amount,
+        purchaseOrderRef: selectedInvoice.purchaseOrderRef,
+        dateBilled: selectedInvoice.dateBilled,
+        dueDate: selectedInvoice.dueDate,
+        status: selectedInvoice.status
+      });
     }
-  }, [selectedPO]);
+
+  }, [selectedInvoice]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -28,59 +33,34 @@ function CreateInvoice({ selectedPO, closeModal }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const createdAt = new Date().toISOString();
-    const newInvoice = { ...invoiceData, createdAt };
-  
+
+    // Submit invoice data to REST API:
+    console.log(invoiceData);
+
     axios
-      .post('http://localhost:8080/api/invoices/create', newInvoice)
+      .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
-        console.log('New invoice created successfully: ', response.data);
+        console.log('Invoice updated successfully: ', response.data);
+        
+        // Reset form data:
         setInvoiceData({
-          purchaseOrderRef: '',
           invoiceNumber: '',
           amount: '',
+          purchaseOrderRef: '',
           dateBilled: '',
           dueDate: '',
-          status: '',
+          status: ''
         });
-        closeModal();
+        window.location.reload()
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
-      });
-  
-    const updatedBalValue = selectedPO.balValue - invoiceData.amount;
-    const patchData = {
-      balValue: updatedBalValue,
-    };
-  
-    axios
-      .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
-      .then((response) => {
-        console.log('Purchase order updated successfully:', response.data);
-        closeModal();
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.error('Error updating purchase order:', error);
       });
   };
 
   return (
     <div className="invoice-container">
       <form onSubmit={handleSubmit} className="create-invoice-model">
-        <div>
-          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
-          <input
-            type="text"
-            id="purchaseOrderRef"
-            name="purchaseOrderRef"
-            value={invoiceData.purchaseOrderRef}
-            onChange={handleChange}
-            placeholder="Enter Purchase Order Reference"
-            className="form-control"
-          />
-        </div>
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
           <input
@@ -89,7 +69,6 @@ function CreateInvoice({ selectedPO, closeModal }) {
             name="invoiceNumber"
             value={invoiceData.invoiceNumber}
             onChange={handleChange}
-            placeholder="Enter Invoice Number"
             className="form-control"
           />
         </div>
@@ -101,10 +80,21 @@ function CreateInvoice({ selectedPO, closeModal }) {
             name="amount"
             value={invoiceData.amount}
             onChange={handleChange}
-            placeholder="Enter Amount"
             className="form-control"
           />
         </div>
+        <div>
+          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
+          <input
+            type="text"
+            id="purchaseOrderRef"
+            name="purchaseOrderRef"
+            value={invoiceData.purchaseOrderRef}
+            onChange={handleChange}
+            className="form-control"
+          />
+        </div>
+
         <div>
           <label htmlFor="dateBilled">Date Billed</label>
           <input
@@ -116,6 +106,7 @@ function CreateInvoice({ selectedPO, closeModal }) {
             className="form-control"
           />
         </div>
+
         <div>
           <label htmlFor="dueDate">Due Date</label>
           <input
@@ -127,6 +118,7 @@ function CreateInvoice({ selectedPO, closeModal }) {
             className="form-control"
           />
         </div>
+
         <div>
           <label htmlFor="status">Payment Status</label>
           <select
@@ -145,11 +137,11 @@ function CreateInvoice({ selectedPO, closeModal }) {
         </div>
 
         <button type="submit" className="btn btn-primary">
-          Create Invoice
+          Update Invoice
         </button>
       </form>
     </div>
   );
 }
 
-export default CreateInvoice;
+export default UpdateInvoice;

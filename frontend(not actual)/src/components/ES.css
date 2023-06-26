@@ -24,20 +24,18 @@
   
   .custom-modal {
     position: fixed;
-    top: 0;
-    bottom: 0;
-    margin: 0;
     max-width: none;
+    width: 1300px;
     height: 100%;
-    width: 90%;
-    z-index: 1050;
-    overflow-y: auto;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    margin-left: -650px;
   }
   
   .custom-modal .modal-dialog {
     height: 100%;
     margin: 0;
-    max-width: none;
     width: 100%;
   }
   
