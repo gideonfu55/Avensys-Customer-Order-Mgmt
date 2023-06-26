@@ -29,16 +29,23 @@ function ViewPO({ selectedPO }) {
             });
     }, [selectedPO]);
 
-    const handleDeletePO = (id) => {
+    const handleDeletePO = (id, poNumber) => {
+        if (window.confirm(`Are you sure you want to delete PO ${poNumber}?`)) {
         axios
             .delete(`http://localhost:8080/api/po/delete/${id}`)
             .then((response) => {
-                window.location.reload()
+                setUpdatedPO((prevPO) => {
+                    if (prevPO.id === id) return null;
+                    return prevPO;
+                });
                 console.log('Invoice deleted successfully')
+                toast.success(`PO ${poNumber} deleted successfully!`);
             })
             .catch((error) => {
                 console.error(error);
+                toast.error(`Error deleting PO ${poNumber}!`);
             });
+        }
     };
 
     const handleEditPO = (po) => {
@@ -96,7 +103,6 @@ function ViewPO({ selectedPO }) {
                             <th scope="col">Total Value</th>
                             <th scope="col">Total Balance</th>
                             <th scope="col">Status</th>
-                            <th scope='col'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,14 +116,6 @@ function ViewPO({ selectedPO }) {
                             <td>{selectedPO.totalValue}</td>
                             <td>{selectedPO.balValue}</td>
                             <td>{selectedPO.status}</td>
-                            <td>
-                                <button className='update-btn p-1' onClick={() => handleEditPO(selectedPO)}>
-                                    <i className="fi fi-sr-file-edit p-1"></i>
-                                </button>
-                                <button className='delete-btn p-1' onClick={() => handleDeletePO(selectedPO.id)}>
-                                    <i className="fi fi-sr-trash delete p-1"></i>
-                                </button>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
