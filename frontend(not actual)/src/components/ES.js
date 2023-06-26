@@ -3,14 +3,13 @@ import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO'; // Add this import statement
+import EditPO from './EditPO'; 
 import './ES.css';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 function ES() {
   const [ES, setES] = useState([]);
@@ -81,6 +80,15 @@ function ES() {
 
   const handlePoUpdate = (poNumber) => {
     toast.success(`Purchase order ${poNumber} updated successfully!`);
+    // Fetch updated data after successful update
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setES(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   // const handlePoUpdateError = () => {
@@ -177,8 +185,8 @@ function ES() {
                 Status
               </th>
               <th scope='col' className='text-center'>
-              Actions
-              </th>              
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -193,7 +201,7 @@ function ES() {
                 <td className='text-center'>{po.totalValue}</td>
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
-                
+
                 <td>
                   <div className='button-container'>
                     <button
@@ -209,7 +217,7 @@ function ES() {
                     <button
                       type='button'
                       className='btn btn-dark'
-                      onClick={() => handleEditPO(po)} 
+                      onClick={() => handleEditPO(po)}
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
@@ -257,14 +265,14 @@ function ES() {
               <Modal.Title>Edit Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showEditModal && 
+              {showEditModal && (
                 <EditPO
+                  selectedPO={selectedPO}
+                  closeModal={() => setShowEditModal(false)}
                   onPoUpdated={handlePoUpdate}
-                  // onPoUpdateError={handlePoUpdateError}
-                  selectedPO={selectedPO} 
-                  closeModal={() => setShowEditModal(false)} 
+                  onPoUpdateError={handlePoUpdateError}
                 />
-              }
+              )}
             </Modal.Body>
           </Modal>
         </div>

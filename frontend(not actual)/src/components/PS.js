@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
-import { Modal } from 'react-bootstrap';
+import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
+import EditPO from './EditPO'; 
 import './ES.css';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import EditPO from './EditPO';
+import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function PS() {
   const [PS, setPS] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedPO, setSelectedPO] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('poNumber');
-  const [showEditModal, setShowEditModal] = useState(false);
 
   function handleShowPOModalClose() {
     setShowPOModal(false);
@@ -54,7 +56,11 @@ function PS() {
 
   const filteredPS = selectedStatus
     ? PS.filter((po) => po.status === selectedStatus && po.type === 'Talent Service')
-    : PS.filter((po) => po.type === 'Talent Service' || po.type === 'Professional Service');
+    : PS.filter((po) => po.type === 'Talent Service');
+
+  const searchedPS = searchTerm
+    ? filteredPS.filter((po) => po[searchType].toString().toLowerCase().includes(searchTerm.toLowerCase()))
+    : filteredPS;
 
   const handleDeletePO = (id) => {
     axios
@@ -72,13 +78,31 @@ function PS() {
     setShowEditModal(true);
   };
 
+  const handlePoUpdate = (poNumber) => {
+    toast.success(`Purchase order ${poNumber} updated successfully!`);
+    // Fetch updated data after successful update
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setPS(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handlePoUpdateError = () => {
+    toast.error('Error updating purchase order!');
+  };
+
   return (
     <div className='dashboard-body'>
+      <ToastContainer />
       <NavBar />
       <div className='dashboard-content'>
-        <div className='ps-intro'>
+        <div className='es-intro'>
           <h2>
-            <span style={{ fontWeight: '800' }}>Professional Services:</span>{' '}
+            <span style={{ fontWeight: '800' }}>Talent Services:</span>{' '}
             <span style={{ fontWeight: '200' }}>Purchase Orders</span>
           </h2>
           <button type='button' className='btn btn-dark'>
@@ -97,9 +121,9 @@ function PS() {
           </select>
         </div>
 
-        <div className="search-wrapper">
+        <div className='search-wrapper'>
           <label htmlFor='search-box'>Search:</label>
-          <form className="d-flex">
+          <form className='d-flex'>
             <select
               style={{ width: 100 }}
               id='search-type-select'
@@ -125,112 +149,125 @@ function PS() {
         <table className='table table-light table-hover'>
           <thead>
             <tr>
-              <th scope='col' className='text-center'>PO #</th>
-              <th scope='col' className='text-center'>Client</th>
-              <th scope='col' className='text-center'>Type</th>
-              <th scope='col' className='text-center'>Start Date</th>
-              <th scope='col' className='text-center'>End Date</th>
-              <th scope='col' className='text-center'>Milestone (%)</th>
-              <th scope='col' className='text-center'>Total Value</th>
-              <th scope='col' className='text-center'>Balance Value</th>
               <th scope='col' className='text-center'>
-                <span>Status</span>
-                <i className='fas fa-filter'></i>
+                PO #
               </th>
-              <th scope='col'></th>
-              <th></th>
+              <th scope='col' className='text-center'>
+                Client
+              </th>
+              <th scope='col' className='text-center'>
+                Type
+              </th>
+              <th scope='col' className='text-center'>
+                Start Date
+              </th>
+              <th scope='col' className='text-center'>
+                End Date
+              </th>
+              <th scope='col' className='text-center'>
+                Milestone (%)
+              </th>
+              <th scope='col' className='text-center'>
+                Total Value
+              </th>
+              <th scope='col' className='text-center'>
+                Balance Value
+              </th>
+              <th scope='col' className='text-center'>
+                Status
+              </th>
+              <th scope='col' className='text-center'>
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
-            {filteredPS
-              .filter((po) =>
-                po[searchType]
-                  .toString()
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase())
-              )
-              .map((po) => (
-                <tr key={po.id}>
-                  <td className='text-center'>{po.poNumber}</td>
-                  <td className='text-center'>{po.clientName}</td>
-                  <td className='text-center'>{po.type}</td>
-                  <td className='text-center'>{po.startDate}</td>
-                  <td className='text-center'>{po.endDate}</td>
-                  <td className='text-center'>{po.milestone}</td>
-                  <td className='text-center'>{po.totalValue}</td>
-                  <td className='text-center'>{po.balValue}</td>
-                  <td className='text-center'>{po.status}</td>
-                  <td></td>
-                  <td>
-                    <div className='button-container'>
-                      <button
-                        type='button'
-                        className='btn btn-dark'
-                        onClick={() => {
-                          setSelectedPO(po);
-                          setShowPOModal(true);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </button>
-                      <button
+            {searchedPS.map((po) => (
+              <tr key={po.id}>
+                <td className='text-center'>{po.poNumber}</td>
+                <td className='text-center'>{po.clientName}</td>
+                <td className='text-center'>{po.type}</td>
+                <td className='text-center'>{po.startDate}</td>
+                <td className='text-center'>{po.endDate}</td>
+                <td className='text-center'>{po.milestone}</td>
+                <td className='text-center'>{po.totalValue}</td>
+                <td className='text-center'>{po.balValue}</td>
+                <td className='text-center'>{po.status}</td>
+
+                <td>
+                  <div className='button-container'>
+                    <button
                       type='button'
                       className='btn btn-dark'
-                      onClick={() => handleEditPO(po)} 
+                      onClick={() => {
+                        setSelectedPO(po);
+                        setShowPOModal(true);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </button>
+                    <button
+                      type='button'
+                      className='btn btn-dark'
+                      onClick={() => handleEditPO(po)}
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
-
-                      <button
-                        type='button'
-                        className='btn btn-dark'
-                        onClick={() => {
-                          setSelectedPO(po);
-                          setShowInvoiceModal(true);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faPlus} />
-                      </button>
-                      <button
-                        className='btn btn-dark'
-                        onClick={() => handleDeletePO(po.id)}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    <button
+                      className='btn btn-dark'
+                      onClick={() => {
+                        setSelectedPO(po);
+                        setShowInvoiceModal(true);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faPlus} />
+                    </button>
+                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id)}>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
-        {/* View PO Modal */}
-        <Modal show={showPOModal} onHide={handleShowPOModalClose} dialogClassName='custom-modal'>
-          <Modal.Header closeButton>
-            <Modal.Title>Purchase Order</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
-        </Modal>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          {/* View PO Modal */}
+          <Modal show={showPOModal} onHide={handleShowPOModalClose} dialogClassName='custom-modal'>
+            <Modal.Header closeButton>
+              <Modal.Title>Purchase Order</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
+          </Modal>
 
-        {/* Create Invoice Modal */}
-        <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal w-50'>
-          <Modal.Header closeButton>
-            <Modal.Title>Create Invoice</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
-          </Modal.Body>
-        </Modal>
+          {/* Create Invoice Modal */}
+          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal w-50'>
+            <Modal.Header closeButton>
+              <Modal.Title>Create Invoice</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
+            </Modal.Body>
+          </Modal>
 
-        {/* Edit PO Modal */}
-        <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
+          {/* Edit PO Modal */}
+          <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
             <Modal.Header closeButton>
               <Modal.Title>Edit Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showEditModal && <EditPO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+              {showEditModal && (
+                <EditPO
+                  selectedPO={selectedPO}
+                  closeModal={() => setShowEditModal(false)}
+                  onPoUpdated={handlePoUpdate}
+                  onPoUpdateError={handlePoUpdateError}
+                />
+              )}
             </Modal.Body>
           </Modal>
+        </div>
       </div>
     </div>
   );

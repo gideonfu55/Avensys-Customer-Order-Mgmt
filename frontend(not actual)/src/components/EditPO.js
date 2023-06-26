@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function EditPO({ selectedPO, closeModal, onPoUpdated }) {
-
+function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
   const [poData, setPOData] = useState(selectedPO);
 
   const handleChange = (e) => {
@@ -20,11 +19,10 @@ function EditPO({ selectedPO, closeModal, onPoUpdated }) {
       .then((response) => {
         onPoUpdated(poData.poNumber);
         closeModal();
-        window.location.reload();
       })
       .catch((error) => {
-        console.log('Error updating purchase order:', error);
-        // onPoUpdateError();
+        console.error(error);
+        onPoUpdateError();
       });
   };
 
