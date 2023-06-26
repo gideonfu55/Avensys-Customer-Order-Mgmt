@@ -79,10 +79,7 @@ function Dashboard() {
       <ToastContainer />
       <NavBar />
       <div className='dashboard-content'>
-        {/* Search Bar */}
-        <form className='search'>
-          <input type='text' placeholder='Search..' className='form-control search' />
-        </form>
+        <h1>Welcome back, {user.username}!</h1>
         {/* Highlights */}
         <div className='highlight-overview'>
           <h5>Overview</h5>

@@ -30,6 +30,7 @@ function CreateInvoice({ selectedPO, closeModal }) {
     event.preventDefault();
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
+  
     axios
       .post('http://localhost:8080/api/invoices/create', newInvoice)
       .then((response) => {

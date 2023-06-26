@@ -1,12 +1,20 @@
 package com.example.OJTPO.service;
 
-import com.example.OJTPO.firebase.FirebaseService;
-import com.example.OJTPO.model.User;
-import com.google.firebase.database.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.CompletableFuture;
+import com.example.OJTPO.firebase.FirebaseService;
+import com.example.OJTPO.model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 @Service
 public class UserService {
@@ -110,6 +118,32 @@ public class UserService {
                 completableFuture.completeExceptionally(databaseError.toException());
             }
         });
+        return completableFuture;
+    }
+    
+    //  Get All Users
+    public CompletableFuture<List<User>> getAllUsers() {
+        CompletableFuture<List<User>> completableFuture = new CompletableFuture<>();
+        DatabaseReference usersRef = firebaseService.getFirebase().child("users");
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<User> userList = new ArrayList<>();
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    User user = userSnapshot.getValue(User.class);
+                    userList.add(user);
+                }
+
+                completableFuture.complete(userList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                completableFuture.completeExceptionally(databaseError.toException());
+            }
+        });
+
         return completableFuture;
     }
 }

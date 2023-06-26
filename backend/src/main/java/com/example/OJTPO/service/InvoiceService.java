@@ -20,7 +20,6 @@ import com.google.firebase.database.ValueEventListener;
 @Service
 public class InvoiceService {
 
-
   private DatabaseReference getDatabaseInstance() {
     return FirebaseDatabase.getInstance().getReference();
   }
@@ -28,7 +27,6 @@ public class InvoiceService {
   private DatabaseReference getInvoiceReference() {
     return getDatabaseInstance().child("Invoices");
   }
-  
 
   private DatabaseReference getLastInvoiceId() {
     return getDatabaseInstance().child("lastInvoiceId");
@@ -67,7 +65,6 @@ public class InvoiceService {
 
     return invoice;
   }
-
 
   // Get all invoices:
   public CompletableFuture<List<Invoice>> getAllInvoices() {

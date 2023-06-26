@@ -1,3 +1,4 @@
+
 .admin-container {
   overflow-x: auto;
   background-color: white;
@@ -9,12 +10,12 @@
   border-collapse: collapse;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  overflow: hidden;
+  overflow:auto;
   table-layout: fixed;
 }
 
 .admin-table th {
-  background-color: #6C63FF;
+  background-color: #202020;
   color: #fff;
   font-weight: 500;
   padding: 20px;
@@ -28,29 +29,6 @@
 
 .admin-table tr:last-child td {
   border-bottom: none;
-}
-
-.admin-table button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: solid black;
-  padding: 5px;
-  border-radius: 5px;
-  font-size: 14px;
-  margin: 0 5px;
-  width: 35px;
-  height: 35px;
-}
-
-.admin-table .btn-danger {
-  background-color: #ff0000;
-  color: #fff;
-}
-
-.admin-table .btn-success {
-  background-color: #008000;
-  color: #fff;
 }
 
 .admin-table tr:hover {
@@ -97,6 +75,12 @@
   vertical-align: middle;
 }
 
+.admin-create-user {
+  display: flex;
+  flex-direction: column;
+  row-gap: .7rem;
+}
+
 .create-user-card {
   width: 30%;
   display: flex;
@@ -105,4 +89,20 @@
   border-radius: 1rem;
   background-color: #f1f1f1;
   padding: 2rem;
+}
+
+.user-records {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.dropdown-item {
+  display: flex;
+  column-gap: .5rem;
+  cursor: pointer;
+}
+
+.dropdown-item:focus {
+  background-color: transparent;
 }
