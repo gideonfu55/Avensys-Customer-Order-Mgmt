@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, closeModal, props }) {
+function CreateInvoice({ selectedPO, closeModal }) {
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
     invoiceNumber: '',
@@ -35,7 +35,6 @@ function CreateInvoice({ selectedPO, closeModal, props }) {
       .post('http://localhost:8080/api/invoices/create', newInvoice)
       .then((response) => {
         console.log('New invoice created successfully: ', response.data);
-        props.onInvoiceCreated(newInvoice.invoiceNumber);
         setInvoiceData({
           purchaseOrderRef: '',
           invoiceNumber: '',
@@ -48,7 +47,6 @@ function CreateInvoice({ selectedPO, closeModal, props }) {
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
-        props.onInvoiceCreationError();
       });
   
     const updatedBalValue = selectedPO.balValue - invoiceData.amount;
@@ -61,7 +59,7 @@ function CreateInvoice({ selectedPO, closeModal, props }) {
       .then((response) => {
         console.log('Purchase order updated successfully:', response.data);
         closeModal();
-        // window.location.reload();
+        window.location.reload();
       })
       .catch((error) => {
         console.error('Error updating purchase order:', error);

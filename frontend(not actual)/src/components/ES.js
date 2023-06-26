@@ -95,14 +95,6 @@ function ES() {
     toast.error('Error updating purchase order!');
   };
 
-  const handleInvoiceCreated = (invoiceNumber) => {
-    toast.success(`Invoice ${invoiceNumber} created successfully!`);
-  };
-
-  const handleInvoiceCreatedError = () => {
-    toast.error('Error creating invoice!');
-  };
-
   return (
     <div className='dashboard-body'>
       <ToastContainer />
@@ -255,7 +247,7 @@ function ES() {
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showInvoiceModal && <CreateInvoice onInvoiceCreated={handleInvoiceCreated} onInvoiceCreationError={handleInvoiceCreatedError} selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
+              {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
             </Modal.Body>
           </Modal>
 
