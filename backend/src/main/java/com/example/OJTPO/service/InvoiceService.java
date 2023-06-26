@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 @Service
 public class InvoiceService {
 
+
   private DatabaseReference getDatabaseInstance() {
     return FirebaseDatabase.getInstance().getReference();
   }
