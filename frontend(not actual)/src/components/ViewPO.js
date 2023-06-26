@@ -5,6 +5,8 @@ import './ViewPO.css'
 import axios from 'axios';
 import EditPO from './EditPO';
 import UpdateInvoice from './UpdateInvoice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ViewPO({ selectedPO }) {
 
@@ -43,7 +45,8 @@ function ViewPO({ selectedPO }) {
         setShowEditModal(true);
     };
 
-    const handleDeleteInvoice = (id) => {
+    const handleDeleteInvoice = (id, invoiceNumber) => {
+        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
         axios
             .delete(`http://localhost:8080/api/invoices/delete/${id}`)
             .then((response) => {
@@ -55,12 +58,22 @@ function ViewPO({ selectedPO }) {
             });
     };
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setUpdatedPO(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
+    const handleInvoiceUpdate = (invoiceNumber) => {
+        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
+        // Fetch updated data after successful update
+        axios
+            .get('http://localhost:8080/api/invoices/all', { maxRedirects: 5 })
+            .then((response) => {
+                const filteredInvoices = response.data.filter(invoice => invoice.purchaseOrderRef === selectedPO.poNumber);
+                setInvoices(filteredInvoices);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    const handleInvoiceUpdateError = () => {
+        toast.error('Error updating invoice!');
     };
 
     function handleShowInvoiceModalClose() {
@@ -147,7 +160,7 @@ function ViewPO({ selectedPO }) {
                                     <button
                                         className='delete-btn p-1'
                                         onClick={() => {
-                                            handleDeleteInvoice(invoice.id)
+                                            handleDeleteInvoice(invoice.id, invoice.invoiceNumber)
                                         }}
                                     >
                                         <i className="fi fi-sr-trash delete p-1"></i>
@@ -173,7 +186,16 @@ function ViewPO({ selectedPO }) {
                 <Modal.Header closeButton>
                     <Modal.Title>Update Invoice</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{showInvoiceModal && <UpdateInvoice selectedInvoice={selectedInvoice} closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
+                <Modal.Body>
+                    {showInvoiceModal &&
+                        <UpdateInvoice
+                            selectedInvoice={selectedInvoice}
+                            onInvoiceUpdated={handleInvoiceUpdate}
+                            onInvoiceUpdateError={handleInvoiceUpdateError}
+                            closeModal={handleShowInvoiceModalClose}
+                        />
+                    }
+                </Modal.Body>
             </Modal>
             <div>
             </div>
