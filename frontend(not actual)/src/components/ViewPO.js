@@ -75,6 +75,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
         if (invoiceData.status === "Paid") {
             if (invoiceData.status != status) {
                 updatedBalValue = selectedPO.balValue - invoiceData.amount;
+                setBalValue(updatedBalValue)
                 if (isPS) {
                     const startDate = new Date(selectedPO.startDate);
                     const endDate = new Date(selectedPO.endDate)
