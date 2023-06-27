@@ -42,7 +42,7 @@ function NavBar() {
             }
             <li class="nav-item">
               <i className="fi fi-br-stats"></i>
-              <span>Insights</span>
+              <span>Notifications</span>
             </li>
             <li class="nav-item">
               <i className="fi fi-sr-settings"></i>
