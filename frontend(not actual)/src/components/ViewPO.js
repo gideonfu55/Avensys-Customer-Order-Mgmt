@@ -15,6 +15,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [updatedPO, setUpdatedPO] = useState({ ...selectedPO });
+    const [balValue, setBalValue] = useState(selectedPO.balValue);
 
     useEffect(() => {
         axios
@@ -65,31 +66,28 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
             });
     };
 
-    const handleInvoiceUpdate = (invoiceData, amount) => {
+    const handleInvoiceUpdate = (invoiceData, amount, status) => {
         toast.success(`Invoice ${invoiceData.invoiceNumber} updated successfully!`);
 
+        let updatedBalValue;
+        let updatedMilestone;
+
         if (invoiceData.status === "Paid") {
-            let updatedBalValue = selectedPO.balValue;
-            let updatedMilestone = selectedPO.milestone
-
-            if (invoiceData.amount != amount) {
-                updatedBalValue = selectedPO.balValue + amount - invoiceData.amount;
-            } else {
+            if (invoiceData.status != status) {
                 updatedBalValue = selectedPO.balValue - invoiceData.amount;
-            }
-
-            if (isPS) {
-                console.log("This is PS")
-                const startDate = new Date(selectedPO.startDate);
-                const endDate = new Date(selectedPO.endDate)
-                const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
-                const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
-
-                const percentageIncrement = 100 / numberOfMonths;
-                const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
-                updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+                if (isPS) {
+                    const startDate = new Date(selectedPO.startDate);
+                    const endDate = new Date(selectedPO.endDate)
+                    const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+                    const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+    
+                    const percentageIncrement = 100 / numberOfMonths;
+                    const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+                    updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+                }
             } else {
-                console.log("This is ES")
+                updatedBalValue = balValue + amount - invoiceData.amount;
+                setBalValue(updatedBalValue)
             }
 
             const patchData = {
