@@ -222,7 +222,6 @@ function ES() {
                 <td className='text-center'>{po.totalValue}</td>
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
-                
 
                 <td>
                   <div className='button-container'>
