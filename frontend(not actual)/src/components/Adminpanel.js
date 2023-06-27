@@ -21,64 +21,31 @@ function Adminpanel() {
   const [showCreateUserModal, setShowCreateUserModal] = useState(false); // New state variable for the "Create User" modal
 
   useEffect(() => {
-
-    axios.get('http://localhost:8080/users')
-      .then((response) => {
-        console.log(response.data);
-        setAllUser(response.data);
-      })
-      .catch((error) => {
-        console.error(`Error fetching users: ${error}`);
-      })
-
-    // axios
-    //   .get('http://localhost:8080/admin/posts')
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     setAllPost(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error(`Error fetching posts data: ${error}`);
-    //   });
-
-    // axios
-    //   .get('http://localhost:8080/admin/users')
-    //   .then((response) => {
-    //     setAllUser(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error(`Error fetching users data: ${error}`);
-    //   });
+    loadUsers();
   }, []);
 
-  function deletePost(post) {
-    axios
-      .post('http://localhost:8080/admin/delete/post', post)
-      .then((response) => {
-        console.log(response.data);
-        window.location.pathname = '/adminpanel';
-      })
-      .catch((error) => {
-        console.error(`Error deleting post: ${error}`);
-      });
+  const loadUsers = () => {
+    axios.get('http://localhost:8080/users')
+    .then((response) => {
+      console.log(response.data);
+      setAllUser(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
   }
 
-  function deleteUser(user) {
-    axios
-      .post('http://localhost:8080/admin/delete/user', user)
-      .then((response) => {
-        console.log(response.data);
-        window.location.pathname = '/adminpanel';
+  const deleteUser = (username) => {
+    axios.delete(`http://localhost:8080/user/delete/${username}`)
+      .then(response => {
+        console.log("Deleted User Account:", response.data);
+        loadUsers();
       })
-      .catch((error) => {
-        console.error(`Error deleting user: ${error}`);
+      .catch(error => {
+        console.error(error);
       });
-  }
-
-  function updatePost(post) {
-    setSelectedPost(post);
-    setShowPostModal(true);
-  }
+  };
+  
 
   function updateUser(user) {
     setSelectedUser(user);
@@ -111,60 +78,6 @@ function Adminpanel() {
           </div>
 
           <div className='user-records'>
-            {/* <h3>Post Records</h3>
-          <input
-            type='text'
-            className='form-control search'
-            placeholder='Search posts...'
-            onChange={(event) => setSearchTermPost(event.target.value)}
-          />
-          <table className='table admin-table'>
-            <thead>
-              <tr>
-                <th className='role'>Username</th>
-                <th>Caption</th>
-                <th>Content</th>
-                <th>Creation Date</th>
-                <th className='role' colSpan='2' style={{ textAlign: 'center' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {post.length <= 0 ? (
-                <tr>No post to show</tr>
-              ) : (
-                post
-                  .filter((post) => {
-                    if (searchTermPost === '') {
-                      return post;
-                    } else if (
-                      post.content.toLowerCase().includes(searchTermPost.toLowerCase())
-                    ) {
-                      return post;
-                    }
-                    return null;
-                  })
-                  .map((post) => (
-                    <tr key={post.postId}>
-                      <td>{post.user.username}</td>
-                      <td>{post.caption}</td>
-                      <td>{post.content}</td>
-                      <td>{post.createdAt}</td>
-                      <td>
-                        <button onClick={() => deletePost(post)} className='btn-danger admin-table button'>
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </td>
-                      <td>
-                        <button onClick={() => updatePost(post)} className='btn btn-success'>
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-              )}
-            </tbody>
-          </table> */}
-
             <h3>User Records</h3>
             <input
               type='text'
@@ -215,7 +128,7 @@ function Adminpanel() {
                                 <i class="fi fi-sr-file-edit"></i>
                                 <span>Update</span>
                               </a>
-                              <a class="dropdown-item" href="#" style={{ color: 'red' }}>
+                              <a class="dropdown-item" onClick={() => deleteUser(user.username)} style={{ color: 'red' }}>
                                 <i class="fi fi-sr-trash"></i>
                                 <span>Delete</span>
                               </a>
@@ -239,18 +152,6 @@ function Adminpanel() {
           <Modal.Body>
             {selectedUser && (
               <UpdateUser user={selectedUser} closeModal={handleUserModalClose} />
-            )}
-          </Modal.Body>
-        </Modal>
-
-        {/* Update Post Modal */}
-        <Modal show={showPostModal} onHide={handlePostModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Update User</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {selectedPost && (
-              <UpdateMediaPost post={selectedPost} closeModal={handlePostModalClose} />
             )}
           </Modal.Body>
         </Modal>
