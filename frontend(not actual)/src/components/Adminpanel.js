@@ -21,64 +21,31 @@ function Adminpanel() {
   const [showCreateUserModal, setShowCreateUserModal] = useState(false); // New state variable for the "Create User" modal
 
   useEffect(() => {
-
-    axios.get('http://localhost:8080/users')
-      .then((response) => {
-        console.log(response.data);
-        setAllUser(response.data);
-      })
-      .catch((error) => {
-        console.error(`Error fetching users: ${error}`);
-      })
-
-    // axios
-    //   .get('http://localhost:8080/admin/posts')
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     setAllPost(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error(`Error fetching posts data: ${error}`);
-    //   });
-
-    // axios
-    //   .get('http://localhost:8080/admin/users')
-    //   .then((response) => {
-    //     setAllUser(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error(`Error fetching users data: ${error}`);
-    //   });
+    loadUsers();
   }, []);
 
-  function deletePost(post) {
-    axios
-      .post('http://localhost:8080/admin/delete/post', post)
-      .then((response) => {
-        console.log(response.data);
-        window.location.pathname = '/adminpanel';
-      })
-      .catch((error) => {
-        console.error(`Error deleting post: ${error}`);
-      });
+  const loadUsers = () => {
+    axios.get('http://localhost:8080/users')
+    .then((response) => {
+      console.log(response.data);
+      setAllUser(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
   }
 
-  function deleteUser(user) {
-    axios
-      .post('http://localhost:8080/admin/delete/user', user)
-      .then((response) => {
-        console.log(response.data);
-        window.location.pathname = '/adminpanel';
+  const deleteUser = (username) => {
+    axios.delete(`http://localhost:8080/user/delete/${username}`)
+      .then(response => {
+        console.log("Deleted User Account:", response.data);
+        loadUsers();
       })
-      .catch((error) => {
-        console.error(`Error deleting user: ${error}`);
+      .catch(error => {
+        console.error(error);
       });
-  }
-
-  function updatePost(post) {
-    setSelectedPost(post);
-    setShowPostModal(true);
-  }
+  };
+  
 
   function updateUser(user) {
     setSelectedUser(user);
@@ -161,7 +128,7 @@ function Adminpanel() {
                                 <i class="fi fi-sr-file-edit"></i>
                                 <span>Update</span>
                               </a>
-                              <a class="dropdown-item" href="#" style={{ color: 'red' }}>
+                              <a class="dropdown-item" onClick={() => deleteUser(user.username)} style={{ color: 'red' }}>
                                 <i class="fi fi-sr-trash"></i>
                                 <span>Delete</span>
                               </a>
@@ -185,18 +152,6 @@ function Adminpanel() {
           <Modal.Body>
             {selectedUser && (
               <UpdateUser user={selectedUser} closeModal={handleUserModalClose} />
-            )}
-          </Modal.Body>
-        </Modal>
-
-        {/* Update Post Modal */}
-        <Modal show={showPostModal} onHide={handlePostModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Update User</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {selectedPost && (
-              <UpdateMediaPost post={selectedPost} closeModal={handlePostModalClose} />
             )}
           </Modal.Body>
         </Modal>

@@ -1,5 +1,3 @@
-
-.dashboard-content {
 .admin-container {
   overflow-x: auto;
   background-color: white;
@@ -125,5 +123,4 @@
 
 .dropdown-item:focus {
   background-color: transparent;
-}
 }
