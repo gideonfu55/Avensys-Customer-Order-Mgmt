@@ -21,7 +21,7 @@ function SalesNotification() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/sales/notification/all")
+      .get("http://localhost:8080/api/sales/notification/all/Sales")
       .then(response => {
         setNotifications(response.data);
       })

@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
+import { toast } from 'react-toastify';
 
 function CreatePO(props) {
+
+  const username = localStorage.getItem('username');
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -47,14 +50,37 @@ function CreatePO(props) {
           status: ''
         });
 
-        // Close the modal after creating po successfully:
-        props.closeModal();
-        
+    // Format the date to be displayed in a notification:
+    const formattedDate = new Date(newPO.createdAt).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+
+    // After a successful PO creation by Sales, create a notification for Finance/Management:
+    const notification = {
+      message: `New PO ${newPO.poNumber} created by ${username} on ${formattedDate}`,
+      userRole: 'Finance'
+    };
+
+    // Post to Database:
+    axios.post('http://localhost:8080/api/notification/create', notification)
+      .then((response) => {
+        console.log(response.data)
+        toast.success('Create PO notification created for finance & management');
       })
       .catch((error) => {
-        console.error('Error creating purchase order:', error);
-        props.onPoCreationError();
+        toast.error('Error creating notification:', error);
       });
+
+    // Close the modal after creating po successfully:
+    props.closeModal();
+    
+  })
+    .catch((error) => {
+      console.error('Error creating purchase order:', error);
+      props.onPoCreationError();
+    });
   };
 
   return (

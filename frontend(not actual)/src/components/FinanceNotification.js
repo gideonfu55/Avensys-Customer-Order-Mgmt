@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
+import './FinanceNotification.css'
 
 function FinanceNotification() {
 
@@ -19,9 +20,21 @@ function FinanceNotification() {
       })
   }
 
+  function fetchNotifications() {
+    axios
+      .get("http://localhost:8080/api/finance/notification/all/Finance")
+      .then(response => {
+        setNotifications(response.data);
+      })
+      .catch(error => {
+        console.error(`Error fetching notifications: ${error}`);
+      });
+  }
+
+  // - Rendering all notifications for Finance:
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/finance/notification/all")
+      .get("http://localhost:8080/api/notification/all/Finance")
       .then(response => {
         setNotifications(response.data);
       })
@@ -30,14 +43,25 @@ function FinanceNotification() {
       });
   }, []);
 
+  // - To fetch Finance notifications periodically (every 10s):
+  useEffect(() => {
+    fetchNotifications();
+
+    const intervalId = setInterval(() => {
+      fetchNotifications();
+    }, 10000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <div className="notification-container">
       <ToastContainer/>
-      <h2>Finance Notifications</h2>
+      <h5 className='mb-4'>Finance Notifications</h5>
       {notifications.map((n) => (
         <div key={n.id}>
-          <p>{n.text}</p>
-          <button onClick={() => deleteNotification(n.id)}>Dismiss</button>
+          <p>{n.message}</p>
         </div>
       ))}
     </div>
