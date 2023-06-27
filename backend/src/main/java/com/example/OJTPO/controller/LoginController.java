@@ -1,16 +1,12 @@
 package com.example.OJTPO.controller;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.OJTPO.model.User;
 import com.example.OJTPO.service.UserService;
@@ -57,4 +53,31 @@ public class LoginController {
         }
       });
   }
+  
+  @GetMapping("/users")
+  public ResponseEntity<List<User>> getAllUsers() {
+      CompletableFuture<List<User>> usersFuture = userService.getAllUsers();
+      try {
+          List<User> users = usersFuture.get();
+          return ResponseEntity.ok(users);
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      }
+  }
+
+    @DeleteMapping("/user/delete/{username}")
+    public CompletableFuture<ResponseEntity<String>> deleteUser(@PathVariable("username") String username) {
+        return userService.deleteUserByUsername(username)
+                .thenApply(deletedUser -> {
+                    if (deletedUser != null) {
+                        return ResponseEntity.ok(deletedUser);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+                    }
+                });
+    }
+
 }
+
+
+

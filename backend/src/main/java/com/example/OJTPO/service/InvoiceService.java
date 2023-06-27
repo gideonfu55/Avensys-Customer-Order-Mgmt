@@ -19,7 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 
 @Service
 public class InvoiceService {
-	
 
   private DatabaseReference getDatabaseInstance() {
     return FirebaseDatabase.getInstance().getReference();
@@ -28,45 +27,44 @@ public class InvoiceService {
   private DatabaseReference getInvoiceReference() {
     return getDatabaseInstance().child("Invoices");
   }
-  
+
   private DatabaseReference getLastInvoiceId() {
-	    return getDatabaseInstance().child("lastInvoiceId");
-	  }
+    return getDatabaseInstance().child("lastInvoiceId");
+  }
 
-	//Create new Invoice:
-	public Invoice createInvoice(Invoice invoice) {
-	   DatabaseReference invoicesRef = getInvoiceReference();
-	
-	   // Get the last invoice ID
-	   DatabaseReference indexRef = getLastInvoiceId();
-	   indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
-	       @Override
-	       public void onDataChange(DataSnapshot dataSnapshot) {
-	           Long lastInvoiceId = dataSnapshot.getValue(Long.class);
-	           if (lastInvoiceId == null) {
-	               lastInvoiceId = 0L;
-	           }
-	
-	           // Increment the last invoice ID and use it for the new invoice's ID
-	           Long newInvoiceId = lastInvoiceId + 1;
-	           invoice.setId(newInvoiceId);
-	
-	           // Update the last invoice ID in the database
-	           indexRef.setValueAsync(newInvoiceId);
-	
-	           // Add the new invoice to the database
-	           invoicesRef.child(String.valueOf(newInvoiceId)).setValueAsync(invoice);
-	       }
-	
-	       @Override
-	       public void onCancelled(DatabaseError databaseError) {
-	           throw databaseError.toException();
-	       }
-	   });
-	
-	   return invoice;
-	}
+  // Create new Invoice:
+  public Invoice createInvoice(Invoice invoice) {
+    DatabaseReference invoicesRef = getInvoiceReference();
 
+    // Get the last invoice ID
+    DatabaseReference indexRef = getLastInvoiceId();
+    indexRef.addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        Long lastInvoiceId = dataSnapshot.getValue(Long.class);
+        if (lastInvoiceId == null) {
+          lastInvoiceId = 0L;
+        }
+
+        // Increment the last invoice ID and use it for the new invoice's ID
+        Long newInvoiceId = lastInvoiceId + 1;
+        invoice.setId(newInvoiceId);
+
+        // Update the last invoice ID in the database
+        indexRef.setValueAsync(newInvoiceId);
+
+        // Add the new invoice to the database
+        invoicesRef.child(String.valueOf(newInvoiceId)).setValueAsync(invoice);
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        throw databaseError.toException();
+      }
+    });
+
+    return invoice;
+  }
 
   // Get all invoices:
   public CompletableFuture<List<Invoice>> getAllInvoices() {
@@ -74,21 +72,21 @@ public class InvoiceService {
     final List<Invoice> invoices = new ArrayList<>();
 
     getInvoiceReference()
-      .addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-          for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
-            Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
-            invoices.add(invoice);
+        .addListenerForSingleValueEvent(new ValueEventListener() {
+          @Override
+          public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+              Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
+              invoices.add(invoice);
+            }
+            future.complete(invoices);
           }
-          future.complete(invoices);
-        }
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-          future.completeExceptionally(databaseError.toException());
-        }
-      });
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+            future.completeExceptionally(databaseError.toException());
+          }
+        });
 
     return future;
   }
@@ -102,18 +100,18 @@ public class InvoiceService {
     }
 
     getInvoiceReference().child(idString)
-      .addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-          Invoice invoice = dataSnapshot.getValue(Invoice.class);
-          future.complete(invoice);
-        }
+        .addListenerForSingleValueEvent(new ValueEventListener() {
+          @Override
+          public void onDataChange(DataSnapshot dataSnapshot) {
+            Invoice invoice = dataSnapshot.getValue(Invoice.class);
+            future.complete(invoice);
+          }
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-          future.completeExceptionally(databaseError.toException());
-        }
-      });
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+            future.completeExceptionally(databaseError.toException());
+          }
+        });
 
     return future;
   }
@@ -128,33 +126,34 @@ public class InvoiceService {
     CompletableFuture<Invoice> completableFuture = new CompletableFuture<>();
 
     getInvoiceReference().child(idString)
-      .addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-          if (dataSnapshot.exists()) {
-            Invoice existingInvoice = dataSnapshot.getValue(Invoice.class);
-            existingInvoice.updateWith(newInvoice);
-            ApiFuture<Void> future = getInvoiceReference().child(idString).setValueAsync(existingInvoice);
-            ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
-              @Override
-              public void onSuccess(Void result) {
-                completableFuture.complete(existingInvoice);
-              }
-              @Override
-              public void onFailure(Throwable t) {
-                completableFuture.completeExceptionally(t);
-              }
-            }, MoreExecutors.directExecutor());
-          } else {
-            completableFuture.complete(null);
-          }
-        }
+        .addListenerForSingleValueEvent(new ValueEventListener() {
+          @Override
+          public void onDataChange(DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+              Invoice existingInvoice = dataSnapshot.getValue(Invoice.class);
+              existingInvoice.updateWith(newInvoice);
+              ApiFuture<Void> future = getInvoiceReference().child(idString).setValueAsync(existingInvoice);
+              ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                  completableFuture.complete(existingInvoice);
+                }
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-          completableFuture.completeExceptionally(databaseError.toException());
-        }
-      });
+                @Override
+                public void onFailure(Throwable t) {
+                  completableFuture.completeExceptionally(t);
+                }
+              }, MoreExecutors.directExecutor());
+            } else {
+              completableFuture.complete(null);
+            }
+          }
+
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+            completableFuture.completeExceptionally(databaseError.toException());
+          }
+        });
 
     return completableFuture;
   }
