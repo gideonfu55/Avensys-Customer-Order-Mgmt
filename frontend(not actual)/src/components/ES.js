@@ -143,7 +143,7 @@ function ES() {
           <label htmlFor='status-select'>Filter by Status:</label>
           <select id='status-select' className='form-control' value={selectedStatus} onChange={handleStatusChange}>
             <option value=''>All</option>
-            <option value='Outstanding'>Outstanding</option>
+            <option value='Ongoing'>Ongoing</option>
             <option value='Completed'>Completed</option>
             <option value='Cancelled'>Cancelled</option>
           </select>

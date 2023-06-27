@@ -122,7 +122,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           onChange={handleChange}
           required
         >
-          <option value='Outstanding'>Outstanding</option>
+          <option value='Ongoing'>Ongoing</option>
           <option value='Completed'>Completed</option>
           <option value='Cancelled'>Cancelled</option>
         </select>
