@@ -1,5 +1,7 @@
 
 .dashboard-content {
+.admin-container {
+  overflow-x: auto;
   background-color: white;
   padding: 2rem;
   width: 90vw;

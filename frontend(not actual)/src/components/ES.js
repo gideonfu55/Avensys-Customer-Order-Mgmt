@@ -3,7 +3,7 @@ import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO'; // Add this import statement
+import EditPO from './EditPO';
 import './ES.css';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -63,15 +63,19 @@ function ES() {
     ? filteredES.filter((po) => po[searchType].toString().toLowerCase().includes(searchTerm.toLowerCase()))
     : filteredES;
 
-  const handleDeletePO = (id) => {
+  const handleDeletePO = (id, poNumber) => {
+    if (window.confirm(`Are you sure you want to delete purchase order ${poNumber}?`)) {
     axios
       .delete(`http://localhost:8080/api/po/delete/${id}`)
       .then((response) => {
         setES((prevES) => prevES.filter((po) => po.id !== id));
+        toast.success(`Purchase order ${poNumber} deleted successfully!`)
       })
       .catch((error) => {
         console.error(error);
+        toast.error(`Error deleting purchase order ${poNumber}!`);
       });
+    }
   };
 
   const handleEditPO = (po) => {
@@ -81,6 +85,39 @@ function ES() {
 
   const handlePoUpdate = (poNumber) => {
     toast.success(`Purchase order ${poNumber} updated successfully!`);
+
+    // Fetch updated data after successful update
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setES(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleInvUpdate = () => {
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setES(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  const handleInvoiceUpdate = (invoiceNumber) => {
+    toast.success(`Invoice ${invoiceNumber} created successfully!`);
+
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setES(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handlePoUpdateError = () => {
@@ -107,7 +144,7 @@ function ES() {
           <label htmlFor='status-select'>Filter by Status:</label>
           <select id='status-select' className='form-control' value={selectedStatus} onChange={handleStatusChange}>
             <option value=''>All</option>
-            <option value='Outstanding'>Outstanding</option>
+            <option value='Ongoing'>Ongoing</option>
             <option value='Completed'>Completed</option>
             <option value='Cancelled'>Cancelled</option>
           </select>
@@ -169,8 +206,8 @@ function ES() {
                 Status
               </th>
               <th scope='col' className='text-center'>
-              Actions
-              </th>              
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -186,6 +223,7 @@ function ES() {
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
                 
+
                 <td>
                   <div className='button-container'>
                     <button
@@ -201,7 +239,7 @@ function ES() {
                     <button
                       type='button'
                       className='btn btn-dark'
-                      onClick={() => handleEditPO(po)} 
+                      onClick={() => handleEditPO(po)}
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
@@ -214,7 +252,7 @@ function ES() {
                     >
                       <FontAwesomeIcon icon={faPlus} />
                     </button>
-                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id)}>
+                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id, po.poNumber)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </div>
@@ -230,7 +268,7 @@ function ES() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -239,7 +277,13 @@ function ES() {
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showInvoiceModal && <CreateInvoice selectedPO={selectedPO} closeModal={handleShowInvoiceModalClose} />}
+              {showInvoiceModal && (
+                <CreateInvoice
+                  selectedPO={selectedPO}
+                  closeModal={handleShowInvoiceModalClose}
+                  onInvUpdated={handleInvoiceUpdate}
+                />
+              )}
             </Modal.Body>
           </Modal>
 
@@ -249,7 +293,14 @@ function ES() {
               <Modal.Title>Edit Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {showEditModal && <EditPO onPoUpdated={handlePoUpdate} onPoUpdateError={handlePoUpdateError} selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+              {showEditModal && (
+                <EditPO
+                  selectedPO={selectedPO}
+                  closeModal={() => setShowEditModal(false)}
+                  onPoUpdated={handlePoUpdate}
+                  onPoUpdateError={handlePoUpdateError}
+                />
+              )}
             </Modal.Body>
           </Modal>
         </div>

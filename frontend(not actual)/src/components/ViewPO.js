@@ -5,8 +5,10 @@ import './ViewPO.css'
 import axios from 'axios';
 import EditPO from './EditPO';
 import UpdateInvoice from './UpdateInvoice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function ViewPO({ selectedPO }) {
+function ViewPO({ selectedPO, onInvUpdated }) {
 
     const [invoices, setInvoices] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -27,23 +29,31 @@ function ViewPO({ selectedPO }) {
             });
     }, [selectedPO]);
 
-    const handleDeletePO = (id) => {
+    const handleDeletePO = (id, poNumber) => {
+        if (window.confirm(`Are you sure you want to delete PO ${poNumber}?`)) {
         axios
             .delete(`http://localhost:8080/api/po/delete/${id}`)
             .then((response) => {
-                window.location.reload()
+                setUpdatedPO((prevPO) => {
+                    if (prevPO.id === id) return null;
+                    return prevPO;
+                });
                 console.log('Invoice deleted successfully')
+                toast.success(`PO ${poNumber} deleted successfully!`);
             })
             .catch((error) => {
                 console.error(error);
+                toast.error(`Error deleting PO ${poNumber}!`);
             });
+        }
     };
 
     const handleEditPO = (po) => {
         setShowEditModal(true);
     };
 
-    const handleDeleteInvoice = (id) => {
+    const handleDeleteInvoice = (id, invoiceNumber) => {
+        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
         axios
             .delete(`http://localhost:8080/api/invoices/delete/${id}`)
             .then((response) => {
@@ -55,12 +65,39 @@ function ViewPO({ selectedPO }) {
             });
     };
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setUpdatedPO(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
+    const handleInvoiceUpdate = (invoiceData, amount) => {
+        toast.success(`Invoice ${invoiceData.invoiceNumber} updated successfully!`);
+
+        const updatedBalValue = selectedPO.balValue + amount - invoiceData.amount;
+        const patchData = {
+            balValue: updatedBalValue,
+        };
+
+        axios
+            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+            .then((response) => {
+                console.log('Purchase order updated successfully:', response.data);
+                setUpdatedPO(response.data)
+                onInvUpdated()
+            })
+            .catch((error) => {
+                console.error('Error updating purchase order:', error);
+            });
+
+        // Fetch updated data after successful update
+        axios
+            .get('http://localhost:8080/api/invoices/all', { maxRedirects: 5 })
+            .then((response) => {
+                const filteredInvoices = response.data.filter(invoice => invoice.purchaseOrderRef === selectedPO.poNumber);
+                setInvoices(filteredInvoices);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    const handleInvoiceUpdateError = () => {
+        toast.error('Error updating invoice!');
     };
 
     function handleShowInvoiceModalClose() {
@@ -83,7 +120,6 @@ function ViewPO({ selectedPO }) {
                             <th scope="col">Total Value</th>
                             <th scope="col">Total Balance</th>
                             <th scope="col">Status</th>
-                            <th scope='col'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,16 +131,8 @@ function ViewPO({ selectedPO }) {
                             <td>{selectedPO.endDate}</td>
                             <td>{selectedPO.milestone}</td>
                             <td>{selectedPO.totalValue}</td>
-                            <td>{selectedPO.balValue}</td>
+                            <td>{updatedPO.balValue}</td>
                             <td>{selectedPO.status}</td>
-                            <td>
-                                <button className='update-btn p-1' onClick={() => handleEditPO(selectedPO)}>
-                                    <i className="fi fi-sr-file-edit p-1"></i>
-                                </button>
-                                <button className='delete-btn p-1' onClick={() => handleDeletePO(selectedPO.id)}>
-                                    <i className="fi fi-sr-trash delete p-1"></i>
-                                </button>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -147,7 +175,7 @@ function ViewPO({ selectedPO }) {
                                     <button
                                         className='delete-btn p-1'
                                         onClick={() => {
-                                            handleDeleteInvoice(invoice.id)
+                                            handleDeleteInvoice(invoice.id, invoice.invoiceNumber)
                                         }}
                                     >
                                         <i className="fi fi-sr-trash delete p-1"></i>
@@ -173,7 +201,16 @@ function ViewPO({ selectedPO }) {
                 <Modal.Header closeButton>
                     <Modal.Title>Update Invoice</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{showInvoiceModal && <UpdateInvoice selectedInvoice={selectedInvoice} closeModal={handleShowInvoiceModalClose} />}</Modal.Body>
+                <Modal.Body>
+                    {showInvoiceModal &&
+                        <UpdateInvoice
+                            selectedInvoice={selectedInvoice}
+                            onInvoiceUpdated={handleInvoiceUpdate}
+                            onInvoiceUpdateError={handleInvoiceUpdateError}
+                            closeModal={handleShowInvoiceModalClose}
+                        />
+                    }
+                </Modal.Body>
             </Modal>
             <div>
             </div>

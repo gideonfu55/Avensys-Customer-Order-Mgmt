@@ -173,6 +173,7 @@ function Adminpanel() {
                 )}
               </tbody>
             </table>
+
           </div>
         </div>
 
@@ -213,6 +214,8 @@ function Adminpanel() {
           </Modal.Body>
         </Modal>
       </div>
+
+
     </div>
   );
 }

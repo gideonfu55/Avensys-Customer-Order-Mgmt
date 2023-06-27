@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function EditPO({ selectedPO, closeModal, props }) {
+function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
   const [poData, setPOData] = useState(selectedPO);
 
   const handleChange = (e) => {
@@ -17,13 +17,12 @@ function EditPO({ selectedPO, closeModal, props }) {
     axios
       .patch(`http://localhost:8080/api/po/update/${poData.id}`, poData)
       .then((response) => {
-        props.onPoUpdated(poData.poNumber);
+        onPoUpdated(poData.poNumber);
         closeModal();
-        window.location.reload();
       })
       .catch((error) => {
         console.error(error);
-        props.onPoUpdateError();
+        onPoUpdateError();
       });
   };
 
@@ -123,7 +122,7 @@ function EditPO({ selectedPO, closeModal, props }) {
           onChange={handleChange}
           required
         >
-          <option value='Outstanding'>Outstanding</option>
+          <option value='Ongoing'>Ongoing</option>
           <option value='Completed'>Completed</option>
           <option value='Cancelled'>Cancelled</option>
         </select>

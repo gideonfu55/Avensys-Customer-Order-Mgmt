@@ -45,7 +45,7 @@ function Dashboard() {
       .then(response => {
         const data = response.data;
         if (Array.isArray(data)) {
-          const outstandingCount = data.filter(po => po.status.toLowerCase() === "outstanding").length;
+          const outstandingCount = data.filter(po => po.status.toLowerCase() === "ongoing").length;
           setOutstandingCount(outstandingCount);
         }
       })
@@ -105,14 +105,7 @@ function Dashboard() {
           <h5>View Tables</h5>
           <div className='po-tables'>
             <div className='po-table-1'>
-              <h1>
-                <b>Enterprise Services</b>
-                <span>
-                  <h1>
-                    Purchase Orders
-                  </h1>
-                </span>
-              </h1>
+              <h1><b>Enterprise Service</b> Purchase Orders</h1>
               <Link to='/ES'>
                 <button className='btn btn-dark' type='button'>
                   View More
@@ -120,14 +113,7 @@ function Dashboard() {
               </Link>
             </div>
             <div className='po-table-2'>
-              <h1>
-                <b>Professional Services</b>
-                <span>
-                  <h1>
-                    Purchase Orders
-                  </h1>
-                </span>
-              </h1>
+              <h1><b>Talent Service</b> Purchase Orders</h1>
               <Link to='/PS'>
                 <button className='btn btn-dark' type='button'>
                   View More
@@ -141,16 +127,16 @@ function Dashboard() {
       {loadModal && (
         <Modal show={showPOForm} onHide={handlePOFormClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Create Purchase Order</Modal.Title>
+            <Modal.Title>Submit Purchase Order</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {
-              showPOForm &&
-              user &&
-              <CreatePO
-                onPoCreated={handlePoCreated}
-                onPoCreationError={handlePoCreationError}
-                closeModal={handlePOFormClose}
+              showPOForm && 
+              user && 
+              <CreatePO 
+                onPoCreated={handlePoCreated} 
+                onPoCreationError={handlePoCreationError} 
+                closeModal={handlePOFormClose} 
               />
             }
           </Modal.Body>
