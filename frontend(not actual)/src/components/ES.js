@@ -278,6 +278,7 @@ function ES() {
               {showInvoiceModal && (
                 <CreateInvoice
                   selectedPO={selectedPO}
+                  isPS={false}
                   closeModal={handleShowInvoiceModalClose}
                   onInvUpdated={handleInvoiceUpdate}
                 />

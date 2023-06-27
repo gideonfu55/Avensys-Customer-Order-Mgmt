@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
+function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
     invoiceNumber: '',
@@ -52,9 +52,22 @@ function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
 
     if (newInvoice.status === "Paid") {
       const updatedBalValue = selectedPO.balValue - newInvoice.amount;
+      let updatedMilestone;
+
+      if (isPS) {
+        const startDate = new Date(selectedPO.startDate);
+        const endDate = new Date(selectedPO.endDate)
+        const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+        const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+  
+        const percentageIncrement = 100 / numberOfMonths;
+        const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+        updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+      }
 
       const patchData = {
-        balValue: updatedBalValue
+        balValue: updatedBalValue,
+        milestone: updatedMilestone
       };
 
       axios

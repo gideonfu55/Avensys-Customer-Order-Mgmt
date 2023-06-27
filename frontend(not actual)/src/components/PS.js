@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
-import CreateInvoice from './CreateInvoicePS';
+import CreateInvoice from './CreateInvoice';
 import EditPO from './EditPO';
 import './ES.css';
 import axios from 'axios';
@@ -286,6 +286,7 @@ function PS() {
               {showInvoiceModal && (
                 <CreateInvoice
                   selectedPO={selectedPO}
+                  isPS={true}
                   closeModal={handleShowInvoiceModalClose}
                   onInvUpdated={handleInvoiceUpdate}
                 />
