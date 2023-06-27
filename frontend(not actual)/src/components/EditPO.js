@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function EditPO({ selectedPO, closeModal }) {
+function EditPO({ selectedPO, closeModal, props }) {
   const [poData, setPOData] = useState(selectedPO);
 
   const handleChange = (e) => {
@@ -17,12 +17,13 @@ function EditPO({ selectedPO, closeModal }) {
     axios
       .patch(`http://localhost:8080/api/po/update/${poData.id}`, poData)
       .then((response) => {
-        
+        props.onPoUpdated(poData.poNumber);
         closeModal();
         window.location.reload();
       })
       .catch((error) => {
         console.error(error);
+        props.onPoUpdateError();
       });
   };
 

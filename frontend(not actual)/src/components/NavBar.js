@@ -16,43 +16,44 @@ function NavBar() {
 
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
+    console.log(loggedUser.role)
     setUser(loggedUser);
   }, [location]);
 
   return (
     location.pathname !== '/login' && location.pathname !== '/register' && user && (
       <div className='side-nav'>
-        <ul className='nav flex-column'>
+        <ul className='wrapper'>
           <div className='nav-group'>
-            <li>
+            <div>
               <Link to='/dashboard' class="nav-item">
                 <i className="fi fi-sr-house-chimney"></i>
                 <span>Dashboard</span>
               </Link>
-            </li>
+            </div>
             {user.role === 'Admin' || user.role === 'Management'
-              ? (<li>
+              ? (<div>
                 <Link to='/adminpanel' class="nav-item">
                   <i className="fi fi-sr-user"></i>
                   <span>Admin Panel</span>
                 </Link>
-              </li>)
+              </div>)
               : (null)
             }
-            <li class="nav-item">
+            <div class="nav-item">
               <i className="fi fi-br-stats"></i>
               <span>Insights</span>
-            </li>
-            <li class="nav-item">
+            </div>
+            <div class="nav-item">
               <i className="fi fi-sr-settings"></i>
               <span>Settings</span>
-            </li>
+            </div>
           </div>
-          <div className='nav-group'>
-            <li class="nav-item" onClick={handleLogout}>
+          <div className='nav-group divider'>
+            <div class="nav-item" onClick={handleLogout}>
               <i className="fi fi-br-sign-out-alt"></i>
               <span>Logout</span>
-            </li>
+            </div>
           </div>
         </ul>
       </div>

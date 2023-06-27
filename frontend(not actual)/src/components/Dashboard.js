@@ -6,13 +6,15 @@ import CreatePO from './CreatePO';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [showPOForm, setShowPOForm] = useState(false);
   const navigate = useNavigate();
   const [loadModal, setLoadModal] = useState(false);
-  const [outstandingCount, setOutstandingCount] = useState(0); 
+  const [outstandingCount, setOutstandingCount] = useState(0);
 
   useEffect(() => {
     const username = localStorage.getItem('username');
@@ -56,8 +58,16 @@ function Dashboard() {
     setShowPOForm(true);
   };
 
+  const handlePoCreated = (poNumber) => {
+    toast.success(`Purchase order ${poNumber} created successfully!`);
+  }
+
   const handlePOFormClose = () => {
     setShowPOForm(false);
+  };
+
+  const handlePoCreationError = () => {
+    toast.error(`Error creating purchase order. Please check again.`);
   };
 
   if (!user) {
@@ -66,13 +76,10 @@ function Dashboard() {
 
   return (
     <div className='dashboard-body'>
+      <ToastContainer />
       <NavBar />
       <div className='dashboard-content'>
         <h1>Welcome back, {user.username}!</h1>
-        {/* Search Bar */}
-        <form className='search'>
-          <input type='text' placeholder='Search..' className='form-control search' />
-        </form>
         {/* Highlights */}
         <div className='highlight-overview'>
           <h5>Overview</h5>
@@ -98,7 +105,14 @@ function Dashboard() {
           <h5>View Tables</h5>
           <div className='po-tables'>
             <div className='po-table-1'>
-              <h1><b>Enterprise Service</b> Purchase Orders</h1>
+              <h1>
+                <b>Enterprise Services</b>
+                <span>
+                  <h1>
+                    Purchase Orders
+                  </h1>
+                </span>
+              </h1>
               <Link to='/ES'>
                 <button className='btn btn-dark' type='button'>
                   View More
@@ -106,7 +120,14 @@ function Dashboard() {
               </Link>
             </div>
             <div className='po-table-2'>
-              <h1><b>Talent Service</b> Purchase Orders</h1>
+              <h1>
+                <b>Professional Services</b>
+                <span>
+                  <h1>
+                    Purchase Orders
+                  </h1>
+                </span>
+              </h1>
               <Link to='/PS'>
                 <button className='btn btn-dark' type='button'>
                   View More
@@ -123,7 +144,15 @@ function Dashboard() {
             <Modal.Title>Create Purchase Order</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {showPOForm && user && <CreatePO closeModal={handlePOFormClose} />}
+            {
+              showPOForm &&
+              user &&
+              <CreatePO
+                onPoCreated={handlePoCreated}
+                onPoCreationError={handlePoCreationError}
+                closeModal={handlePOFormClose}
+              />
+            }
           </Modal.Body>
         </Modal>
       )}

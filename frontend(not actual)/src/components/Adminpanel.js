@@ -111,60 +111,6 @@ function Adminpanel() {
           </div>
 
           <div className='user-records'>
-            {/* <h3>Post Records</h3>
-          <input
-            type='text'
-            className='form-control search'
-            placeholder='Search posts...'
-            onChange={(event) => setSearchTermPost(event.target.value)}
-          />
-          <table className='table admin-table'>
-            <thead>
-              <tr>
-                <th className='role'>Username</th>
-                <th>Caption</th>
-                <th>Content</th>
-                <th>Creation Date</th>
-                <th className='role' colSpan='2' style={{ textAlign: 'center' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {post.length <= 0 ? (
-                <tr>No post to show</tr>
-              ) : (
-                post
-                  .filter((post) => {
-                    if (searchTermPost === '') {
-                      return post;
-                    } else if (
-                      post.content.toLowerCase().includes(searchTermPost.toLowerCase())
-                    ) {
-                      return post;
-                    }
-                    return null;
-                  })
-                  .map((post) => (
-                    <tr key={post.postId}>
-                      <td>{post.user.username}</td>
-                      <td>{post.caption}</td>
-                      <td>{post.content}</td>
-                      <td>{post.createdAt}</td>
-                      <td>
-                        <button onClick={() => deletePost(post)} className='btn-danger admin-table button'>
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </td>
-                      <td>
-                        <button onClick={() => updatePost(post)} className='btn btn-success'>
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-              )}
-            </tbody>
-          </table> */}
-
             <h3>User Records</h3>
             <input
               type='text'
@@ -227,7 +173,6 @@ function Adminpanel() {
                 )}
               </tbody>
             </table>
-
           </div>
         </div>
 
@@ -268,8 +213,6 @@ function Adminpanel() {
           </Modal.Body>
         </Modal>
       </div>
-
-
     </div>
   );
 }

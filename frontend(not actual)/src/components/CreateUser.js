@@ -41,7 +41,7 @@ function CreateUser() {
   return (
     <div>
       <form onSubmit={handleSubmit} className='create-user-model'>
-        <div>
+        <div className='form-group'>
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -51,10 +51,9 @@ function CreateUser() {
             onChange={handleChange}
             placeholder='Enter Username'
             className='form-control'
-            required
           />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -64,10 +63,9 @@ function CreateUser() {
             onChange={handleChange}
             placeholder='Enter Password'
             className='form-control'
-            required
           />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="email">Email</label>
           <input
             type="email"
@@ -77,10 +75,9 @@ function CreateUser() {
             onChange={handleChange}
             className='form-control'
             placeholder='Enter Email'
-            required
           />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="role">Role</label>
           <select
             class="form-control custom-select"
