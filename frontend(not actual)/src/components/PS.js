@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
-import CreateInvoice from './CreateInvoice';
+import CreateInvoice from './CreateInvoicePS';
 import EditPO from './EditPO'; 
 import './ES.css';
 import axios from 'axios';
@@ -266,7 +266,7 @@ function PS() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} isPS={true} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -276,7 +276,7 @@ function PS() {
             </Modal.Header>
             <Modal.Body>
               {showInvoiceModal && (
-              <CreateInvoice 
+              <CreateInvoice
               selectedPO={selectedPO} 
               closeModal={handleShowInvoiceModalClose} 
               onInvUpdated={handleInvoiceUpdate}

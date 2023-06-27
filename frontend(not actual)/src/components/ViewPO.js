@@ -8,7 +8,7 @@ import UpdateInvoice from './UpdateInvoice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function ViewPO({ selectedPO, onInvUpdated }) {
+function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
     const [invoices, setInvoices] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -31,20 +31,20 @@ function ViewPO({ selectedPO, onInvUpdated }) {
 
     const handleDeletePO = (id, poNumber) => {
         if (window.confirm(`Are you sure you want to delete PO ${poNumber}?`)) {
-        axios
-            .delete(`http://localhost:8080/api/po/delete/${id}`)
-            .then((response) => {
-                setUpdatedPO((prevPO) => {
-                    if (prevPO.id === id) return null;
-                    return prevPO;
+            axios
+                .delete(`http://localhost:8080/api/po/delete/${id}`)
+                .then((response) => {
+                    setUpdatedPO((prevPO) => {
+                        if (prevPO.id === id) return null;
+                        return prevPO;
+                    });
+                    console.log('Invoice deleted successfully')
+                    toast.success(`PO ${poNumber} deleted successfully!`);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    toast.error(`Error deleting PO ${poNumber}!`);
                 });
-                console.log('Invoice deleted successfully')
-                toast.success(`PO ${poNumber} deleted successfully!`);
-            })
-            .catch((error) => {
-                console.error(error);
-                toast.error(`Error deleting PO ${poNumber}!`);
-            });
         }
     };
 
@@ -68,21 +68,46 @@ function ViewPO({ selectedPO, onInvUpdated }) {
     const handleInvoiceUpdate = (invoiceData, amount) => {
         toast.success(`Invoice ${invoiceData.invoiceNumber} updated successfully!`);
 
-        const updatedBalValue = selectedPO.balValue + amount - invoiceData.amount;
-        const patchData = {
-            balValue: updatedBalValue,
-        };
+        if (invoiceData.status === "Paid") {
+            let updatedBalValue = selectedPO.balValue;
+            let updatedMilestone = selectedPO.milestone
 
-        axios
-            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
-            .then((response) => {
-                console.log('Purchase order updated successfully:', response.data);
-                setUpdatedPO(response.data)
-                onInvUpdated()
-            })
-            .catch((error) => {
-                console.error('Error updating purchase order:', error);
-            });
+            if (invoiceData.amount != amount) {
+                updatedBalValue = selectedPO.balValue + amount - invoiceData.amount;
+            } else {
+                updatedBalValue = selectedPO.balValue - invoiceData.amount;
+            }
+
+            if (isPS) {
+                console.log("This is PS")
+                const startDate = new Date(selectedPO.startDate);
+                const endDate = new Date(selectedPO.endDate)
+                const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+                const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+
+                const percentageIncrement = 100 / numberOfMonths;
+                const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+                updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+            } else {
+                console.log("This is ES")
+            }
+
+            const patchData = {
+                balValue: updatedBalValue,
+                milestone: updatedMilestone
+            };
+
+            axios
+                .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+                .then((response) => {
+                    console.log('Purchase order updated successfully:', response.data);
+                    setUpdatedPO(response.data)
+                    onInvUpdated()
+                })
+                .catch((error) => {
+                    console.error('Error updating purchase order:', error);
+                });
+        }
 
         // Fetch updated data after successful update
         axios
@@ -129,7 +154,7 @@ function ViewPO({ selectedPO, onInvUpdated }) {
                             <td>{selectedPO.type}</td>
                             <td>{selectedPO.startDate}</td>
                             <td>{selectedPO.endDate}</td>
-                            <td>{selectedPO.milestone}</td>
+                            <td>{updatedPO.milestone}</td>
                             <td>{selectedPO.totalValue}</td>
                             <td>{updatedPO.balValue}</td>
                             <td>{selectedPO.status}</td>
