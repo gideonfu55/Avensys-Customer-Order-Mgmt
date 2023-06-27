@@ -14,7 +14,7 @@ function Dashboard() {
   const [showPOForm, setShowPOForm] = useState(false);
   const navigate = useNavigate();
   const [loadModal, setLoadModal] = useState(false);
-  const [outstandingCount, setOutstandingCount] = useState(0); 
+  const [outstandingCount, setOutstandingCount] = useState(0);
 
   useEffect(() => {
     const username = localStorage.getItem('username');
@@ -45,7 +45,7 @@ function Dashboard() {
       .then(response => {
         const data = response.data;
         if (Array.isArray(data)) {
-          const outstandingCount = data.filter(po => po.status.toLowerCase() === "outstanding").length;
+          const outstandingCount = data.filter(po => po.status.toLowerCase() === "ongoing").length;
           setOutstandingCount(outstandingCount);
         }
       })
@@ -127,7 +127,7 @@ function Dashboard() {
       {loadModal && (
         <Modal show={showPOForm} onHide={handlePOFormClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Create Purchase Order</Modal.Title>
+            <Modal.Title>Submit Purchase Order</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {

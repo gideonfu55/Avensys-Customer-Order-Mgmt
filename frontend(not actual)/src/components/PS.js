@@ -96,8 +96,27 @@ function PS() {
       });
   };
 
+  const handleInvUpdate = () => {
+    axios
+    .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+    .then((response) => {
+      setPS(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
   const handleInvoiceUpdate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
+
+    axios
+    .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+    .then((response) => {
+      setPS(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   };
 
   const handlePoUpdateError = () => {
@@ -124,7 +143,7 @@ function PS() {
           <label htmlFor='status-select'>Filter by Status:</label>
           <select id='status-select' className='form-control' value={selectedStatus} onChange={handleStatusChange}>
             <option value=''>All</option>
-            <option value='Outstanding'>Outstanding</option>
+            <option value='Ongoing'>Ongoing</option>
             <option value='Completed'>Completed</option>
             <option value='Cancelled'>Cancelled</option>
           </select>
@@ -247,7 +266,7 @@ function PS() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}

@@ -13,7 +13,7 @@ function CreatePO(props) {
     balValue: '',
     milestone: '',
     type: '',
-    status: ''
+    status: 'Ongoing'
   })
 
   // toast("Component Loaded!");
@@ -159,7 +159,7 @@ function CreatePO(props) {
             <option value="Professional Service">Professional Service</option>
           </select>
         </div>
-        <div>
+        {/* <div>
           <label htmlFor="status">Status</label>
           <select
             id="status"
@@ -169,11 +169,13 @@ function CreatePO(props) {
             className='form-control'
           >
             <option value="" disabled>Select Status</option>
+            <option value="Approved">Approved</option>
+            <option value="Not Approved">Not Approved</option>
             <option value="Outstanding">Outstanding</option>
             <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>
           </select>
-        </div>
+        </div> */}
         
         <button type="submit" className='btn btn-primary'>Create Purchase Order</button>
       </form>
