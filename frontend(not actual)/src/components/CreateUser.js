@@ -41,7 +41,7 @@ function CreateUser() {
   return (
     <div>
       <form onSubmit={handleSubmit} className='create-user-model'>
-        <div>
+        <div className='form-group'>
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -53,7 +53,7 @@ function CreateUser() {
             className='form-control'
           />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -65,7 +65,7 @@ function CreateUser() {
             className='form-control'
           />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="email">Email</label>
           <input
             type="email"
@@ -77,7 +77,7 @@ function CreateUser() {
             placeholder='Enter Email'
           />
         </div>
-        <div>
+        <div className='form-group'>
           <label htmlFor="role">Role</label>
           <select
             class="form-control custom-select"
@@ -93,7 +93,7 @@ function CreateUser() {
             <option value='Sales'>Sales</option>
           </select>
         </div>
-        <button type="submit" className='btn btn-primary'>Create User</button>
+        <button type="submit" className='btn btn-dark'>Create User</button>
       </form>
     </div>
   );
