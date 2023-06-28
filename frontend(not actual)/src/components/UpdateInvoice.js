@@ -3,6 +3,10 @@ import React, { useEffect, useState } from 'react';
 import './CreateInvoice.css';
 
 function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError }) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [invoiceData, setInvoiceData] = useState({
     invoiceNumber: '',
     amount: '',
@@ -38,6 +42,22 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
         onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
+
+        // Create notification after Invoice is updated:
+        const notification = {
+          message: `Invoice ${invoiceData.invoiceNumber} has been updated by ${username} on ${new Date().toLocaleDateString()}`,
+          userRole: `${role}`,
+        };
+
+        // Post notification to Database:
+        axios.post('http://localhost:8080/api/notification/create', notification)
+          .then((response) => {
+            console.log(response.data)
+          })
+          .catch((error) => {
+            console.log('Error creating notification:', error);
+          });
+
         closeModal()
       })
       .catch((error) => {

@@ -8,8 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import SalesNotification from './SalesNotification';
-import FinanceNotification from './FinanceNotification';
+import History from './History';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -76,6 +75,8 @@ function Dashboard() {
     return <p>Loading...</p>;
   }
 
+  localStorage.setItem('role', user.role);
+
   return (
     <div className='dashboard-body'>
       <ToastContainer />
@@ -94,11 +95,9 @@ function Dashboard() {
             </div>
             {/* Used for rendering notifications by role */}
             <div className='highlight-3'>
-              {(user.role.toLowerCase() === 'finance' || user.role.toLowerCase() === 'management') && (
-                <>
-                  <FinanceNotification />
-                </>
-              )}
+              <>
+                <History />
+              </>
             </div>
           </div>
         </div>

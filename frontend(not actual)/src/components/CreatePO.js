@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 function CreatePO(props) {
 
   const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -57,20 +58,21 @@ function CreatePO(props) {
       year: 'numeric'
     });
 
-    // After a successful PO creation by Sales, create a notification for Finance/Management:
+    // After a successful PO creation by Sales, create a history item for Finance/Management:
     const notification = {
       message: `New PO ${newPO.poNumber} created by ${username} on ${formattedDate}`,
-      userRole: 'Finance'
+      userRole: `${role}`
     };
+
+    console.log(role);
 
     // Post to Database:
     axios.post('http://localhost:8080/api/notification/create', notification)
       .then((response) => {
         console.log(response.data)
-        toast.success('Create PO notification created for finance & management');
       })
       .catch((error) => {
-        toast.error('Error creating notification:', error);
+        console.log('Error creating notification:', error);
       });
 
     // Close the modal after creating po successfully:

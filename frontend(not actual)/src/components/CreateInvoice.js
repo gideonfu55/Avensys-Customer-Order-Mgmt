@@ -3,6 +3,10 @@ import axios from 'axios';
 import './CreateInvoice.css';
 
 function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
     invoiceNumber: '',
@@ -44,6 +48,24 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
           dueDate: '',
           status: '',
         });
+
+        // Create history item after invoice is created:
+        const formattedDate = new Date().toLocaleDateString('en-GB');
+
+        const notification = {
+          message: `New Invoice ${newInvoice.invoiceNumber} created by ${username} on ${formattedDate}`,
+          userRole: `${role}`
+        };
+
+        axios
+          .post('http://localhost:8080/api/notification/create', notification)
+          .then(response => {
+            console.log('Notification created successfully')
+          })
+          .catch(error => {
+            console.error(`Error creating notification: ${error}`)
+          });
+
         closeModal();
       })
       .catch((error) => {

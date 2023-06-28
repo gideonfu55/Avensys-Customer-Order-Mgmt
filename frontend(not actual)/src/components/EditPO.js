@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
 
   const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
 
   const [poData, setPOData] = useState(selectedPO);
 
@@ -25,18 +26,17 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
 
         // Create notification after PO is updated:
         const notification = {
-          message: `PO ${poData.poNumber} has been updated by ${username} ${new Date().toLocaleDateString()}`,
-          userRole: 'Finance',
+          message: `PO ${poData.poNumber} has been updated by ${username} on ${new Date().toLocaleDateString()}`,
+          userRole: `${role}`,
         };
 
-        // Post to Database:
+        // Post notification to Database:
         axios.post('http://localhost:8080/api/notification/create', notification)
         .then((response) => {
           console.log(response.data)
-          toast.success('Update notification created for finance & management');
         })
         .catch((error) => {
-          toast.error('Error creating notification:', error);
+          console.log('Error creating notification:', error);
         });
 
         closeModal();
