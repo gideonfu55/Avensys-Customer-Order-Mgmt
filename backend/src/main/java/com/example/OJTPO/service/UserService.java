@@ -203,4 +203,46 @@ public class UserService {
 
         return completableFuture;
     }
+
+    // Update User:
+    public CompletableFuture<Boolean> updateUserByUsername(String username, User updateUser) {
+        if (username == null || username.equals("null")) {
+            throw new IllegalArgumentException("Username cannot be null!");
+        }
+
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+        DatabaseReference usersRef = getUserReference();
+        Query query = usersRef.orderByChild("username").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        User currentUser = userSnapshot.getValue(User.class);
+                        currentUser.updateWith(updateUser);
+                        userSnapshot.getRef().setValue(currentUser, (error, ref) -> {
+                            if (error == null) {
+                                completableFuture.complete(true);
+                            } else {
+                                completableFuture.completeExceptionally(error.toException());
+                            }
+                        });
+
+                        return;
+                    }
+                }
+
+                completableFuture.complete(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
+        return completableFuture;
+    }
 }

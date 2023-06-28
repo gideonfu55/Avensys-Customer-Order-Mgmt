@@ -2,7 +2,9 @@ package com.example.OJTPO.controller;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import com.example.OJTPO.model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +78,19 @@ public class LoginController {
                     }
                 });
     }
+
+    @PatchMapping("/user/update/{username}")
+    public CompletableFuture<ResponseEntity<String>> updateUser(@PathVariable("username") String username, @RequestBody User updatedUser) {
+        return userService.updateUserByUsername(username, updatedUser)
+                .thenApply(isUpdated -> {
+                    if (isUpdated) {
+                        return ResponseEntity.ok("User with username: " + username + " has been updated.");
+                    } else {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+                    }
+                });
+    }
+
 
 }
 

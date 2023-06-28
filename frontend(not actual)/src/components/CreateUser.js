@@ -10,6 +10,31 @@ function CreateUser() {
     role: ''
   });
 
+  const [errors, setErrors] = useState({});
+  const validateForm = () => {
+    const newErrors = [];
+    let isValid = true;
+    if (!userData.username) {
+      newErrors.username = "Username is required."
+      isValid = false;
+    }
+    if (!userData.email) {
+      newErrors.email = "Email is required."
+      isValid = false;
+    }
+    if (!userData.password) {
+      newErrors.password = "Password is required."
+      isValid = false;
+    }
+    if (!userData.role) {
+      newErrors.role = "Role is required."
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  }
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setUserData((prevState) => ({ ...prevState, [name]: value }));
@@ -20,22 +45,25 @@ function CreateUser() {
     const createdAt = new Date().toISOString();
     const newUser = { ...userData, createdAt };
 
-    // Send user data to the backend
-    axios
-      .post('http://localhost:8080/createUser', newUser)
-      .then((response) => {
-        console.log('User created successfully:', response.data);
-        // Reset the form
-        setUserData({
-          username: '',
-          password: '',
-          email: '',
-          role: ''
+    if (validateForm()) {
+      // Send user data to the backend
+      axios
+        .post('http://localhost:8080/createUser', newUser)
+        .then((response) => {
+          console.log('User created successfully:', response.data);
+          setUserData({
+            username: '',
+            password: '',
+            email: '',
+            role: ''
+          });
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error);
         });
-      })
-      .catch((error) => {
-        console.error('Error creating user:', error);
-      });
+    } else {
+      console.log("User has failed to be created..");
+    }
   };
 
   return (
@@ -52,6 +80,7 @@ function CreateUser() {
             placeholder='Enter Username'
             className='form-control'
           />
+          {errors.username && <div className="text-danger">{errors.username}</div>}
         </div>
         <div className='form-group'>
           <label htmlFor="password">Password</label>
@@ -64,6 +93,8 @@ function CreateUser() {
             placeholder='Enter Password'
             className='form-control'
           />
+          {errors.password && <div className="text-danger">{errors.password}</div>}
+
         </div>
         <div className='form-group'>
           <label htmlFor="email">Email</label>
@@ -76,6 +107,8 @@ function CreateUser() {
             className='form-control'
             placeholder='Enter Email'
           />
+          {errors.email && <div className="text-danger">{errors.email}</div>}
+
         </div>
         <div className='form-group'>
           <label htmlFor="role">Role</label>
@@ -92,6 +125,7 @@ function CreateUser() {
             <option value='Management'>Management</option>
             <option value='Sales'>Sales</option>
           </select>
+          {errors.role && <div className="text-danger">{errors.role}</div>}
         </div>
         <button type="submit" className='btn btn-dark'>Create User</button>
       </form>
