@@ -49,6 +49,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
         onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
+        setValidationError('');
 
         // Create notification after Invoice is updated:
         const notification = {
