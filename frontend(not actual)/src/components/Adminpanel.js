@@ -3,21 +3,14 @@ import NavBar from './NavBar.js';
 import './Adminpanel.css';
 import { Modal } from 'react-bootstrap';
 import UpdateUser from './UpdateUser';
-import UpdateMediaPost from './UpdateMediaPost';
 import CreateUser from './CreateUser'; // Import the CreateUser component
 import axios from 'axios';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function Adminpanel() {
-  const [post, setAllPost] = useState([]);
   const [user, setAllUser] = useState([]);
-  const [searchTermPost, setSearchTermPost] = useState('');
   const [searchTermUser, setSearchTermUser] = useState('');
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [showPostModal, setShowPostModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
   const [showCreateUserModal, setShowCreateUserModal] = useState(false); // New state variable for the "Create User" modal
 
   useEffect(() => {
@@ -54,10 +47,6 @@ function Adminpanel() {
 
   function handleUserModalClose() {
     setShowUserModal(false);
-  }
-
-  function handlePostModalClose() {
-    setShowPostModal(false);
   }
 
   function handleCreateUserModalClose() {
@@ -147,7 +136,7 @@ function Adminpanel() {
         {/* Update User Modal */}
         <Modal show={showUserModal} onHide={handleUserModalClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Update User</Modal.Title>
+            <Modal.Title><i class="fi fi-sr-user-pen"></i> Update User</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {selectedUser && (

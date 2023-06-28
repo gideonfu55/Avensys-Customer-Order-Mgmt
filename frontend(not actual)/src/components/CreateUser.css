@@ -1,5 +1,5 @@
-.create-user-model {
+.create-user-model, .form-group {
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
+    row-gap: .7rem;
 }
