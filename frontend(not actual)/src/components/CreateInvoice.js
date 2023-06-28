@@ -3,6 +3,10 @@ import axios from 'axios';
 import './CreateInvoice.css';
 
 function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
     invoiceNumber: '',
@@ -11,6 +15,8 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
     dueDate: '',
     status: '',
   });
+
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     if (selectedPO) {
@@ -28,6 +34,12 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
+
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
 
@@ -44,13 +56,32 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
           dueDate: '',
           status: '',
         });
+        setValidationError('');
+
+        // Create history item after invoice is created:
+        const formattedDate = new Date().toLocaleDateString('en-GB');
+
+        const notification = {
+          message: `New Invoice ${newInvoice.invoiceNumber} created by ${username} on ${formattedDate}`,
+          userRole: `${role}`
+        };
+
+        axios
+          .post('http://localhost:8080/api/notification/create', notification)
+          .then(response => {
+            console.log('Notification created successfully')
+          })
+          .catch(error => {
+            console.error(`Error creating notification: ${error}`)
+          });
+
         closeModal();
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
       });
 
-    if (newInvoice.status === "Paid") {
+    if (newInvoice.status === "Paid" && selectedPO.balValue > newInvoice.amount) {
       const updatedBalValue = selectedPO.balValue - newInvoice.amount;
       let updatedMilestone;
 
@@ -97,6 +128,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
             onChange={handleChange}
             placeholder="Enter Purchase Order Reference"
             className="form-control"
+            disabled
           />
         </div>
         <div>
@@ -122,6 +154,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
             placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
           <label htmlFor="dateBilled">Date Billed</label>

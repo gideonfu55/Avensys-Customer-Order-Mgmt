@@ -39,6 +39,7 @@
     padding: 2rem;
     border-radius: .7rem;
     box-shadow: rgba(99, 99, 99, 0.042) 0px 2px 8px 0px;
+    height: 50vh;
 }
 
 .highlight-1 {
