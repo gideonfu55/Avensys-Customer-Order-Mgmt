@@ -11,6 +11,7 @@ import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 function ES() {
   const [ES, setES] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
@@ -266,7 +267,7 @@ function ES() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} isPS={false} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -278,6 +279,7 @@ function ES() {
               {showInvoiceModal && (
                 <CreateInvoice
                   selectedPO={selectedPO}
+                  isPS={false}
                   closeModal={handleShowInvoiceModalClose}
                   onInvUpdated={handleInvoiceUpdate}
                 />

@@ -37,7 +37,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
     axios
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
-        onInvoiceUpdated(invoiceData, selectedInvoice.amount)
+        onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
         closeModal()
       })
       .catch((error) => {

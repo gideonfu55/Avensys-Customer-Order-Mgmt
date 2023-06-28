@@ -3,7 +3,7 @@ import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO'; 
+import EditPO from './EditPO';
 import './ES.css';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -67,13 +67,13 @@ function PS() {
       axios
         .delete(`http://localhost:8080/api/po/delete/${id}`)
         .then((response) => {
-        setPS((prevPS) => prevPS.filter((po) => po.id !== id));
-        toast.success(`Purchase order ${poNumber} deleted successfully!`);
-      })
+          setPS((prevPS) => prevPS.filter((po) => po.id !== id));
+          toast.success(`Purchase order ${poNumber} deleted successfully!`);
+        })
         .catch((error) => {
-        console.error(error);
-        toast.error(`Error deleting purchase order ${poNumber}!`);
-      });
+          console.error(error);
+          toast.error(`Error deleting purchase order ${poNumber}!`);
+        });
     }
 
   };
@@ -98,25 +98,25 @@ function PS() {
 
   const handleInvUpdate = () => {
     axios
-    .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
-    .then((response) => {
-      setPS(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setPS(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
   const handleInvoiceUpdate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
 
     axios
-    .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
-    .then((response) => {
-      setPS(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setPS(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handlePoUpdateError = () => {
@@ -266,7 +266,15 @@ function PS() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>
+              {showPOModal &&
+                <ViewPO
+                  selectedPO={selectedPO}
+                  onInvUpdated={handleInvUpdate}
+                  isPS={true}
+                  closeModal={handleShowPOModalClose} />
+              }
+            </Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -276,11 +284,12 @@ function PS() {
             </Modal.Header>
             <Modal.Body>
               {showInvoiceModal && (
-              <CreateInvoice 
-              selectedPO={selectedPO} 
-              closeModal={handleShowInvoiceModalClose} 
-              onInvUpdated={handleInvoiceUpdate}
-              />
+                <CreateInvoice
+                  selectedPO={selectedPO}
+                  isPS={true}
+                  closeModal={handleShowInvoiceModalClose}
+                  onInvUpdated={handleInvoiceUpdate}
+                />
               )}
             </Modal.Body>
           </Modal>
