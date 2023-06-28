@@ -59,7 +59,7 @@ function History() {
       <ToastContainer/>
       <h5 className='mb-4'>{role} History</h5>
       {role.toLowerCase() === 'sales'
-        ? history.filter(n => !n.message.includes('update') && !n.message.includes('delete')).map((n) => (
+        ? history.filter(n => !n.message.includes('update') && !n.message.includes('delete') && !n.message.includes('Invoice')).map((n) => (
           <div key={n.id}>
             <p>{n.message}</p>
           </div>
