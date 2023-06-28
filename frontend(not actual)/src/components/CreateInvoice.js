@@ -16,6 +16,8 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
     status: '',
   });
 
+  const [validationError, setValidationError] = useState('');
+
   useEffect(() => {
     if (selectedPO) {
       setInvoiceData((prevState) => ({
@@ -32,6 +34,12 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
+
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
 
@@ -48,6 +56,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
           dueDate: '',
           status: '',
         });
+        setValidationError('');
 
         // Create history item after invoice is created:
         const formattedDate = new Date().toLocaleDateString('en-GB');
@@ -72,7 +81,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
         console.error('Error creating invoice:', error);
       });
 
-    if (newInvoice.status === "Paid") {
+    if (newInvoice.status === "Paid" && selectedPO.balValue > newInvoice.amount) {
       const updatedBalValue = selectedPO.balValue - newInvoice.amount;
       let updatedMilestone;
 
@@ -119,6 +128,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
             onChange={handleChange}
             placeholder="Enter Purchase Order Reference"
             className="form-control"
+            disabled
           />
         </div>
         <div>
@@ -144,6 +154,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
             placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
           <label htmlFor="dateBilled">Date Billed</label>

@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './CreateInvoice.css';
 
-function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError }) {
+function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError, selectedPO }) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
@@ -15,6 +15,8 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
     dueDate: '',
     status: ''
   });
+
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     if (selectedInvoice) {
@@ -37,6 +39,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
 
     axios
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
@@ -88,8 +95,10 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             name="amount"
             value={invoiceData.amount}
             onChange={handleChange}
+            placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
           <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
