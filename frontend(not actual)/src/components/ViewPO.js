@@ -90,37 +90,39 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
         let updatedBalValue;
         let updatedMilestone;
+        let updatedStatus;
 
-        if (isPS) {
-            const startDate = new Date(selectedPO.startDate);
-            const endDate = new Date(selectedPO.endDate)
-            const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
-            const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+        // const startDate = new Date(selectedPO.startDate);
+        // const endDate = new Date(selectedPO.endDate);
+        // const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+        // const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
 
-            const percentageIncrement = 100 / numberOfMonths;
-            const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
-        }
+        // const percentageIncrement = 100 / numberOfMonths;
+        // const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+        // updatedMilestone = (milestoneAsNumber + percentageIncrement).toString();
 
-        if (invoiceData.status === "Paid" && selectedPO.balValue > invoiceData.amount) {
-            if (invoiceData.status != status) {
-                updatedMilestone = (milestoneAsNumber + percentageIncrement).toString();
+        if (invoiceData.status !== status) {
+            if (invoiceData.status === 'Paid' && selectedPO.balValue >= invoiceData.amount) {
                 updatedBalValue = selectedPO.balValue - invoiceData.amount;
-                setBalValue(updatedBalValue)
-
-            } else {
-                updatedBalValue = balValue + amount - invoiceData.amount;
-                setBalValue(updatedBalValue)
+            } else if (invoiceData.status === 'Unpaid') {
+                updatedBalValue = selectedPO.balValue + invoiceData.amount;
             }
 
-        } else if (invoiceData.status === "Unpaid" && invoiceData.status != status) {
-            updatedMilestone = (milestoneAsNumber - percentageIncrement).toString();
-            updatedBalValue = selectedPO.balValue + invoiceData.amount;
-            setBalValue(updatedBalValue)
+            setBalValue(updatedBalValue);
+
+            if (isPS) {
+                updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
+            }
+        }
+
+        if (updatedBalValue === 0) {
+            updatedStatus = "Completed"
         }
 
         const patchData = {
             balValue: updatedBalValue,
-            milestone: updatedMilestone
+            milestone: updatedMilestone,
+            status: updatedStatus
         };
 
         axios
@@ -182,7 +184,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                             <td>{parseFloat(updatedPO.milestone).toFixed(2)}</td>
                             <td>{selectedPO.totalValue}</td>
                             <td>{updatedPO.balValue}</td>
-                            <td>{selectedPO.status}</td>
+                            <td>{updatedPO.status}</td>
                         </tr>
                     </tbody>
                 </table>

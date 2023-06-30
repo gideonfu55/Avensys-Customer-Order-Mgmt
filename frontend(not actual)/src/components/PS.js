@@ -239,7 +239,7 @@ function PS() {
                 <td className='text-center'>{po.type}</td>
                 <td className='text-center'>{po.startDate}</td>
                 <td className='text-center'>{po.endDate}</td>
-                <td className='text-center'>{po.milestone}</td>
+                <td className='text-center'>{parseFloat(po.milestone).toFixed(2)}</td>
                 <td className='text-center'>{po.totalValue}</td>
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
