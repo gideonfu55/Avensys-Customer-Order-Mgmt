@@ -87,12 +87,15 @@ function Dashboard() {
         <div className='highlight-overview'>
           <h5>Overview</h5>
           <div className='highlights'>
-            <div className='highlight-1'>
-              <h1>{outstandingCount}</h1> Ongoing Projects
+
+          <div className="highlight-1">
+            <h1 className="title">{outstandingCount}</h1>
+            <div className="content">
+              <span>Ongoing Projects</span>
             </div>
-            <div className='highlight-2'>
-              Highlight 2
-            </div>
+          </div>
+
+            
             {/* Used for rendering notifications by role */}
             <div className='highlight-3'>
               <>

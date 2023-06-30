@@ -10,11 +10,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+
 
 function PS() {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
+  const navigate = useNavigate();
 
   const [PS, setPS] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
@@ -143,6 +146,10 @@ function PS() {
     toast.error('Error updating purchase order!');
   };
 
+  const handleGoBack = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className='dashboard-body'>
       <ToastContainer />
@@ -153,7 +160,7 @@ function PS() {
             <span style={{ fontWeight: '800' }}>Talent Services:</span>{' '}
             <span style={{ fontWeight: '200' }}>Purchase Orders</span>
           </h2>
-          <button type='button' className='btn btn-dark'>
+          <button type='button' className='btn btn-dark' onClick={handleGoBack}>
             Back
           </button>
         </div>

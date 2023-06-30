@@ -32,8 +32,6 @@
     justify-content: space-between;
 }
 
-.highlight-1,
-.highlight-2,
 .highlight-3 {
     width: 30%;
     padding: 2rem;
@@ -41,6 +39,15 @@
     box-shadow: rgba(99, 99, 99, 0.042) 0px 2px 8px 0px;
     height: 50vh;
 }
+
+.highlight-1{
+    width: 30%;
+    padding: 2rem;
+    border-radius: .7rem;
+    box-shadow: rgba(99, 99, 99, 0.042) 0px 2px 8px 0px;
+    height: 50vh;
+}
+
 
 .highlight-1 {
     background-color: #E5DEF0;
