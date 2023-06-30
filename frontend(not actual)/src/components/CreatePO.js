@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
-import { toast } from 'react-toastify';
 
 function CreatePO(props) {
 
@@ -63,7 +62,7 @@ function CreatePO(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const createdAt = new Date().toISOString();
-    const newPO = { ...poData, createdAt };
+    const newPO = { ...poData, poNumber, createdAt };
 
     if (poNumberError) {
       return;
@@ -75,6 +74,7 @@ function CreatePO(props) {
       .then((response) => {
         console.log('Purchase order created successfully:', response.data);
         props.onPoCreated(newPO.poNumber);
+        
         // Reset the form
         setPoData({
           clientName: '',
@@ -87,6 +87,8 @@ function CreatePO(props) {
           type: '',
           status: ''
         });
+        setPONumber('');
+        setPONumberError(null);
 
     // Format the date to be displayed in a notification:
     const formattedDate = new Date(newPO.createdAt).toLocaleDateString('en-GB', {
