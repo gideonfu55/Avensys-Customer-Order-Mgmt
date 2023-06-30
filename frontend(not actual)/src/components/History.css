@@ -1,0 +1,9 @@
+.notification-container {
+  /* Other styles here... */
+  overflow-y: auto;
+  max-height: 90%; /* Adjust as necessary */
+}
+
+.notification-container::-webkit-scrollbar {
+  width: 0.5em;
+}

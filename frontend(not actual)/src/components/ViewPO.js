@@ -8,13 +8,17 @@ import UpdateInvoice from './UpdateInvoice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function ViewPO({ selectedPO }) {
+function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
+
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
 
     const [invoices, setInvoices] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [updatedPO, setUpdatedPO] = useState({ ...selectedPO });
+    const [balValue, setBalValue] = useState(selectedPO.balValue);
 
     useEffect(() => {
         axios
@@ -29,16 +33,23 @@ function ViewPO({ selectedPO }) {
             });
     }, [selectedPO]);
 
-    const handleDeletePO = (id) => {
-        axios
-            .delete(`http://localhost:8080/api/po/delete/${id}`)
-            .then((response) => {
-                window.location.reload()
-                console.log('Invoice deleted successfully')
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+    const handleDeletePO = (id, poNumber) => {
+        if (window.confirm(`Are you sure you want to delete PO ${poNumber}?`)) {
+            axios
+                .delete(`http://localhost:8080/api/po/delete/${id}`)
+                .then((response) => {
+                    setUpdatedPO((prevPO) => {
+                        if (prevPO.id === id) return null;
+                        return prevPO;
+                    });
+                    console.log('Invoice deleted successfully')
+                    toast.success(`PO ${poNumber} deleted successfully!`);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    toast.error(`Error deleting PO ${poNumber}!`);
+                });
+        }
     };
 
     const handleEditPO = (po) => {
@@ -52,14 +63,77 @@ function ViewPO({ selectedPO }) {
             .then((response) => {
                 setInvoices((prevInvoices) => prevInvoices.filter((invoice) => invoice.id !== id));
                 console.log('Invoice deleted successfully')
+
+                // Create notification after invoice is deleted:
+                const notification = {
+                    message: `Invoice ${invoiceNumber} has been deleted by ${username} on ${new Date().toLocaleDateString()}`,
+                    userRole: `${role}`,
+                };
+
+                // Post notification to Database:
+                axios.post('http://localhost:8080/api/notification/create', notification)
+                    .then((response) => {
+                        console.log(response.data)
+                    })
+                    .catch((error) => {
+                        console.log('Error creating notification:', error);
+                    });
+
             })
             .catch((error) => {
                 console.error(error);
             });
     };
 
-    const handleInvoiceUpdate = (invoiceNumber) => {
-        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
+    const handleInvoiceUpdate = (invoiceData, amount, status) => {
+        toast.success(`Invoice ${invoiceData.invoiceNumber} updated successfully!`);
+
+        let updatedBalValue;
+        let updatedMilestone;
+
+        if (isPS) {
+            const startDate = new Date(selectedPO.startDate);
+            const endDate = new Date(selectedPO.endDate)
+            const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+            const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+
+            const percentageIncrement = 100 / numberOfMonths;
+            const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+        }
+
+        if (invoiceData.status === "Paid" && selectedPO.balValue > invoiceData.amount) {
+            if (invoiceData.status != status) {
+                updatedMilestone = (milestoneAsNumber + percentageIncrement).toString();
+                updatedBalValue = selectedPO.balValue - invoiceData.amount;
+                setBalValue(updatedBalValue)
+
+            } else {
+                updatedBalValue = balValue + amount - invoiceData.amount;
+                setBalValue(updatedBalValue)
+            }
+
+        } else if (invoiceData.status === "Unpaid" && invoiceData.status != status) {
+            updatedMilestone = (milestoneAsNumber - percentageIncrement).toString();
+            updatedBalValue = selectedPO.balValue + invoiceData.amount;
+            setBalValue(updatedBalValue)
+        }
+
+        const patchData = {
+            balValue: updatedBalValue,
+            milestone: updatedMilestone
+        };
+
+        axios
+            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+            .then((response) => {
+                console.log('Purchase order updated successfully:', response.data);
+                setUpdatedPO(response.data)
+                onInvUpdated()
+            })
+            .catch((error) => {
+                console.error('Error updating purchase order:', error);
+            });
+
         // Fetch updated data after successful update
         axios
             .get('http://localhost:8080/api/invoices/all', { maxRedirects: 5 })
@@ -96,7 +170,6 @@ function ViewPO({ selectedPO }) {
                             <th scope="col">Total Value</th>
                             <th scope="col">Total Balance</th>
                             <th scope="col">Status</th>
-                            <th scope='col'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,18 +179,10 @@ function ViewPO({ selectedPO }) {
                             <td>{selectedPO.type}</td>
                             <td>{selectedPO.startDate}</td>
                             <td>{selectedPO.endDate}</td>
-                            <td>{selectedPO.milestone}</td>
+                            <td>{parseFloat(updatedPO.milestone).toFixed(2)}</td>
                             <td>{selectedPO.totalValue}</td>
-                            <td>{selectedPO.balValue}</td>
+                            <td>{updatedPO.balValue}</td>
                             <td>{selectedPO.status}</td>
-                            <td>
-                                <button className='update-btn p-1' onClick={() => handleEditPO(selectedPO)}>
-                                    <i className="fi fi-sr-file-edit p-1"></i>
-                                </button>
-                                <button className='delete-btn p-1' onClick={() => handleDeletePO(selectedPO.id)}>
-                                    <i className="fi fi-sr-trash delete p-1"></i>
-                                </button>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -190,6 +255,7 @@ function ViewPO({ selectedPO }) {
                     {showInvoiceModal &&
                         <UpdateInvoice
                             selectedInvoice={selectedInvoice}
+                            selectedPO={selectedPO}
                             onInvoiceUpdated={handleInvoiceUpdate}
                             onInvoiceUpdateError={handleInvoiceUpdateError}
                             closeModal={handleShowInvoiceModalClose}

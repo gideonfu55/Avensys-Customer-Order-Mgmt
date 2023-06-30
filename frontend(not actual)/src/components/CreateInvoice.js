@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
+function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
     invoiceNumber: '',
@@ -11,6 +15,8 @@ function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
     dueDate: '',
     status: '',
   });
+
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     if (selectedPO) {
@@ -28,9 +34,15 @@ function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
+
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
-  
+
     axios
       .post('http://localhost:8080/api/invoices/create', newInvoice)
       .then((response) => {
@@ -44,26 +56,63 @@ function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
           dueDate: '',
           status: '',
         });
+        setValidationError('');
+
+        // Create history item after invoice is created:
+        const formattedDate = new Date().toLocaleDateString('en-GB');
+
+        const notification = {
+          message: `New Invoice ${newInvoice.invoiceNumber} created by ${username} on ${formattedDate}`,
+          userRole: `${role}`
+        };
+
+        axios
+          .post('http://localhost:8080/api/notification/create', notification)
+          .then(response => {
+            console.log('Notification created successfully')
+          })
+          .catch(error => {
+            console.error(`Error creating notification: ${error}`)
+          });
+
         closeModal();
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
       });
+
+    if (newInvoice.status === "Paid" && selectedPO.balValue > newInvoice.amount) {
+      const updatedBalValue = selectedPO.balValue - newInvoice.amount;
+      let updatedMilestone;
+
+      if (isPS) {
+        const startDate = new Date(selectedPO.startDate);
+        const endDate = new Date(selectedPO.endDate)
+        const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+        const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
   
-    const updatedBalValue = selectedPO.balValue - invoiceData.amount;
-    const patchData = {
-      balValue: updatedBalValue,
-    };
-  
-    axios
-      .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
-      .then((response) => {
-        console.log('Purchase order updated successfully:', response.data);
-        closeModal();
-      })
-      .catch((error) => {
-        console.error('Error updating purchase order:', error);
-      });
+        const percentageIncrement = 100 / numberOfMonths;
+        const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+        updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+      }
+
+      const patchData = {
+        balValue: updatedBalValue,
+        milestone: updatedMilestone
+      };
+
+      axios
+        .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+        .then((response) => {
+          console.log('Purchase order updated successfully:', response.data);
+
+          closeModal();
+        })
+        .catch((error) => {
+          console.error('Error updating purchase order:', error);
+        });
+
+    }
   };
 
   return (
@@ -79,6 +128,7 @@ function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
             onChange={handleChange}
             placeholder="Enter Purchase Order Reference"
             className="form-control"
+            disabled
           />
         </div>
         <div>
@@ -104,6 +154,7 @@ function CreateInvoice({ selectedPO, closeModal, onInvUpdated }) {
             placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
           <label htmlFor="dateBilled">Date Billed</label>

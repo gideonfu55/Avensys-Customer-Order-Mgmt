@@ -38,6 +38,7 @@ function App() {
         <Loading /> // Render the loading component while isLoading is true
       ) : (
         <Routes>
+          <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path='/ES' element={<ES/>} />

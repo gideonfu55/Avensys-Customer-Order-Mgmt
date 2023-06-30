@@ -3,7 +3,7 @@ import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO'; 
+import EditPO from './EditPO';
 import './ES.css';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,6 +12,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function PS() {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [PS, setPS] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -62,15 +66,36 @@ function PS() {
     ? filteredPS.filter((po) => po[searchType].toString().toLowerCase().includes(searchTerm.toLowerCase()))
     : filteredPS;
 
-  const handleDeletePO = (id) => {
-    axios
-      .delete(`http://localhost:8080/api/po/delete/${id}`)
-      .then((response) => {
-        setPS((prevPS) => prevPS.filter((po) => po.id !== id));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleDeletePO = (id, poNumber) => {
+    if (window.confirm(`Are you sure you want to delete purchase order ${poNumber}?`)) {
+      axios
+        .delete(`http://localhost:8080/api/po/delete/${id}`)
+        .then((response) => {
+          setPS((prevPS) => prevPS.filter((po) => po.id !== id));
+
+          // Create delete notification:
+          const notification = {
+            message: `PO ${poNumber} has been deleted by ${username} on ${new Date().toLocaleDateString()}`,
+            userRole: `${role}`,
+          };
+
+          // Post notification to Database:
+          axios.post('http://localhost:8080/api/notification/create', notification)
+          .then((response) => {
+            console.log(response.data)
+          })
+          .catch((error) => {
+            console.log('Error creating notification:', error);
+          });
+
+          toast.success(`Purchase order ${poNumber} deleted successfully!`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error(`Error deleting purchase order ${poNumber}!`);
+        });
+    }
+
   };
 
   const handleEditPO = (po) => {
@@ -91,8 +116,27 @@ function PS() {
       });
   };
 
+  const handleInvUpdate = () => {
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setPS(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
   const handleInvoiceUpdate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
+
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setPS(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handlePoUpdateError = () => {
@@ -119,7 +163,7 @@ function PS() {
           <label htmlFor='status-select'>Filter by Status:</label>
           <select id='status-select' className='form-control' value={selectedStatus} onChange={handleStatusChange}>
             <option value=''>All</option>
-            <option value='Outstanding'>Outstanding</option>
+            <option value='Ongoing'>Ongoing</option>
             <option value='Completed'>Completed</option>
             <option value='Cancelled'>Cancelled</option>
           </select>
@@ -180,9 +224,11 @@ function PS() {
               <th scope='col' className='text-center'>
                 Status
               </th>
+              {role.toLowerCase() === 'finance' && (
               <th scope='col' className='text-center'>
                 Actions
               </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -197,7 +243,7 @@ function PS() {
                 <td className='text-center'>{po.totalValue}</td>
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
-
+                {role.toLowerCase() === 'finance' && (
                 <td>
                   <div className='button-container'>
                     <button
@@ -226,11 +272,12 @@ function PS() {
                     >
                       <FontAwesomeIcon icon={faPlus} />
                     </button>
-                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id)}>
+                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id, po.poNumber)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </div>
                 </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -242,7 +289,15 @@ function PS() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>
+              {showPOModal &&
+                <ViewPO
+                  selectedPO={selectedPO}
+                  onInvUpdated={handleInvUpdate}
+                  isPS={true}
+                  closeModal={handleShowPOModalClose} />
+              }
+            </Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -252,11 +307,12 @@ function PS() {
             </Modal.Header>
             <Modal.Body>
               {showInvoiceModal && (
-              <CreateInvoice 
-              selectedPO={selectedPO} 
-              closeModal={handleShowInvoiceModalClose} 
-              onInvUpdated={handleInvoiceUpdate}
-              />
+                <CreateInvoice
+                  selectedPO={selectedPO}
+                  isPS={true}
+                  closeModal={handleShowInvoiceModalClose}
+                  onInvUpdated={handleInvoiceUpdate}
+                />
               )}
             </Modal.Body>
           </Modal>

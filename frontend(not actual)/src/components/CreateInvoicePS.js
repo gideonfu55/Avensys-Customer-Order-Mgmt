@@ -1,36 +1,25 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './CreateInvoice.css';
 
-function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError, selectedPO }) {
-
-  const username = localStorage.getItem('username');
-  const role = localStorage.getItem('role');
-
+function CreateInvoicePS({ selectedPO, closeModal, onInvUpdated }) {
   const [invoiceData, setInvoiceData] = useState({
+    purchaseOrderRef: '',
     invoiceNumber: '',
     amount: '',
-    purchaseOrderRef: '',
     dateBilled: '',
     dueDate: '',
-    status: ''
+    status: '',
   });
 
-  const [validationError, setValidationError] = useState('');
-
   useEffect(() => {
-    if (selectedInvoice) {
-      setInvoiceData({
-        invoiceNumber: selectedInvoice.invoiceNumber,
-        amount: selectedInvoice.amount,
-        purchaseOrderRef: selectedInvoice.purchaseOrderRef,
-        dateBilled: selectedInvoice.dateBilled,
-        dueDate: selectedInvoice.dueDate,
-        status: selectedInvoice.status
-      });
+    if (selectedPO) {
+      setInvoiceData((prevState) => ({
+        ...prevState,
+        purchaseOrderRef: selectedPO.poNumber,
+      }));
     }
-
-  }, [selectedInvoice]);
+  }, [selectedPO]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -39,44 +28,74 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
-      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
-      return;
-    }
+    const createdAt = new Date().toISOString();
+    const newInvoice = { ...invoiceData, createdAt };
 
     axios
-      .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
+      .post('http://localhost:8080/api/invoices/create', newInvoice)
       .then((response) => {
-        onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
-        setValidationError('');
-
-        // Create notification after Invoice is updated:
-        const notification = {
-          message: `Invoice ${invoiceData.invoiceNumber} has been updated by ${username} on ${new Date().toLocaleDateString()}`,
-          userRole: `${role}`,
-        };
-
-        // Post notification to Database:
-        axios.post('http://localhost:8080/api/notification/create', notification)
-          .then((response) => {
-            console.log(response.data)
-          })
-          .catch((error) => {
-            console.log('Error creating notification:', error);
-          });
-
-        closeModal()
+        onInvUpdated(newInvoice.invoiceNumber)
+        console.log('New invoice created successfully: ', response.data);
+        setInvoiceData({
+          purchaseOrderRef: '',
+          invoiceNumber: '',
+          amount: '',
+          dateBilled: '',
+          dueDate: '',
+          status: '',
+        });
+        closeModal();
       })
       .catch((error) => {
         console.error('Error creating invoice:', error);
-        onInvoiceUpdateError()
       });
+
+    if (newInvoice.status === "Paid") {
+      const updatedBalValue = selectedPO.balValue - newInvoice.amount;
+
+      const startDate = new Date(selectedPO.startDate);
+      const endDate = new Date(selectedPO.endDate)
+      const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+      const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+
+      const percentageIncrement = 100 / numberOfMonths;
+      const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+      const updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+
+      const patchData = {
+        balValue: updatedBalValue,
+        milestone: updatedMilestone
+      };
+
+      axios
+        .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+        .then((response) => {
+          console.log('Purchase order updated successfully:', response.data);
+
+          closeModal();
+        })
+        .catch((error) => {
+          console.error('Error updating purchase order:', error);
+        });
+
+    }
   };
 
   return (
     <div className="invoice-container">
       <form onSubmit={handleSubmit} className="create-invoice-model">
+        <div>
+          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
+          <input
+            type="text"
+            id="purchaseOrderRef"
+            name="purchaseOrderRef"
+            value={invoiceData.purchaseOrderRef}
+            onChange={handleChange}
+            placeholder="Enter Purchase Order Reference"
+            className="form-control"
+          />
+        </div>
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
           <input
@@ -85,6 +104,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             name="invoiceNumber"
             value={invoiceData.invoiceNumber}
             onChange={handleChange}
+            placeholder="Enter Invoice Number"
             className="form-control"
           />
         </div>
@@ -99,20 +119,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             placeholder="Enter Amount"
             className="form-control"
           />
-          {validationError && <div className="text-danger">{validationError}</div>}
         </div>
-        <div>
-          <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
-          <input
-            type="text"
-            id="purchaseOrderRef"
-            name="purchaseOrderRef"
-            value={invoiceData.purchaseOrderRef}
-            onChange={handleChange}
-            className="form-control"
-          />
-        </div>
-
         <div>
           <label htmlFor="dateBilled">Date Billed</label>
           <input
@@ -124,7 +131,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             className="form-control"
           />
         </div>
-
         <div>
           <label htmlFor="dueDate">Due Date</label>
           <input
@@ -136,7 +142,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             className="form-control"
           />
         </div>
-
         <div>
           <label htmlFor="status">Payment Status</label>
           <select
@@ -155,11 +160,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
         </div>
 
         <button type="submit" className="btn btn-primary">
-          Update Invoice
+          Create Invoice
         </button>
       </form>
     </div>
   );
 }
 
-export default UpdateInvoice;
+export default CreateInvoicePS;

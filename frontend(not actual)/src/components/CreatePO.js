@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
+import { toast } from 'react-toastify';
 
 function CreatePO(props) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -13,7 +17,7 @@ function CreatePO(props) {
     balValue: '',
     milestone: '',
     type: '',
-    status: ''
+    status: 'Ongoing'
   })
 
   // toast("Component Loaded!");
@@ -47,14 +51,38 @@ function CreatePO(props) {
           status: ''
         });
 
-        // Close the modal after creating po successfully:
-        props.closeModal();
-        
+    // Format the date to be displayed in a notification:
+    const formattedDate = new Date(newPO.createdAt).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+
+    // After a successful PO creation by Sales, create a history item for Finance/Management:
+    const notification = {
+      message: `New PO ${newPO.poNumber} created by ${username} on ${formattedDate}`,
+      userRole: `${role}`
+    };
+
+    console.log(role);
+
+    // Post to Database:
+    axios.post('http://localhost:8080/api/notification/create', notification)
+      .then((response) => {
+        console.log(response.data)
       })
       .catch((error) => {
-        console.error('Error creating purchase order:', error);
-        props.onPoCreationError();
+        console.log('Error creating notification:', error);
       });
+
+    // Close the modal after creating po successfully:
+    props.closeModal();
+    
+  })
+    .catch((error) => {
+      console.error('Error creating purchase order:', error);
+      props.onPoCreationError();
+    });
   };
 
   return (
@@ -159,7 +187,7 @@ function CreatePO(props) {
             <option value="Professional Service">Professional Service</option>
           </select>
         </div>
-        <div>
+        {/* <div>
           <label htmlFor="status">Status</label>
           <select
             id="status"
@@ -169,11 +197,13 @@ function CreatePO(props) {
             className='form-control'
           >
             <option value="" disabled>Select Status</option>
+            <option value="Approved">Approved</option>
+            <option value="Not Approved">Not Approved</option>
             <option value="Outstanding">Outstanding</option>
             <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>
           </select>
-        </div>
+        </div> */}
         
         <button type="submit" className='btn btn-primary'>Create Purchase Order</button>
       </form>

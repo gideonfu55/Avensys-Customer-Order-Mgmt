@@ -59,5 +59,13 @@ public class User {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+    public void updateWith(User newUser) {
+        this.username = newUser.username != null ? newUser.username : this.username;
+        this.email = newUser.email != null ? newUser.email : this.email;
+        this.password = newUser.password != null ? newUser.password : this.password;
+        this.role = newUser.role != null ? newUser.role : this.role;
+        this.createdAt = newUser.createdAt != null ? newUser.createdAt : this.createdAt;
+    }
 }
 

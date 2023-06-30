@@ -8,13 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import History from './History';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [showPOForm, setShowPOForm] = useState(false);
   const navigate = useNavigate();
   const [loadModal, setLoadModal] = useState(false);
-  const [outstandingCount, setOutstandingCount] = useState(0); 
+  const [outstandingCount, setOutstandingCount] = useState(0);
 
   useEffect(() => {
     const username = localStorage.getItem('username');
@@ -45,7 +46,7 @@ function Dashboard() {
       .then(response => {
         const data = response.data;
         if (Array.isArray(data)) {
-          const outstandingCount = data.filter(po => po.status.toLowerCase() === "outstanding").length;
+          const outstandingCount = data.filter(po => po.status.toLowerCase() === "ongoing").length;
           setOutstandingCount(outstandingCount);
         }
       })
@@ -74,6 +75,8 @@ function Dashboard() {
     return <p>Loading...</p>;
   }
 
+  localStorage.setItem('role', user.role);
+
   return (
     <div className='dashboard-body'>
       <ToastContainer />
@@ -90,16 +93,21 @@ function Dashboard() {
             <div className='highlight-2'>
               Highlight 2
             </div>
+            {/* Used for rendering notifications by role */}
             <div className='highlight-3'>
-              Highlight 3
+              <>
+                <History />
+              </>
             </div>
           </div>
         </div>
         {/* Add PO Button? */}
-        <div className='po-creation-card'>
-          <p>Ready to create a purchase order?</p>
-          <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
-        </div>
+        {user.role.toLowerCase() === 'sales' && (
+            <div className='po-creation-card'>
+              <p>Ready to create a purchase order?</p>
+              <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
+            </div>
+          )}
         {/* View Different Tables */}
         <div className='po-types'>
           <h5>View Tables</h5>
@@ -127,7 +135,7 @@ function Dashboard() {
       {loadModal && (
         <Modal show={showPOForm} onHide={handlePOFormClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Create Purchase Order</Modal.Title>
+            <Modal.Title>Submit Purchase Order</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {

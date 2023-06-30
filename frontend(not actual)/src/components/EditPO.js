@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [poData, setPOData] = useState(selectedPO);
 
   const handleChange = (e) => {
@@ -18,6 +23,22 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
       .patch(`http://localhost:8080/api/po/update/${poData.id}`, poData)
       .then((response) => {
         onPoUpdated(poData.poNumber);
+
+        // Create notification after PO is updated:
+        const notification = {
+          message: `PO ${poData.poNumber} has been updated by ${username} on ${new Date().toLocaleDateString()}`,
+          userRole: `${role}`,
+        };
+
+        // Post notification to Database:
+        axios.post('http://localhost:8080/api/notification/create', notification)
+        .then((response) => {
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.log('Error creating notification:', error);
+        });
+
         closeModal();
       })
       .catch((error) => {
@@ -122,7 +143,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           onChange={handleChange}
           required
         >
-          <option value='Outstanding'>Outstanding</option>
+          <option value='Ongoing'>Ongoing</option>
           <option value='Completed'>Completed</option>
           <option value='Cancelled'>Cancelled</option>
         </select>
