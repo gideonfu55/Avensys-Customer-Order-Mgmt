@@ -18,6 +18,8 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   const [validationError, setValidationError] = useState('');
 
+  const [validationError, setValidationError] = useState('');
+
   useEffect(() => {
     if (selectedInvoice) {
       setInvoiceData({
@@ -39,6 +41,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
 
     if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
       setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
@@ -97,8 +104,10 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             value={invoiceData.amount}
             onChange={handleChange}
             placeholder="Enter Amount"
+            placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
           {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
