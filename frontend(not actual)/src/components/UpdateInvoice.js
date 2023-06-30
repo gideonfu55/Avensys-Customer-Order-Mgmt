@@ -2,7 +2,11 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './CreateInvoice.css';
 
-function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError }) {
+function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError, selectedPO }) {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [invoiceData, setInvoiceData] = useState({
     invoiceNumber: '',
     amount: '',
@@ -11,6 +15,8 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
     dueDate: '',
     status: ''
   });
+
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     if (selectedInvoice) {
@@ -34,10 +40,32 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
+
     axios
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
         onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
+        setValidationError('');
+
+        // Create notification after Invoice is updated:
+        const notification = {
+          message: `Invoice ${invoiceData.invoiceNumber} has been updated by ${username} on ${new Date().toLocaleDateString()}`,
+          userRole: `${role}`,
+        };
+
+        // Post notification to Database:
+        axios.post('http://localhost:8080/api/notification/create', notification)
+          .then((response) => {
+            console.log(response.data)
+          })
+          .catch((error) => {
+            console.log('Error creating notification:', error);
+          });
+
         closeModal()
       })
       .catch((error) => {
@@ -68,8 +96,10 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             name="amount"
             value={invoiceData.amount}
             onChange={handleChange}
+            placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
           <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>

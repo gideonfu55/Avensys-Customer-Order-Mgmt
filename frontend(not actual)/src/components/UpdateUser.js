@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
 import axios from 'axios';
+import './UpdateUser.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 function UpdateUser({ user, closeModal }) {
   const [formData, setFormData] = useState(user);
@@ -15,87 +15,85 @@ function UpdateUser({ user, closeModal }) {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleUpdateUserSubmit = (event) => {
     event.preventDefault();
-
-    setIsLoading(true); // Enable loading state
-
-    const updatedUser = {
-      ...user,
-      ...formData,
-    };
-
-    axios
-      .post('http://localhost:8080/admin/update/user', updatedUser)
+    setIsLoading(true);
+    const updatedUser = { ...user, ...formData };
+    const { username } = updatedUser;
+    axios.patch(`http://localhost:8080/user/update/${username}`, updatedUser)
       .then((response) => {
         console.log(response.data);
         closeModal();
-        window.location.href = '/adminpanel'; // Navigate to /adminpanel
+        window.location.href = '/adminpanel';
       })
       .catch((error) => {
-        console.error(`Error updating user: ${error}`);
+        console.error(error);
       })
       .finally(() => {
-        setIsLoading(false); // Disable loading state
-      });
-  };
+        setIsLoading(false);
+      })
+  }
 
   return (
-    <>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId='username'>
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type='text'
-            required
+    <div>
+      <form onSubmit={handleUpdateUserSubmit} className='update-form'>
+        <div className='form-group'>
+          <label>Username</label>
+          <input
+            className='form-control'
             name='username'
             value={formData.username}
             onChange={handleChange}
-          />
-        </Form.Group>
-        <Form.Group controlId='password'>
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type='text'
-            required
-            name='password'
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </Form.Group>
-        <Form.Group controlId='email'>
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type='text'
-            required
+            id='username-update'
+            type='text' />
+        </div>
+        <div className='form-group'>
+          <label>Email</label>
+          <input
+            className='form-control'
             name='email'
             value={formData.email}
             onChange={handleChange}
-          />
-        </Form.Group>
-        <Form.Group controlId='role' className='mb-3'>
-          <Form.Label>Role</Form.Label>
-          <Form.Select
-            required
-            name='role'
-            value={formData.role}
+            id='email-update'
+            type='text' />
+        </div>
+        <div className='form-group'>
+          <label>Password</label>
+          <input
+            className='form-control'
+            name='password'
+            value={formData.password}
             onChange={handleChange}
-          >
+            id='password-update'
+            type='password' />
+        </div>
+        <div className='form-group'>
+          <label>Role</label>
+          <select
+            className='form-control'
+            name='role'
+            onChange={handleChange}
+            value={formData.role}>
             <option value=''>Select Role</option>
             <option value='Admin'>Admin</option>
-            <option value='User'>User</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Button type='submit' variant='primary' disabled={isLoading}>
+            <option value='Delivery'>Delivery</option>
+            <option value='Finance'>Finance</option>
+            <option value='Management'>Management</option>
+            <option value='Sales'>Sales</option>
+          </select>
+        </div>
+        <button
+          className='btn btn-dark'
+          style={{ width: '100%' }}
+          disabled={isLoading}>
           {isLoading ? (
             <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
-            <FontAwesomeIcon icon={faCheck} size='2x' />
+            <span>Save Changes</span>
           )}
-        </Button>
-      </Form>
-    </>
+        </button>
+      </form>
+    </div>
   );
 }
 

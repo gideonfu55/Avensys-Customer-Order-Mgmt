@@ -12,6 +12,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function PS() {
+
+  const username = localStorage.getItem('username');
+  const role = localStorage.getItem('role');
+
   const [PS, setPS] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -68,6 +72,22 @@ function PS() {
         .delete(`http://localhost:8080/api/po/delete/${id}`)
         .then((response) => {
           setPS((prevPS) => prevPS.filter((po) => po.id !== id));
+
+          // Create delete notification:
+          const notification = {
+            message: `PO ${poNumber} has been deleted by ${username} on ${new Date().toLocaleDateString()}`,
+            userRole: `${role}`,
+          };
+
+          // Post notification to Database:
+          axios.post('http://localhost:8080/api/notification/create', notification)
+          .then((response) => {
+            console.log(response.data)
+          })
+          .catch((error) => {
+            console.log('Error creating notification:', error);
+          });
+
           toast.success(`Purchase order ${poNumber} deleted successfully!`);
         })
         .catch((error) => {
@@ -204,9 +224,11 @@ function PS() {
               <th scope='col' className='text-center'>
                 Status
               </th>
+              {role.toLowerCase() === 'finance' && (
               <th scope='col' className='text-center'>
                 Actions
               </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -217,11 +239,11 @@ function PS() {
                 <td className='text-center'>{po.type}</td>
                 <td className='text-center'>{po.startDate}</td>
                 <td className='text-center'>{po.endDate}</td>
-                <td className='text-center'>{po.milestone}</td>
+                <td className='text-center'>{parseFloat(po.milestone).toFixed(2)}</td>
                 <td className='text-center'>{po.totalValue}</td>
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
-
+                {role.toLowerCase() === 'finance' && (
                 <td>
                   <div className='button-container'>
                     <button
@@ -255,6 +277,7 @@ function PS() {
                     </button>
                   </div>
                 </td>
+                )}
               </tr>
             ))}
           </tbody>

@@ -10,6 +10,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+
     const [invoices, setInvoices] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -60,6 +63,22 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
             .then((response) => {
                 setInvoices((prevInvoices) => prevInvoices.filter((invoice) => invoice.id !== id));
                 console.log('Invoice deleted successfully')
+
+                // Create notification after invoice is deleted:
+                const notification = {
+                    message: `Invoice ${invoiceNumber} has been deleted by ${username} on ${new Date().toLocaleDateString()}`,
+                    userRole: `${role}`,
+                };
+
+                // Post notification to Database:
+                axios.post('http://localhost:8080/api/notification/create', notification)
+                    .then((response) => {
+                        console.log(response.data)
+                    })
+                    .catch((error) => {
+                        console.log('Error creating notification:', error);
+                    });
+
             })
             .catch((error) => {
                 console.error(error);
@@ -71,42 +90,51 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
         let updatedBalValue;
         let updatedMilestone;
+        let updatedStatus;
 
-        if (invoiceData.status === "Paid") {
-            if (invoiceData.status != status) {
+        // const startDate = new Date(selectedPO.startDate);
+        // const endDate = new Date(selectedPO.endDate);
+        // const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
+        // const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
+
+        // const percentageIncrement = 100 / numberOfMonths;
+        // const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
+        // updatedMilestone = (milestoneAsNumber + percentageIncrement).toString();
+
+        if (invoiceData.status !== status) {
+            if (invoiceData.status === 'Paid' && selectedPO.balValue >= invoiceData.amount) {
                 updatedBalValue = selectedPO.balValue - invoiceData.amount;
-                setBalValue(updatedBalValue)
-                if (isPS) {
-                    const startDate = new Date(selectedPO.startDate);
-                    const endDate = new Date(selectedPO.endDate)
-                    const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
-                    const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
-    
-                    const percentageIncrement = 100 / numberOfMonths;
-                    const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
-                    updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
-                }
-            } else {
-                updatedBalValue = balValue + amount - invoiceData.amount;
-                setBalValue(updatedBalValue)
+            } else if (invoiceData.status === 'Unpaid') {
+                updatedBalValue = selectedPO.balValue + invoiceData.amount;
             }
 
-            const patchData = {
-                balValue: updatedBalValue,
-                milestone: updatedMilestone
-            };
+            setBalValue(updatedBalValue);
 
-            axios
-                .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
-                .then((response) => {
-                    console.log('Purchase order updated successfully:', response.data);
-                    setUpdatedPO(response.data)
-                    onInvUpdated()
-                })
-                .catch((error) => {
-                    console.error('Error updating purchase order:', error);
-                });
+            if (isPS) {
+                updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
+            }
         }
+
+        if (updatedBalValue === 0) {
+            updatedStatus = "Completed"
+        }
+
+        const patchData = {
+            balValue: updatedBalValue,
+            milestone: updatedMilestone,
+            status: updatedStatus
+        };
+
+        axios
+            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+            .then((response) => {
+                console.log('Purchase order updated successfully:', response.data);
+                setUpdatedPO(response.data)
+                onInvUpdated()
+            })
+            .catch((error) => {
+                console.error('Error updating purchase order:', error);
+            });
 
         // Fetch updated data after successful update
         axios
@@ -153,10 +181,10 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                             <td>{selectedPO.type}</td>
                             <td>{selectedPO.startDate}</td>
                             <td>{selectedPO.endDate}</td>
-                            <td>{updatedPO.milestone}</td>
+                            <td>{parseFloat(updatedPO.milestone).toFixed(2)}</td>
                             <td>{selectedPO.totalValue}</td>
                             <td>{updatedPO.balValue}</td>
-                            <td>{selectedPO.status}</td>
+                            <td>{updatedPO.status}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -229,6 +257,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                     {showInvoiceModal &&
                         <UpdateInvoice
                             selectedInvoice={selectedInvoice}
+                            selectedPO={selectedPO}
                             onInvoiceUpdated={handleInvoiceUpdate}
                             onInvoiceUpdateError={handleInvoiceUpdateError}
                             closeModal={handleShowInvoiceModalClose}

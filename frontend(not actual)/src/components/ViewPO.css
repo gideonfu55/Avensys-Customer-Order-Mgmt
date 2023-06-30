@@ -7,10 +7,8 @@
 .modal-dialog-expanded {
     width: 90%;
     max-width: 1200px;
-    /* Set the maximum width if needed */
     height: 90%;
     max-height: 800px;
-    /* Set the maximum height if needed */
 }
 
 button {

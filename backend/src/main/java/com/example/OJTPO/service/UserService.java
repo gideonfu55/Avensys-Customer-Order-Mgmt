@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.firebase.database.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +26,14 @@ public class UserService {
 
     @Autowired
     private FirebaseService firebaseService;
+
+    private DatabaseReference getDatabaseInstance() {
+        return FirebaseDatabase.getInstance().getReference();
+    }
+
+    private DatabaseReference getUserReference() {
+        return getDatabaseInstance().child("users");
+    }
 
     public CompletableFuture<User> validateUser(String username, String password) {
         CompletableFuture<User> completableFuture = new CompletableFuture<>();
@@ -141,6 +154,92 @@ public class UserService {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 completableFuture.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    // Delete Users
+    public CompletableFuture<String> deleteUserByUsername(String username) {
+        if (username == null || username.equals("null")) {
+            throw new IllegalArgumentException("Username cannot be null!");
+        }
+
+        CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+        DatabaseReference usersRef = getUserReference();
+        Query query = usersRef.orderByChild("username").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        String userKey = userSnapshot.getKey();
+                        ApiFuture<Void> future = getUserReference().child(userKey).removeValueAsync();
+                        ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                completableFuture.complete("User with username: " + username + " has been deleted.");
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                completableFuture.completeExceptionally(t);
+                            }
+                        }, MoreExecutors.directExecutor());
+                        return;
+                    }
+                }
+                completableFuture.complete(null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                completableFuture.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    // Update User:
+    public CompletableFuture<Boolean> updateUserByUsername(String username, User updateUser) {
+        if (username == null || username.equals("null")) {
+            throw new IllegalArgumentException("Username cannot be null!");
+        }
+
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+        DatabaseReference usersRef = getUserReference();
+        Query query = usersRef.orderByChild("username").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        User currentUser = userSnapshot.getValue(User.class);
+                        currentUser.updateWith(updateUser);
+                        userSnapshot.getRef().setValue(currentUser, (error, ref) -> {
+                            if (error == null) {
+                                completableFuture.complete(true);
+                            } else {
+                                completableFuture.completeExceptionally(error.toException());
+                            }
+                        });
+
+                        return;
+                    }
+                }
+
+                completableFuture.complete(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                completableFuture.completeExceptionally(error.toException());
             }
         });
 

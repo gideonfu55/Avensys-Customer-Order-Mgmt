@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import History from './History';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -74,6 +75,8 @@ function Dashboard() {
     return <p>Loading...</p>;
   }
 
+  localStorage.setItem('role', user.role);
+
   return (
     <div className='dashboard-body'>
       <ToastContainer />
@@ -90,16 +93,21 @@ function Dashboard() {
             <div className='highlight-2'>
               Highlight 2
             </div>
+            {/* Used for rendering notifications by role */}
             <div className='highlight-3'>
-              Highlight 3
+              <>
+                <History />
+              </>
             </div>
           </div>
         </div>
         {/* Add PO Button? */}
-        <div className='po-creation-card'>
-          <p>Ready to create a purchase order?</p>
-          <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
-        </div>
+        {user.role.toLowerCase() === 'sales' && (
+            <div className='po-creation-card'>
+              <p>Ready to create a purchase order?</p>
+              <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
+            </div>
+          )}
         {/* View Different Tables */}
         <div className='po-types'>
           <h5>View Tables</h5>
