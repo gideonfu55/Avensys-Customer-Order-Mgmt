@@ -18,8 +18,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   const [validationError, setValidationError] = useState('');
 
-  const [validationError, setValidationError] = useState('');
-
   useEffect(() => {
     if (selectedInvoice) {
       setInvoiceData({
