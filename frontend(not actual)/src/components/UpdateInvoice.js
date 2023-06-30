@@ -45,6 +45,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
       return;
     }
 
+    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
+      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
+
     axios
       .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
       .then((response) => {
@@ -97,8 +102,10 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             value={invoiceData.amount}
             onChange={handleChange}
             placeholder="Enter Amount"
+            placeholder="Enter Amount"
             className="form-control"
           />
+          {validationError && <div className="text-danger">{validationError}</div>}
           {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
