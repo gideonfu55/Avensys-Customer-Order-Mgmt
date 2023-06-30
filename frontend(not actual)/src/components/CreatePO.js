@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
-import { toast } from 'react-toastify';
 
 function CreatePO(props) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
+
+  const [poNumber, setPONumber] = useState('');
+  const [poNumberError, setPONumberError] = useState(null);
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -20,17 +22,51 @@ function CreatePO(props) {
     status: 'Ongoing'
   })
 
-  // toast("Component Loaded!");
+  useEffect(() => {
+    const validatePONumber = async () => {
+      if (poNumber) {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/po/check/${poNumber}`);
+  
+          if (response.data) {
+            setPONumberError('Purchase order number already exists');
+          } else {
+            setPONumberError(null);
+          }
+        } catch (error) {
+          console.error('Error checking PO number:', error);
+        }
+      } else {
+        setPONumberError(null);  // If the PO number is empty, clear the error
+      }
+    };
+  
+    validatePONumber();
+  }, [poNumber]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setPoData((prevState) => ({ ...prevState, [name]: value }));
+
+    if (name === 'poNumber') {
+      setPONumber(value);
+    } else {
+      setPoData((prevState) => ({ ...prevState, [name]: value }));
+    }
+  };
+
+  const handlePONumberChange = (event) => {
+    setPONumber(event.target.value);
+    setPONumberError(null);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const createdAt = new Date().toISOString();
     const newPO = { ...poData, createdAt };
+
+    if (poNumberError) {
+      return;
+    }
 
     // Send purchase order data to the backend
     axios
@@ -106,11 +142,17 @@ function CreatePO(props) {
             type="text"
             id="poNumber"
             name="poNumber"
-            value={poData.poNumber}
-            onChange={handleChange}
+            value={poNumber}
+            onChange={handlePONumberChange}
             placeholder='Enter Purchase Order Number'
-            className='form-control'
+            className={`form-control ${poNumberError ? 'is-invalid' : ''}`}
           />
+          {
+            poNumberError && 
+            <div className="invalid-feedback">
+              {poNumberError}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="startDate">Start Date</label>

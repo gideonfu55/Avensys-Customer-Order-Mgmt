@@ -212,4 +212,28 @@ public class PurchaseOrderService {
     return completableFuture;
   }
 
+  // Logic to check if PO number already exists:
+  public CompletableFuture<Boolean> checkPONumberExists(String poNumber) {
+    CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+    getPOReference().orderByChild("poNumber").equalTo(poNumber)
+      .addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          if (dataSnapshot.exists()) {
+            completableFuture.complete(true);
+          } else {
+            completableFuture.complete(false);
+          }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          completableFuture.completeExceptionally(databaseError.toException());
+        }
+      });
+
+    return completableFuture;
+  }
+
 }

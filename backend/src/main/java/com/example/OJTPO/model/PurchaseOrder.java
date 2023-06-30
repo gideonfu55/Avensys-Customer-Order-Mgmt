@@ -114,8 +114,8 @@ public class PurchaseOrder {
     this.poNumber = newPurchaseOrder.poNumber != null ? newPurchaseOrder.poNumber : this.poNumber;
     this.startDate = newPurchaseOrder.startDate != null ? newPurchaseOrder.startDate : this.startDate;
     this.endDate = newPurchaseOrder.endDate != null ? newPurchaseOrder.endDate : this.endDate;
-    this.totalValue = newPurchaseOrder.totalValue != 0 ? newPurchaseOrder.totalValue : this.totalValue;
-    this.balValue = newPurchaseOrder.balValue != 0 ? newPurchaseOrder.balValue : this.balValue;
+    this.totalValue = newPurchaseOrder.totalValue >= 0 ? newPurchaseOrder.totalValue : this.totalValue;
+    this.balValue = newPurchaseOrder.balValue >= 0 ? newPurchaseOrder.balValue : this.balValue;
     this.milestone = newPurchaseOrder.milestone != null ? newPurchaseOrder.milestone : this.milestone;
     this.type = newPurchaseOrder.type != null ? newPurchaseOrder.type : this.type;
     this.status = newPurchaseOrder.status != null ? newPurchaseOrder.status : this.status;
