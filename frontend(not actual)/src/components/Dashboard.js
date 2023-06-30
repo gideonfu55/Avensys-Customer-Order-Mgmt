@@ -102,10 +102,12 @@ function Dashboard() {
           </div>
         </div>
         {/* Add PO Button? */}
-        <div className='po-creation-card'>
-          <p>Ready to create a purchase order?</p>
-          <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
-        </div>
+        {user.role.toLowerCase() === 'sales' && (
+            <div className='po-creation-card'>
+              <p>Ready to create a purchase order?</p>
+              <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
+            </div>
+          )}
         {/* View Different Tables */}
         <div className='po-types'>
           <h5>View Tables</h5>

@@ -3,6 +3,4 @@ backend/po-management/target
 backend/.DS_Store
 .DS_Store
 backend/po-management/firebaseKey.json
-firebase-key.json
-frontend(not actual)/node_modules
-.vscode
+

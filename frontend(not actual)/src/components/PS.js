@@ -224,9 +224,11 @@ function PS() {
               <th scope='col' className='text-center'>
                 Status
               </th>
+              {role.toLowerCase() === 'finance' && (
               <th scope='col' className='text-center'>
                 Actions
               </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -241,7 +243,7 @@ function PS() {
                 <td className='text-center'>{po.totalValue}</td>
                 <td className='text-center'>{po.balValue}</td>
                 <td className='text-center'>{po.status}</td>
-
+                {role.toLowerCase() === 'finance' && (
                 <td>
                   <div className='button-container'>
                     <button
@@ -275,6 +277,7 @@ function PS() {
                     </button>
                   </div>
                 </td>
+                )}
               </tr>
             ))}
           </tbody>
