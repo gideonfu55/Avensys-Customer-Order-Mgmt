@@ -1,35 +1,57 @@
-.navbar-brand,
-.nav-link {
+/* Icons */
+@import "~@flaticon/flaticon-uicons/css/all/all";
+
+/* Importing Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+.side-nav {
+  position: sticky;
+  left: 0px;
+  padding: 50px 0px;
+  width: 250px;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper {
+  width: 250px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav-item {
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
   display: flex;
   align-items: center;
+  flex-direction: row;
+  column-gap: .5rem;
+  margin: 8px 8px 0px;
 }
 
-.nav-link:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 4px; 
-  padding-bottom: 20px; 
+.nav-item:hover {
+  color: whitesmoke;
+  text-decoration: none;
+  transition: .3s ease-in;
 }
 
-.dropdown {
-  position: relative;
-  transform: translateY(20%);
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.6rem;
 }
 
-.dropdown-toggle {
-    align-items: center;
-    padding-left: 8px;
-  }
-  
-  
-.dropdown-toggle-img {
-    width: 24px; 
-    height: 24px; 
-    object-fit: cover;
-    margin-right: 5px;
-  }
-
-  .navbar-logo {
-    max-width: 80px; 
-    height: auto;
-    padding-right: 10px;
-  }
+.divider {
+  border-top: 1px solid #292929;
+  margin: 20px 0px;
+  width: 100%;
+}

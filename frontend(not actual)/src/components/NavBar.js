@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Navbar, Nav, Image, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './NavBar.css';
@@ -16,39 +16,46 @@ function NavBar() {
 
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
+    console.log(loggedUser.role)
     setUser(loggedUser);
   }, [location]);
 
   return (
     location.pathname !== '/login' && location.pathname !== '/register' && user && (
-      <div>
-        <Navbar bg="dark" variant="dark" expand="lg" className="fixed-top">
-          <Navbar.Brand className="navbar-brand" href="/Welcome">
-            <Image src="/logo.png" className='navbar-logo' style={{ paddingLeft: '30px' }}/> TweGram
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-between">
-            <Nav className="mr-auto">
-              <Nav.Link href="/Explore">Explore</Nav.Link>
-              <Nav.Link href="/Profile">Profile</Nav.Link>
-              {user.role.toLowerCase() === 'admin' && <Nav.Link href="/Adminpanel">Admin Controls</Nav.Link>}
-            </Nav>
-            <Dropdown className="dropdown" style={{ paddingRight: '30px' }}>
-              <Dropdown.Toggle variant="success" id="dropdown-basic" className='dropdown-toggle'>
-                <Image src="/avatar.png" className="dropdown-toggle-img" alt="A" />
-                <span>
-                  {user.username}
-                </span>
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Navbar.Collapse>
-        </Navbar>
-        <div className="content" style={{ paddingTop: '90px' }}> {/* Apply padding to the top */}
-          {/* Your page content here */}
-        </div>
+      <div className='side-nav'>
+        <ul className='wrapper'>
+          <div className='nav-group'>
+            <div>
+              <Link to='/dashboard' class="nav-item">
+                <i className="fi fi-sr-house-chimney"></i>
+                <span>Dashboard</span>
+              </Link>
+            </div>
+            {user.role === 'Admin' || user.role === 'Management'
+              ? (<div>
+                <Link to='/adminpanel' class="nav-item">
+                  <i className="fi fi-sr-user"></i>
+                  <span>Admin Panel</span>
+                </Link>
+              </div>)
+              : (null)
+            }
+            <div class="nav-item">
+              <i className="fi fi-br-stats"></i>
+              <span>Insights</span>
+            </div>
+            <div class="nav-item">
+              <i className="fi fi-sr-settings"></i>
+              <span>Settings</span>
+            </div>
+          </div>
+          <div className='nav-group divider'>
+            <div class="nav-item" onClick={handleLogout}>
+              <i className="fi fi-br-sign-out-alt"></i>
+              <span>Logout</span>
+            </div>
+          </div>
+        </ul>
       </div>
     )
   );

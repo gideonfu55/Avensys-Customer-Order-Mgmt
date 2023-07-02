@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.OJTPO.model.PurchaseOrder;
 import com.example.OJTPO.service.PurchaseOrderService;
@@ -50,12 +51,12 @@ public class POcontroller {
 
   // For finance team to get all billable POs:
   @GetMapping("/po/all")
-  public CompletableFuture<ResponseEntity<List<PurchaseOrder>>> getBillablePOs() {
+  public CompletableFuture<List<PurchaseOrder>> getBillablePOs() {
     return purchaseOrderService.getBillablePOs().thenApply(billablePOs -> {
       if (!billablePOs.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(billablePOs);
+        return billablePOs;
       } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No billable purchase orders found");
       }
     });
   }
@@ -100,6 +101,21 @@ public class POcontroller {
       return new ResponseEntity<>("Purchase Order not found", HttpStatus.NOT_FOUND);
     } catch (InterruptedException | ExecutionException e) {
       return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // For checking if the PO is unique:
+  @GetMapping("/po/check/{poNumber}")
+  public ResponseEntity<?> checkPONumberExists(@PathVariable String poNumber) {
+    CompletableFuture<Boolean> future = purchaseOrderService.checkPONumberExists(poNumber);
+    try {
+      Boolean purchaseOrderResponse = future.get();
+      if (purchaseOrderResponse) {
+        return new ResponseEntity<>(true, HttpStatus.OK);
+      }
+      return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+    } catch (InterruptedException | ExecutionException e) {
+      return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

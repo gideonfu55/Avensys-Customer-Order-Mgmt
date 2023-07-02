@@ -1,18 +1,39 @@
 package com.example.OJTPO.service;
 
-import com.example.OJTPO.firebase.FirebaseService;
-import com.example.OJTPO.model.User;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.firebase.database.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.CompletableFuture;
+import com.example.OJTPO.firebase.FirebaseService;
+import com.example.OJTPO.model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 @Service
 public class UserService {
 
     @Autowired
     private FirebaseService firebaseService;
+
+    private DatabaseReference getDatabaseInstance() {
+        return FirebaseDatabase.getInstance().getReference();
+    }
+
+    private DatabaseReference getUserReference() {
+        return getDatabaseInstance().child("users");
+    }
 
     public CompletableFuture<User> validateUser(String username, String password) {
         CompletableFuture<User> completableFuture = new CompletableFuture<>();
@@ -36,25 +57,25 @@ public class UserService {
         DatabaseReference usersRef = firebaseService.getFirebase().child("users");
 
         usersRef.orderByChild("username")
-                .equalTo(username)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                User user = userSnapshot.getValue(User.class);
-                                completableFuture.complete(user);
-                                return;
-                            }
+            .equalTo(username)
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                            User user = userSnapshot.getValue(User.class);
+                            completableFuture.complete(user);
+                            return;
                         }
-                        completableFuture.complete(null);
                     }
+                    completableFuture.complete(null);
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        completableFuture.completeExceptionally(databaseError.toException());
-                    }
-                });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    completableFuture.completeExceptionally(databaseError.toException());
+                }
+            });
         return completableFuture;
     }
 
@@ -110,6 +131,118 @@ public class UserService {
                 completableFuture.completeExceptionally(databaseError.toException());
             }
         });
+        return completableFuture;
+    }
+    
+    //  Get All Users
+    public CompletableFuture<List<User>> getAllUsers() {
+        CompletableFuture<List<User>> completableFuture = new CompletableFuture<>();
+        DatabaseReference usersRef = firebaseService.getFirebase().child("users");
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<User> userList = new ArrayList<>();
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    User user = userSnapshot.getValue(User.class);
+                    userList.add(user);
+                }
+
+                completableFuture.complete(userList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                completableFuture.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    // Delete Users
+    public CompletableFuture<String> deleteUserByUsername(String username) {
+        if (username == null || username.equals("null")) {
+            throw new IllegalArgumentException("Username cannot be null!");
+        }
+
+        CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+        DatabaseReference usersRef = getUserReference();
+        Query query = usersRef.orderByChild("username").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        String userKey = userSnapshot.getKey();
+                        ApiFuture<Void> future = getUserReference().child(userKey).removeValueAsync();
+                        ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                completableFuture.complete("User with username: " + username + " has been deleted.");
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                completableFuture.completeExceptionally(t);
+                            }
+                        }, MoreExecutors.directExecutor());
+                        return;
+                    }
+                }
+                completableFuture.complete(null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                completableFuture.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return completableFuture;
+    }
+
+    // Update User:
+    public CompletableFuture<Boolean> updateUserByUsername(String username, User updateUser) {
+        if (username == null || username.equals("null")) {
+            throw new IllegalArgumentException("Username cannot be null!");
+        }
+
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+        DatabaseReference usersRef = getUserReference();
+        Query query = usersRef.orderByChild("username").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        User currentUser = userSnapshot.getValue(User.class);
+                        currentUser.updateWith(updateUser);
+                        userSnapshot.getRef().setValue(currentUser, (error, ref) -> {
+                            if (error == null) {
+                                completableFuture.complete(true);
+                            } else {
+                                completableFuture.completeExceptionally(error.toException());
+                            }
+                        });
+
+                        return;
+                    }
+                }
+
+                completableFuture.complete(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                completableFuture.completeExceptionally(error.toException());
+            }
+        });
+
         return completableFuture;
     }
 }

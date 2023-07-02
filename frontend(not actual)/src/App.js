@@ -4,12 +4,11 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Loading from './components/Loading'; // Import your loading component
 import Login from './components/Login';
-import Register from './components/Register';
-import Welcome from './components/Welcome';
 import Adminpanel from './components/Adminpanel';
-import Explore from './components/Explore';
-import Profile from './components/Profile';
 import PageNotFound from './components/PageNotFound';
+import Dashboard from './components/Dashboard';
+import ES from './components/ES';
+import PS from './components/PS';
 
 function App() {
   const [userRole, setUserRole] = useState(null);
@@ -39,12 +38,11 @@ function App() {
         <Loading /> // Render the loading component while isLoading is true
       ) : (
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path='/ES' element={<ES/>} />
+          <Route path='/PS' element={<PS/>} />
           {isAdmin ? (
             <Route path="/adminpanel" element={<Adminpanel />} />
           ) : null}

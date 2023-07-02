@@ -1,76 +1,88 @@
-.login-page {
-    height: 100%;
-    background-image: linear-gradient(to right, purple, blue);
-    font-family: 'Lexend Deca', sans-serif;
-    width: 100%;
-    margin: auto;
-    padding-top: 30px;
-  }
-
-  .login-pannel {
-    background-color: rgb(103, 100, 100);
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Importing Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
-.card {
-  background-color: #f4f4f4;
+.login-body {
+    background-image: url('https://inspgr.id/app/uploads/2018/04/photography-manuel-martini-11.jpg');
+    background-color: black;
+    background-size: contain;
+    background-position: center;
+    display: flex;
+    height: 100vh;
 }
 
-button {
-  width:170px;
-  height: 40px;
-  border: none;
-  outline: none;
-  background: #4c4c4c;
-  color: #fff;
-  font-size: 22px;
-  border-radius: 40px;
-  text-align: center;
-  box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  margin-bottom: 20px;
+.text-light {
+    font-weight: 300;
+    font-size: 46px;
 }
 
-svg path {
-  stroke-width: 3;
-  stroke: #fff;
-  stroke-dasharray: 34;
-  stroke-dashoffset: 34;
-  stroke-linecap: round;
+.login-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    width: 40%;
+    padding: 2rem;
 }
 
-.active {
-  background: green;
-  transition: 2s;
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    row-gap: 2rem;
 }
 
-.active p {
-  margin-right: 125px;
-  transition: 1s;
+.login-input {
+    border-radius: 0.1rem;
+    padding: .6rem;
+    width: 100%;
+    border: 1px solid #f1f1f1;
+    background-color: #202020;
+    color: #f1f1f1;
 }
 
-.active svg path {
-  stroke-dashoffset: 0;
-  transition: 1s;
-  transition-delay: 1s;
+.login-input::placeholder {
+    color: #f1f1f1;
+}
+
+.login-input:focus {
+    background-color: #202020;
+    color: #f1f1f1;
+}
+
+.signin-btn {
+    padding: .7rem;
+    font-weight: bold;
+    font-size: 14px;
+    color: #f1f1f1;
+    background-color: #3047FE;
+    border: none;
+}
+
+
+.signin-btn:hover {
+    background-color: #101a63;
+    transition: 0.2s ease-in;
+}
+
+.img-bg {
+    height: 100vh;
+    object-fit: cover;
+}
+
+.forgot-pw {
+    color: white;
+    text-align: center;
+    font-weight: 200;
+    font-size: 15px;
+}
+
+.side-image {
+    background-color: black;
+    opacity: 0.7;
+    width: 100vw;
+    padding: 3rem;
 }
