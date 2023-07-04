@@ -53,7 +53,7 @@ public class NotificationController {
       .exceptionally(e -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
   }
 
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping("/notification/{id}")
   public void deleteNotification(@PathVariable String id) {
     notificationService.deleteNotification(id);
   }

@@ -7,3 +7,7 @@
 .notification-container::-webkit-scrollbar {
   width: 0.5em;
 }
+
+.delete-btn {
+  height: 2.5rem;
+}

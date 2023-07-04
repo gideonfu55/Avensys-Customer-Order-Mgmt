@@ -9,7 +9,7 @@ function History() {
 
   const deleteHistoryItem = (id) => {
     setHistory(history.filter((notification) => notification.id !== id))
-    axios.delete(`http://localhost:8080/api/finance/notification/${id}`)
+    axios.delete(`http://localhost:8080/api/notification/${id}`)
       .then(response => {
         console.log(response)
       })
@@ -55,8 +55,12 @@ function History() {
       <h5 className='mb-4'>{role} History</h5>
       {
         history.map((n) => (
-          <div className='mt-3' style={{borderBottom:"1px solid black"}} key={n.id}>
+          <div className='mt-3 d-flex align-items-center' style={{borderBottom:"1px solid black"}} key={n.id}>
             <p>{n.message}</p>
+            <p className='text-muted'>{n.date}</p>
+            <button className='delete-btn p-1' onClick={() => deleteHistoryItem(n.id)}>
+              <i class="fi fi-sr-trash delete"></i>
+            </button>
           </div>
         ))
       }
