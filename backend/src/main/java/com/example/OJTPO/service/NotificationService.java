@@ -76,6 +76,9 @@ public class NotificationService {
     return completableFuture;
   }
 
+  public void updateNotification(String id, Notification notification) {
+    db.child("notifications").child(id).setValueAsync(notification);
+	}
 
   public void deleteNotification(String id) {
     db.child("notifications").child(id).removeValueAsync();

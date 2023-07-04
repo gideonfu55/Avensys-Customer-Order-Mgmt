@@ -11,3 +11,7 @@
 .delete-btn {
   height: 2.5rem;
 }
+
+.notification-item {
+  cursor: pointer;
+}
