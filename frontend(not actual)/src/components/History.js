@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { ToastContainer, toast } from 'react-toastify';
 import './History.css'
 
 function History() {
@@ -20,29 +19,26 @@ function History() {
   }
 
   function fetchHistory() {
+    let userRole = 'all'
+
+    if (role.toLowerCase() === 'sales') {
+      userRole = 'Sales'
+    }
+    
+    let url  = `http://localhost:8080/api/notification/${userRole}`
+
     axios
-      .get("http://localhost:8080/api/finance/notification/all/Finance")
+      .get(url)
       .then(response => {
         setHistory(response.data);
       })
       .catch(error => {
         console.error(`Error fetching notifications: ${error}`);
       });
+
   }
 
-  // - Rendering all notifications for Finance:
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/notification/all/Finance")
-      .then(response => {
-        setHistory(response.data);
-      })
-      .catch(error => {
-        console.error(`Error fetching notifications: ${error}`);
-      });
-  }, []);
-
-  // - To fetch Finance notifications periodically (every 10s):
+  // - To fetch notifications by role periodically (every 60s):
   useEffect(() => {
     fetchHistory();
 
@@ -56,15 +52,9 @@ function History() {
 
   return (
     <div className="notification-container">
-      <ToastContainer/>
       <h5 className='mb-4'>{role} History</h5>
-      {role.toLowerCase() === 'sales'
-        ? history.filter(n => !n.message.includes('update') && !n.message.includes('delete') && !n.message.includes('Invoice')).map((n) => (
-          <div key={n.id}>
-            <p>{n.message}</p>
-          </div>
-        ))
-        : history.map((n) => (
+      {
+        history.map((n) => (
           <div className='mt-3' style={{borderBottom:"1px solid black"}} key={n.id}>
             <p>{n.message}</p>
           </div>

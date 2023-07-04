@@ -98,9 +98,7 @@ function Dashboard() {
             
             {/* Used for rendering notifications by role */}
             <div className='highlight-3'>
-              <>
-                <History />
-              </>
+              <History />
             </div>
           </div>
         </div>

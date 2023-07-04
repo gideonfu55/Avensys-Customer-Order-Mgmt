@@ -8,6 +8,7 @@ public class Notification {
   private String message;
   private String createdAt;
   private boolean isRead;
+  private String notificationType;
 
   public Notification() {
   }
@@ -67,6 +68,14 @@ public class Notification {
 
   public void setIsRead(boolean isRead) {
     this.isRead = isRead;
+  }
+
+  public String getNotificationType() {
+    return notificationType;
+  }
+
+  public void setNotificationType(String notificationType) {
+    this.notificationType = notificationType;
   }
 
 }

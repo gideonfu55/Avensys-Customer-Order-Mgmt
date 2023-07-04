@@ -40,14 +40,14 @@ function NavBar() {
               </div>)
               : (null)
             }
-            <div class="nav-item">
+            {/* <div class="nav-item">
               <i className="fi fi-br-stats"></i>
               <span>Insights</span>
             </div>
             <div class="nav-item">
               <i className="fi fi-sr-settings"></i>
               <span>Settings</span>
-            </div>
+            </div> */}
           </div>
           <div className='nav-group divider'>
             <div class="nav-item" onClick={handleLogout}>

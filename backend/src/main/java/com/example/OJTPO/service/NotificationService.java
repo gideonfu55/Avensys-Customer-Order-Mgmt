@@ -29,7 +29,8 @@ public class NotificationService {
     db.child("notifications").child(id).setValueAsync(notification).get();
   }
 
-  public List<Notification> getAllNotifications() {
+  public CompletableFuture<List<Notification>> getAllNotifications() {
+    CompletableFuture<List<Notification>> completableFuture = new CompletableFuture<>();
     List<Notification> notifications = new ArrayList<>();
 
     db.child("notifications").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -39,14 +40,17 @@ public class NotificationService {
           Notification notification = ds.getValue(Notification.class);
           notifications.add(notification);
         }
+        completableFuture.complete(notifications);
       }
 
       @Override
       public void onCancelled(DatabaseError databaseError) {
+        // You should handle cancellation/error here
+        completableFuture.completeExceptionally(databaseError.toException());
       }
     });
 
-    return notifications;
+    return completableFuture;
   }
 
   public CompletableFuture<List<Notification>> getAllNotificationsByRole(String userRole) {

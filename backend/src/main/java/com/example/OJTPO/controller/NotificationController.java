@@ -1,6 +1,7 @@
 package com.example.OJTPO.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,17 @@ public class NotificationController {
     }
   }
 
-  @GetMapping("/notification/all/{userRole}")
+  @GetMapping("/notification/{userRole}")
   public ResponseEntity<List<Notification>> getAllNotificationsByRole(@PathVariable String userRole) throws ExecutionException, InterruptedException {
     List<Notification> notifications = notificationService.getAllNotificationsByRole(userRole).get();
     return ResponseEntity.ok(notifications);
+  }
+
+  @GetMapping("/notification/all")
+  public CompletableFuture<ResponseEntity<List<Notification>>> getAllNotifications() throws ExecutionException, InterruptedException {
+    return notificationService.getAllNotifications()
+      .thenApply(ResponseEntity::ok)
+      .exceptionally(e -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
   }
 
   @DeleteMapping("/delete/{id}")
