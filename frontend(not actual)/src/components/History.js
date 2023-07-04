@@ -38,7 +38,10 @@ function History() {
     setIsModalOpen(false);
   };
 
-  const deleteHistoryItem = (id) => {
+  const deleteHistoryItem = (event, id) => {
+
+    event.stopPropagation() // Prevents the notification from being clicked
+
     setHistory(history.filter((notification) => notification.id !== id))
     axios.delete(`http://localhost:8080/api/notification/${id}`)
       .then(response => {
@@ -89,7 +92,7 @@ function History() {
           <div className='mt-3 d-flex align-items-center' style={{borderBottom:"1px solid black", fontWeight: n.isRead ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
             <p className='notification-item'>{n.message}</p>
             <p className='text-muted'>{n.date}</p>
-            <button className='delete-btn p-1' onClick={() => deleteHistoryItem(n.id)}>
+            <button className='delete-btn p-1' onClick={(event) => deleteHistoryItem(event, n.id)}>
               <i class="fi fi-sr-trash delete"></i>
             </button>
           </div>
@@ -106,7 +109,11 @@ function History() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Close</Button>
-          <Button variant="primary" onClick={handleMarkAsRead}>Mark as read</Button>
+          {
+            currentNotification && !currentNotification.isRead && (
+              <Button variant="primary" onClick={handleMarkAsRead}>Mark as read</Button>
+            )
+          }
         </Modal.Footer>
       </Modal>
     </div>
