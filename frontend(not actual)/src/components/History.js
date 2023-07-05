@@ -1,16 +1,49 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { ToastContainer, toast } from 'react-toastify';
 import './History.css'
+import { Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button'
 
 function History() {
 
   const [ history, setHistory ] = useState([]);
   const role = localStorage.getItem('role');
 
-  const deleteHistoryItem = (id) => {
+  // For notification modal:
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentNotification, setCurrentNotification] = useState(null);
+
+  const handleNotificationClick = (notification) => {
+    setCurrentNotification(notification);
+    setIsModalOpen(true);
+  };
+
+  const handleMarkAsRead = () => {
+
+    setHistory(history.map((notification) => {
+      if (notification.id === currentNotification.id) {
+        notification.isRead = true;
+      }
+      return notification;
+    }));
+
+    axios.put(`http://localhost:8080/api/notification/${currentNotification.id}`, currentNotification)
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => {
+        console.error(`Error updating notification: ${error}`)
+      })
+
+    setIsModalOpen(false);
+  };
+
+  const deleteHistoryItem = (event, id) => {
+
+    event.stopPropagation() // Prevents the notification from being clicked
+
     setHistory(history.filter((notification) => notification.id !== id))
-    axios.delete(`http://localhost:8080/api/finance/notification/${id}`)
+    axios.delete(`http://localhost:8080/api/notification/${id}`)
       .then(response => {
         console.log(response)
       })
@@ -20,29 +53,26 @@ function History() {
   }
 
   function fetchHistory() {
+    let userRole = 'all'
+
+    if (role.toLowerCase() === 'sales') {
+      userRole = 'Sales'
+    }
+    
+    let url  = `http://localhost:8080/api/notification/${userRole}`
+
     axios
-      .get("http://localhost:8080/api/finance/notification/all/Finance")
+      .get(url)
       .then(response => {
         setHistory(response.data);
       })
       .catch(error => {
         console.error(`Error fetching notifications: ${error}`);
       });
+
   }
 
-  // - Rendering all notifications for Finance:
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/notification/all/Finance")
-      .then(response => {
-        setHistory(response.data);
-      })
-      .catch(error => {
-        console.error(`Error fetching notifications: ${error}`);
-      });
-  }, []);
-
-  // - To fetch Finance notifications periodically (every 10s):
+  // - To fetch notifications by role periodically (every 60s):
   useEffect(() => {
     fetchHistory();
 
@@ -56,20 +86,36 @@ function History() {
 
   return (
     <div className="notification-container">
-      <ToastContainer/>
       <h5 className='mb-4'>{role} History</h5>
-      {role.toLowerCase() === 'sales'
-        ? history.filter(n => !n.message.includes('update') && !n.message.includes('delete') && !n.message.includes('Invoice')).map((n) => (
-          <div key={n.id}>
-            <p>{n.message}</p>
-          </div>
-        ))
-        : history.map((n) => (
-          <div className='mt-3' style={{borderBottom:"1px solid black"}} key={n.id}>
-            <p>{n.message}</p>
+      {
+        history.map((n) => (
+          <div className='mt-3 d-flex align-items-center' style={{borderBottom:"1px solid black", fontWeight: n.isRead ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
+            <p className='notification-item'>{n.message}</p>
+            <p className='text-muted'>{n.date}</p>
+            <button className='delete-btn p-1' onClick={(event) => deleteHistoryItem(event, n.id)}>
+              <i class="fi fi-sr-trash delete"></i>
+            </button>
           </div>
         ))
       }
+
+      {/* Modal for message */}
+      <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {currentNotification && currentNotification.message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Close</Button>
+          {
+            currentNotification && !currentNotification.isRead && (
+              <Button variant="primary" onClick={handleMarkAsRead}>Mark as read</Button>
+            )
+          }
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
