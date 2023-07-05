@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { Navbar, Nav, Image, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './NavBar.css';
+import axios from 'axios';
 
 function NavBar() {
   const location = useLocation();
@@ -15,9 +16,13 @@ function NavBar() {
   };
 
   useEffect(() => {
+
+    const username = localStorage.getItem('username');
+
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    console.log(loggedUser.role)
-    setUser(loggedUser);
+    if(loggedUser) {
+      setUser(loggedUser);
+    }
   }, [location]);
 
   return (
