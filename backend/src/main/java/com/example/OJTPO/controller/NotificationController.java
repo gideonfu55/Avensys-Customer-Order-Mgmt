@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.OJTPO.model.Notification;
+import com.example.OJTPO.model.User;
 import com.example.OJTPO.service.NotificationService;
 
 @RestController
@@ -45,6 +46,16 @@ public class NotificationController {
     try {
       notificationService.updateNotification(id, notification);
       return new ResponseEntity<>("Notification updated successfully", HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PutMapping("/notification/{id}/read")
+  public ResponseEntity<String> markNotificationAsRead(@PathVariable String id, @RequestBody User user) {
+    try {
+      notificationService.markNotificationAsRead(id, user);
+      return new ResponseEntity<>("Notification marked as read successfully", HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

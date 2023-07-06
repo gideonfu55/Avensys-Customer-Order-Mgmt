@@ -8,6 +8,7 @@ function History() {
 
   const [ history, setHistory ] = useState([]);
   const role = localStorage.getItem('role');
+  const user = JSON.parse(localStorage.getItem('user'));
 
   // For notification modal:
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,20 +21,15 @@ function History() {
 
   const handleMarkAsRead = () => {
 
-    setHistory(history.map((notification) => {
-      if (notification.id === currentNotification.id) {
-        notification.isRead = true;
-      }
-      return notification;
-    }));
-
-    axios.put(`http://localhost:8080/api/notification/${currentNotification.id}`, currentNotification)
-      .then(response => {
-        console.log(response)
+    // Send the user ID in the request body
+    axios.put(`http://localhost:8080/api/notification/${currentNotification.id}/read`, user)
+      .then(() => {
+        console.log(user.id)
+        fetchHistory();  // Refresh the history after marking a notification as read
       })
       .catch(error => {
         console.error(`Error updating notification: ${error}`)
-      })
+      });
 
     setIsModalOpen(false);
   };
@@ -43,6 +39,7 @@ function History() {
     event.stopPropagation() // Prevents the notification from being clicked
 
     setHistory(history.filter((notification) => notification.id !== id))
+
     axios.delete(`http://localhost:8080/api/notification/${id}`)
       .then(response => {
         console.log(response)
@@ -82,14 +79,14 @@ function History() {
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, []);
+  });
 
   return (
     <div className="notification-container">
       <h5 className='mb-4'>{role} History</h5>
       {
         history.map((n) => (
-          <div className='mt-3 d-flex align-items-center' style={{borderBottom:"1px solid black", fontWeight: n.isRead ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
+          <div className='mt-3 d-flex align-items-center' style={{borderBottom:"1px solid black", fontWeight: n.readByUser.includes(user.id.toString()) ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
             <p className='notification-item'>{n.message}</p>
             <p className='text-muted'>{n.date}</p>
             <button className='delete-btn p-1' onClick={(event) => deleteHistoryItem(event, n.id)}>
@@ -110,7 +107,7 @@ function History() {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Close</Button>
           {
-            currentNotification && !currentNotification.isRead && (
+            currentNotification && (
               <Button variant="primary" onClick={handleMarkAsRead}>Mark as read</Button>
             )
           }
