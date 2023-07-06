@@ -82,35 +82,70 @@ function Dashboard() {
       <ToastContainer />
       <NavBar />
       <div className='dashboard-content'>
-        <h1>Welcome back, {user.username}!</h1>
+        <div className='dashboard-content-inner'>
+          <div className='dashboard-details'>
+            <h1>Welcome back,  {user.username}!</h1>
+            <div className='highlight-container'>
+              <div className='ongoing-card'>
+                <h1 className="title">{outstandingCount}</h1>
+                <div className="content">
+                  <span>Ongoing Projects</span>
+                </div>
+              </div>{user.role.toLowerCase() === 'sales' && (
+                <div className='createpo-card'>
+
+                  <div className='po-creation-card'>
+                    <p>Ready to create a purchase order?</p>
+                    <button className='btn btn-light' type='button' onClick={handleCreatePO}>Create PO</button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className='notification-container'>
+              <History />
+            </div>
+          </div>
+          <div className='po-tables' >
+            <div className='es-po'>
+              <h1>Enterprise Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
+              <Link to='/es'><button type='button' className='btn btn-dark'>View More</button></Link>
+            </div>
+            <div className='ts-po'>
+              <h1>Talent Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
+              <Link to='/ps'><button className='btn btn-dark'>View More</button></Link>
+            </div>
+          </div>
+        </div>
+
+
+
+
         {/* Highlights */}
-        <div className='highlight-overview'>
+        {/* <div className='highlight-overview'>
           <h5>Overview</h5>
           <div className='highlights'>
 
-          <div className="highlight-1">
-            <h1 className="title">{outstandingCount}</h1>
-            <div className="content">
-              <span>Ongoing Projects</span>
+            <div className="highlight-1">
+              <h1 className="title">{outstandingCount}</h1>
+              <div className="content">
+                <span>Ongoing Projects</span>
+              </div>
             </div>
-          </div>
 
-            
-            {/* Used for rendering notifications by role */}
             <div className='highlight-3'>
               <History />
             </div>
           </div>
-        </div>
-        {/* Add PO Button? */}
-        {user.role.toLowerCase() === 'sales' && (
+        </div> */}
+        {/* Add PO Button */}
+        {/* {user.role.toLowerCase() === 'sales' && (
             <div className='po-creation-card'>
               <p>Ready to create a purchase order?</p>
               <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
             </div>
-          )}
+          )} */}
         {/* View Different Tables */}
-        <div className='po-types'>
+        {/* <div className='po-types'>
           <h5>View Tables</h5>
           <div className='po-tables'>
             <div className='po-table-1'>
@@ -130,7 +165,7 @@ function Dashboard() {
               </Link>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {loadModal && (
@@ -140,12 +175,12 @@ function Dashboard() {
           </Modal.Header>
           <Modal.Body>
             {
-              showPOForm && 
-              user && 
-              <CreatePO 
-                onPoCreated={handlePoCreated} 
-                onPoCreationError={handlePoCreationError} 
-                closeModal={handlePOFormClose} 
+              showPOForm &&
+              user &&
+              <CreatePO
+                onPoCreated={handlePoCreated}
+                onPoCreationError={handlePoCreationError}
+                closeModal={handlePOFormClose}
               />
             }
           </Modal.Body>
