@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
+  const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,19 +22,32 @@ function Login() {
     }
 
     axios
-      .post('http://localhost:8080/login', {
-        username,
-        password,
-      })
+  .post('http://localhost:8080/login', {
+    username,
+    password,
+  })
+  .then(response => {
+    console.log(response.data);
+    localStorage.setItem('username', username); // Save username
+    navigate('/dashboard');
+
+    axios
+      .get(`http://localhost:8080/user/${username}`)
       .then(response => {
-        console.log(response.data);
-        localStorage.setItem('username', username); // Save username
-        navigate('/dashboard');
+        setUser(response.data);
+        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('role', response.data.role); // Move this line inside the inner promise
       })
       .catch(error => {
-        console.error(`Error: ${error}`);
-        setError('Invalid username or password');
+        console.error(`Error fetching user data: ${error}`);
+        navigate('/login');
       });
+  })
+  .catch(error => {
+    console.error(`Error: ${error}`);
+    setError('Invalid username or password');
+  });
+
   };
 
   useEffect(() => {

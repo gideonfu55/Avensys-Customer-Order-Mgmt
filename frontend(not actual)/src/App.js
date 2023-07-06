@@ -30,7 +30,7 @@ function App() {
       });
   }, []);
 
-  const isAdmin = userRole && userRole.toLowerCase() === 'admin';
+  const isAdmin = userRole && userRole.toLowerCase() === 'management';
 
   return (
     <div className="App">

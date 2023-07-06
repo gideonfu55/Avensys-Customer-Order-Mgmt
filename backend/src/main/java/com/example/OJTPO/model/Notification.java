@@ -1,5 +1,8 @@
 package com.example.OJTPO.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Notification {
 
   private String id;
@@ -7,18 +10,20 @@ public class Notification {
   private String userRole;
   private String message;
   private String createdAt;
-  private boolean isRead;
+  private List<String> readByUser;
+  private String notificationType;
 
   public Notification() {
+    this.readByUser = new ArrayList<>();
   }
 
-  public Notification(String id, String username, String userRole, String message, String createdAt, boolean isRead) {
+  public Notification(String id, String username, String userRole, String message, String createdAt) {
     this.id = id;
     this.username = username;
     this.userRole = userRole;
     this.message = message;
     this.createdAt = createdAt;
-    this.isRead = isRead;
+    this.readByUser = new ArrayList<>();
   }
 
   public String getId() {
@@ -61,12 +66,20 @@ public class Notification {
     this.createdAt = createdAt;
   }
 
-  public boolean getIsRead() {
-    return this.isRead;
+  public List<String> getReadByUser() {
+    return this.readByUser;
   }
 
-  public void setIsRead(boolean isRead) {
-    this.isRead = isRead;
+  public void setReadByUser(List<String> readByUser) {
+    this.readByUser = readByUser;
+  }
+
+  public String getNotificationType() {
+    return notificationType;
+  }
+
+  public void setNotificationType(String notificationType) {
+    this.notificationType = notificationType;
   }
 
 }
