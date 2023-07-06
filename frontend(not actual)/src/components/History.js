@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 
 function History() {
 
-  const [ history, setHistory ] = useState([]);
+  const [history, setHistory] = useState([]);
   const role = localStorage.getItem('role');
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -55,8 +55,8 @@ function History() {
     if (role.toLowerCase() === 'sales') {
       userRole = 'Sales'
     }
-    
-    let url  = `http://localhost:8080/api/notification/${userRole}`
+
+    let url = `http://localhost:8080/api/notification/${userRole}`
 
     axios
       .get(url)
@@ -86,11 +86,10 @@ function History() {
       <h5 className='mb-4'>{role} History</h5>
       {
         history.map((n) => (
-          <div className='mt-3 d-flex align-items-center' style={{borderBottom:"1px solid black", fontWeight: n.readByUser.includes(user.id.toString()) ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
-            <p className='notification-item'>{n.message}</p>
-            <p className='text-muted'>{n.date}</p>
-            <button className='delete-btn p-1' onClick={(event) => deleteHistoryItem(event, n.id)}>
-              <i class="fi fi-sr-trash delete"></i>
+          <div className='history-card'>
+            {n.message}
+            <button className='btn' onClick={(event) => deleteHistoryItem(event, n.id)}>
+              <i class="fi fi-rr-cross-small"></i>
             </button>
           </div>
         ))

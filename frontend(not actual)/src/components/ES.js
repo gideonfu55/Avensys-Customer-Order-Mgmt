@@ -18,7 +18,7 @@ function ES() {
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
   const navigate = useNavigate();
-  
+
   const [ES, setES] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -71,33 +71,33 @@ function ES() {
 
   const handleDeletePO = (id, poNumber) => {
     if (window.confirm(`Are you sure you want to delete purchase order ${poNumber}?`)) {
-    axios
-      .delete(`http://localhost:8080/api/po/delete/${id}`)
-      .then((response) => {
-        setES((prevES) => prevES.filter((po) => po.id !== id));
-
-        // Create delete notification:
-        const notification = {
-          message: `PO ${poNumber} has been deleted by ${username} on ${new Date().toLocaleDateString()}`,
-          userRole: `${role}`,
-        };
-
-        // Post notification to Database:
-        axios.post('http://localhost:8080/api/notification/create', notification)
+      axios
+        .delete(`http://localhost:8080/api/po/delete/${id}`)
         .then((response) => {
-          console.log(response.data)
+          setES((prevES) => prevES.filter((po) => po.id !== id));
+
+          // Create delete notification:
+          const notification = {
+            message: `PO ${poNumber} has been deleted by ${username} on ${new Date().toLocaleDateString()}`,
+            userRole: `${role}`,
+          };
+
+          // Post notification to Database:
+          axios.post('http://localhost:8080/api/notification/create', notification)
+            .then((response) => {
+              console.log(response.data)
+            })
+            .catch((error) => {
+              console.log('Error creating notification:', error);
+            });
+
+          toast.success(`Purchase order ${poNumber} deleted successfully!`)
         })
+
         .catch((error) => {
-          console.log('Error creating notification:', error);
+          console.error(error);
+          toast.error(`Error deleting purchase order ${poNumber}!`);
         });
-
-        toast.success(`Purchase order ${poNumber} deleted successfully!`)
-      })
-
-      .catch((error) => {
-        console.error(error);
-        toast.error(`Error deleting purchase order ${poNumber}!`);
-      });
     }
   };
 
@@ -236,9 +236,9 @@ function ES() {
                 Status
               </th>
               {role.toLowerCase() === 'finance' && (
-              <th scope='col' className='text-center'>
-                Actions
-              </th>
+                <th scope='col' className='text-center'>
+                  Actions
+                </th>
               )}
             </tr>
           </thead>
@@ -256,39 +256,34 @@ function ES() {
                 <td>{po.balValue}</td>
                 <td>{po.status}</td>
                 {role.toLowerCase() === 'finance' && (
-                <td>
-                  <div className='button-container'>
-                    <button
-                      type='button'
-                      className='btn btn-dark'
-                      onClick={() => {
-                        setSelectedPO(po);
-                        setShowPOModal(true);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
-                    <button
-                      type='button'
-                      className='btn btn-dark'
-                      onClick={() => handleEditPO(po)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      className='btn btn-dark'
-                      onClick={() => {
-                        setSelectedPO(po);
-                        setShowInvoiceModal(true);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id, po.poNumber)}>
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </div>
-                </td>
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fi fi-br-menu-dots"></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a
+                          class="dropdown-item"
+                          onClick={() => {
+                            setSelectedPO(po);
+                            setShowPOModal(true);
+                          }}>
+                          <i class="fi fi-rr-eye"></i> View PO
+                        </a>
+                        <a class="dropdown-item" onClick={() => handleEditPO(po)}>
+                          <i class="fi fi-rr-edit"></i> Edit PO
+                        </a>
+                        <a class="dropdown-item" onClick={() => {
+                          setSelectedPO(po);
+                          setShowInvoiceModal(true);
+                        }}><i class="fi fi-rr-add-document"></i> Create Invoice
+                        </a>
+                        <a className="dropdown-item" onClick={() => handleDeletePO(po.id, po.poNumber)}>
+                          <i class="fi fi-rr-trash"></i> Delete PO
+                        </a>
+                      </div>
+                    </div>
+                  </td>
                 )}
               </tr>
             ))}

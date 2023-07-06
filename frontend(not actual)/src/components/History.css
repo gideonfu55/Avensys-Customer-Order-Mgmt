@@ -15,3 +15,17 @@
 .notification-item {
   cursor: pointer;
 }
+
+.history-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1rem;
+  margin: .7rem 0rem .7rem 0rem;
+  border-radius: .7rem;
+}
+
+.history-card .btn:hover {
+  color: maroon;
+}

@@ -84,12 +84,12 @@ function PS() {
 
           // Post notification to Database:
           axios.post('http://localhost:8080/api/notification/create', notification)
-          .then((response) => {
-            console.log(response.data)
-          })
-          .catch((error) => {
-            console.log('Error creating notification:', error);
-          });
+            .then((response) => {
+              console.log(response.data)
+            })
+            .catch((error) => {
+              console.log('Error creating notification:', error);
+            });
 
           toast.success(`Purchase order ${poNumber} deleted successfully!`);
         })
@@ -235,9 +235,9 @@ function PS() {
                 Status
               </th>
               {role.toLowerCase() === 'finance' && (
-              <th scope='col'>
-                Actions
-              </th>
+                <th scope='col' className='text-center'>
+                  Actions
+                </th>
               )}
             </tr>
           </thead>
@@ -255,8 +255,37 @@ function PS() {
                 <td>{po.balValue}</td>
                 <td>{po.status}</td>
                 {role.toLowerCase() === 'finance' && (
-                <td>
-                  <div className='button-container'>
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fi fi-br-menu-dots"></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item"
+                          onClick={() => {
+                            setSelectedPO(po);
+                            setShowPOModal(true);
+                          }}>
+                          <i class="fi fi-rr-eye"></i> View PO
+                        </a>
+                        <a class="dropdown-item"
+                          onClick={() => handleEditPO(po)}>
+                          <i class="fi fi-rr-edit"></i> Edit PO
+                        </a>
+                        <a class="dropdown-item"
+                          onClick={() => {
+                            setSelectedPO(po);
+                            setShowInvoiceModal(true);
+                          }}>
+                          <i class="fi fi-rr-add-document"></i> Create Invoice
+                        </a>
+                        <a class="dropdown-item"
+                          onClick={() => handleDeletePO(po.id, po.poNumber)}>
+                          <i class="fi fi-rr-trash"></i> Delete PO
+                        </a>
+                      </div>
+                    </div>
+                    {/* <div className='button-container'>
                     <button
                       type='button'
                       className='btn btn-dark'
@@ -286,8 +315,8 @@ function PS() {
                     <button className='btn btn-dark' onClick={() => handleDeletePO(po.id, po.poNumber)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
-                  </div>
-                </td>
+                  </div> */}
+                  </td>
                 )}
               </tr>
             ))}
