@@ -8,7 +8,12 @@ function CreatePO(props) {
   const role = localStorage.getItem('role');
 
   const [poNumber, setPONumber] = useState('');
+
+  // For PO validation:
   const [poNumberError, setPONumberError] = useState(null);
+  const [totalValueError, setTotalValueError] = useState(null);
+  const [balValueError, setBalValueError] = useState(null);
+  const [milestoneError, setMilestoneError] = useState(null);
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -46,13 +51,36 @@ function CreatePO(props) {
   }, [poNumber]);
 
   const handleChange = (event) => {
+
     const { name, value } = event.target;
 
     if (name === 'poNumber') {
       setPONumber(value);
-    } else {
-      setPoData((prevState) => ({ ...prevState, [name]: value }));
+      return;
     }
+
+    if (name === 'milestone') {
+      if (value >= 0 && value <= 100) {
+        setPoData((prevState) => ({ ...prevState, milestone: value }));
+        setMilestoneError(null);
+      } else {
+        setMilestoneError('Milestone must be a number between 0 and 100');
+      }
+      return;
+    }
+
+    if (name === 'totalValue' || name === 'balValue') {
+      if (value >= 0) {
+        setPoData((prevState) => ({ ...prevState, [name]: value }));
+        name === 'totalValue' ? setTotalValueError(null) : setBalValueError(null);
+      } else {
+        name === 'totalValue' ? setTotalValueError('Total value must be a positive number') : setBalValueError('Balance value must be a positive number');
+      }
+      return;
+    }
+
+    // Handle other fields
+    setPoData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handlePONumberChange = (event) => {
@@ -80,6 +108,10 @@ function CreatePO(props) {
     // }
     
     return projectNumber;
+
+  const handlePONumberChange = (event) => {
+    setPONumber(event.target.value);
+    setPONumberError(null);
   };
 
   const handleSubmit = (event) => {
@@ -147,6 +179,7 @@ function CreatePO(props) {
       props.onPoCreationError();
     });
   };
+}
 
   return (
     <div>
@@ -213,9 +246,15 @@ function CreatePO(props) {
             name="totalValue"
             value={poData.totalValue}
             onChange={handleChange}
-            className='form-control'
+            className={`form-control ${totalValueError ? 'is-invalid' : ''}`}
             placeholder='Enter Total Value'
           />
+          {
+            totalValueError &&
+            <div className="invalid-feedback">
+              {totalValueError}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="totalValue">Balance Value</label>
@@ -225,9 +264,15 @@ function CreatePO(props) {
             name="balValue"
             value={poData.balValue}
             onChange={handleChange}
-            className='form-control'
+            className={`form-control ${balValueError ? 'is-invalid' : ''}`}
             placeholder='Enter Balance Value'
           />
+          {
+            balValueError &&
+            <div className="invalid-feedback">
+              {balValueError}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="milestone">Milestone</label>
@@ -237,9 +282,15 @@ function CreatePO(props) {
             name="milestone"
             value={poData.milestone}
             onChange={handleChange}
-            className='form-control'
+            className={`form-control ${milestoneError ? 'is-invalid' : ''}`}
             placeholder='Enter Milestone'
           />
+          {
+            milestoneError &&
+            <div className="invalid-feedback">
+              {milestoneError}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="type">Type</label>
@@ -253,9 +304,10 @@ function CreatePO(props) {
             <option value="" disabled>Select Type</option>
             <option value="Enterprise Service">Enterprise Service</option>
             <option value="Talent Service">Talent Service</option>
-            <option value="Professional Service">Professional Service</option>
+            {/* <option value="Professional Service">Professional Service</option> */}
           </select>
         </div>
+
         {/* <div>
           <label htmlFor="status">Status</label>
           <select
@@ -274,7 +326,13 @@ function CreatePO(props) {
           </select>
         </div> */}
         
-        <button type="submit" className='btn btn-primary'>Create Purchase Order</button>
+        <button 
+          type="submit"
+          className='btn btn-primary'
+          disabled={ totalValueError || balValueError || milestoneError || poNumberError }
+        >
+          Create Purchase Order
+        </button>
       </form>
     </div>
   );
