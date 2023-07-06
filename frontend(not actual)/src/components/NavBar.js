@@ -9,11 +9,14 @@ function NavBar() {
   const location = useLocation();
   const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('user');
+  const handleLogout = async () => {
     window.location.href = '/login';
+    await new Promise(resolve => setTimeout(resolve, 100)); 
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
   };
+  
 
   useEffect(() => {
 

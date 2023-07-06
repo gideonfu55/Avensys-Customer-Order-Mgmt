@@ -17,6 +17,7 @@ function CreatePO(props) {
 
   const [poData, setPoData] = useState({
     poNumber: '',
+    prjNumber: '',
     clientName: '',
     startDate: '',
     endDate: '',
@@ -42,7 +43,7 @@ function CreatePO(props) {
           console.error('Error checking PO number:', error);
         }
       } else {
-        setPONumberError(null);  // If the PO number is empty, clear the error
+        setPONumberError(null);  
       }
     };
   
@@ -87,10 +88,37 @@ function CreatePO(props) {
     setPONumberError(null);
   };
 
+  const generateRandomProjectNumber = () => {
+    //const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    //const digits = '0123456789';
+    const combine = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  
+    let projectNumber = '';
+    
+    for (let i = 0; i < 8; i++) {
+      projectNumber += combine.charAt(Math.floor(Math.random() * combine.length));
+    }
+    
+    // for (let i = 0; i < 4; i++) {
+    //   projectNumber += letters.charAt(Math.floor(Math.random() * letters.length));
+    // }
+    
+    // for (let i = 0; i < 2; i++) {
+    //   projectNumber += digits.charAt(Math.floor(Math.random() * digits.length));
+    // }
+    
+    return projectNumber;
+
+  const handlePONumberChange = (event) => {
+    setPONumber(event.target.value);
+    setPONumberError(null);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const createdAt = new Date().toISOString();
-    const newPO = { ...poData, poNumber, createdAt };
+    const prjNumber = generateRandomProjectNumber();
+    const newPO = { ...poData, poNumber,prjNumber, createdAt };
 
     if (poNumberError) {
       return;
@@ -151,6 +179,7 @@ function CreatePO(props) {
       props.onPoCreationError();
     });
   };
+}
 
   return (
     <div>

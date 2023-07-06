@@ -246,7 +246,7 @@ function ES() {
             {searchedES.map((po) => (
               <tr className='text-center align-middle' key={po.id}>
                 <td>{po.poNumber}</td>
-                <td></td>
+                <td>{po.prjNumber}</td>
                 <td>{po.clientName}</td>
                 <td>{po.type}</td>
                 <td>{po.startDate}</td>
