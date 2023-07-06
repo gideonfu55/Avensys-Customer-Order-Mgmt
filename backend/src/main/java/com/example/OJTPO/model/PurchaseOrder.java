@@ -4,6 +4,7 @@ public class PurchaseOrder {
 
   private Long id;
   private String poNumber;
+  private String prjNumber;
   private String clientName;
   private String startDate;
   private String endDate;
@@ -16,9 +17,10 @@ public class PurchaseOrder {
   public PurchaseOrder() {
   }
 
-  public PurchaseOrder(Long id, String poNumber, String clientName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
+  public PurchaseOrder(Long id, String poNumber, String prjNumber, String clientName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
     this.id = id;
     this.poNumber = poNumber;
+    this.prjNumber = prjNumber;
     this.clientName = clientName;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -112,13 +114,22 @@ public class PurchaseOrder {
   public void updateWith(PurchaseOrder newPurchaseOrder) {
     this.clientName = newPurchaseOrder.clientName != null ? newPurchaseOrder.clientName : this.clientName;
     this.poNumber = newPurchaseOrder.poNumber != null ? newPurchaseOrder.poNumber : this.poNumber;
+    this.prjNumber= newPurchaseOrder.prjNumber != null ? newPurchaseOrder.prjNumber : this.prjNumber;
     this.startDate = newPurchaseOrder.startDate != null ? newPurchaseOrder.startDate : this.startDate;
     this.endDate = newPurchaseOrder.endDate != null ? newPurchaseOrder.endDate : this.endDate;
     this.totalValue = newPurchaseOrder.totalValue != 0 ? newPurchaseOrder.totalValue : this.totalValue;
-    this.balValue = newPurchaseOrder.balValue != 0 ? newPurchaseOrder.balValue : this.balValue;
+    this.balValue = newPurchaseOrder.balValue >= 0 ? newPurchaseOrder.balValue : this.balValue;
     this.milestone = newPurchaseOrder.milestone != null ? newPurchaseOrder.milestone : this.milestone;
     this.type = newPurchaseOrder.type != null ? newPurchaseOrder.type : this.type;
     this.status = newPurchaseOrder.status != null ? newPurchaseOrder.status : this.status;
   }
+
+public String getPrjNumber() {
+	return prjNumber;
+}
+
+public void setPrjNumber(String prjNumber) {
+	this.prjNumber = prjNumber;
+}
   
 }

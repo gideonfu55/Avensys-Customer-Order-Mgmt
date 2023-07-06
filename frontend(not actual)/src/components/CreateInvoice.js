@@ -81,24 +81,23 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
         console.error('Error creating invoice:', error);
       });
 
-    if (newInvoice.status === "Paid" && selectedPO.balValue > newInvoice.amount) {
+    if (newInvoice.status === "Paid" && selectedPO.balValue >= newInvoice.amount) {
       const updatedBalValue = selectedPO.balValue - newInvoice.amount;
       let updatedMilestone;
+      let updatedStatus;
 
       if (isPS) {
-        const startDate = new Date(selectedPO.startDate);
-        const endDate = new Date(selectedPO.endDate)
-        const numberOfYears = endDate.getFullYear() - startDate.getFullYear();
-        const numberOfMonths = numberOfYears * 12 + (endDate.getMonth() - startDate.getMonth());
-  
-        const percentageIncrement = 100 / numberOfMonths;
-        const milestoneAsNumber = parseInt(selectedPO.milestone, 10);
-        updatedMilestone = (milestoneAsNumber + percentageIncrement).toFixed(2).toString();
+        updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
+      }
+
+      if (updatedBalValue === 0) {
+        updatedStatus = "Completed"
       }
 
       const patchData = {
         balValue: updatedBalValue,
-        milestone: updatedMilestone
+        milestone: updatedMilestone,
+        status: updatedStatus
       };
 
       axios

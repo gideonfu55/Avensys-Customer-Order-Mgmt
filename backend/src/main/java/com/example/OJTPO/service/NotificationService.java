@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.stereotype.Service;
 
 import com.example.OJTPO.model.Notification;
+import com.example.OJTPO.model.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +30,8 @@ public class NotificationService {
     db.child("notifications").child(id).setValueAsync(notification).get();
   }
 
-  public List<Notification> getAllNotifications() {
+  public CompletableFuture<List<Notification>> getAllNotifications() {
+    CompletableFuture<List<Notification>> completableFuture = new CompletableFuture<>();
     List<Notification> notifications = new ArrayList<>();
 
     db.child("notifications").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -39,14 +41,17 @@ public class NotificationService {
           Notification notification = ds.getValue(Notification.class);
           notifications.add(notification);
         }
+        completableFuture.complete(notifications);
       }
 
       @Override
       public void onCancelled(DatabaseError databaseError) {
+        // You should handle cancellation/error here
+        completableFuture.completeExceptionally(databaseError.toException());
       }
     });
 
-    return notifications;
+    return completableFuture;
   }
 
   public CompletableFuture<List<Notification>> getAllNotificationsByRole(String userRole) {
@@ -72,6 +77,36 @@ public class NotificationService {
     return completableFuture;
   }
 
+  public void updateNotification(String id, Notification notification) {
+    db.child("notifications").child(id).setValueAsync(notification);
+	}
+
+  public void markNotificationAsRead(String id, User user) {
+
+    String userId = Integer.toString(user.getId());
+
+    DatabaseReference notificationRef = db.child("notifications").child(id);
+    
+    notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        Notification notification = dataSnapshot.getValue(Notification.class);
+        
+        if (notification != null) {
+          List<String> readByUser = notification.getReadByUser();
+          if (!readByUser.contains(userId)) {
+            readByUser.add(userId);
+          }
+          notificationRef.setValueAsync(notification);
+        }
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        // Handle database error here
+      }
+    });
+  }
 
   public void deleteNotification(String id) {
     db.child("notifications").child(id).removeValueAsync();

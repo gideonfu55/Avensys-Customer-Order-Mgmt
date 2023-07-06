@@ -108,17 +108,17 @@ function Adminpanel() {
                         <td>{user.email}</td>
                         <td>{user.role}</td>
                         <td>
-                          <div class="dropdown">
-                            <button class="dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              <i class="fi fi-bs-menu-dots"></i>
+                          <div className="dropdown">
+                            <button className="dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i className="fi fi-bs-menu-dots"></i>
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                              <a class="dropdown-item" style={{ color: 'navy' }} onClick={() => updateUser(user)}>
-                                <i class="fi fi-sr-file-edit"></i>
+                            <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <a className="dropdown-item" style={{ color: 'navy' }} onClick={() => updateUser(user)}>
+                                <i className="fi fi-sr-file-edit"></i>
                                 <span>Update</span>
                               </a>
-                              <a class="dropdown-item" onClick={() => deleteUser(user.username)} style={{ color: 'red' }}>
-                                <i class="fi fi-sr-trash"></i>
+                              <a className="dropdown-item" onClick={() => deleteUser(user.username)} style={{ color: 'red' }}>
+                                <i className="fi fi-sr-trash"></i>
                                 <span>Delete</span>
                               </a>
                             </div>
@@ -136,7 +136,7 @@ function Adminpanel() {
         {/* Update User Modal */}
         <Modal show={showUserModal} onHide={handleUserModalClose}>
           <Modal.Header closeButton>
-            <Modal.Title><i class="fi fi-sr-user-pen"></i> Update User</Modal.Title>
+            <Modal.Title><i className="fi fi-sr-user-pen"></i> Update User</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {selectedUser && (
@@ -149,7 +149,7 @@ function Adminpanel() {
         <Modal show={showCreateUserModal} onHide={handleCreateUserModalClose}>
           <Modal.Header closeButton>
             <Modal.Title>
-              <i class="fi fi-rr-users-medical"></i>
+              <i className="fi fi-rr-users-medical"></i>
               <span style={{ fontWeight: '300' }}> Create User</span>
             </Modal.Title>
           </Modal.Header>

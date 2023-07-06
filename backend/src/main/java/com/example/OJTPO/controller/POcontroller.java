@@ -104,4 +104,19 @@ public class POcontroller {
     }
   }
 
+  // For checking if the PO is unique:
+  @GetMapping("/po/check/{poNumber}")
+  public ResponseEntity<?> checkPONumberExists(@PathVariable String poNumber) {
+    CompletableFuture<Boolean> future = purchaseOrderService.checkPONumberExists(poNumber);
+    try {
+      Boolean purchaseOrderResponse = future.get();
+      if (purchaseOrderResponse) {
+        return new ResponseEntity<>(true, HttpStatus.OK);
+      }
+      return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+    } catch (InterruptedException | ExecutionException e) {
+      return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }

@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateUser.css'
-import { toast } from 'react-toastify';
 
 function CreatePO(props) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
 
+  const [poNumber, setPONumber] = useState('');
+  const [poNumberError, setPONumberError] = useState(null);
+
   const [poData, setPoData] = useState({
     poNumber: '',
+    prjNumber: '',
     clientName: '',
     startDate: '',
     endDate: '',
@@ -20,17 +23,74 @@ function CreatePO(props) {
     status: 'Ongoing'
   })
 
-  // toast("Component Loaded!");
+  useEffect(() => {
+    const validatePONumber = async () => {
+      if (poNumber) {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/po/check/${poNumber}`);
+  
+          if (response.data) {
+            setPONumberError('Purchase order number already exists');
+          } else {
+            setPONumberError(null);
+          }
+        } catch (error) {
+          console.error('Error checking PO number:', error);
+        }
+      } else {
+        setPONumberError(null);  
+      }
+    };
+  
+    validatePONumber();
+  }, [poNumber]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setPoData((prevState) => ({ ...prevState, [name]: value }));
+
+    if (name === 'poNumber') {
+      setPONumber(value);
+    } else {
+      setPoData((prevState) => ({ ...prevState, [name]: value }));
+    }
+  };
+
+  const handlePONumberChange = (event) => {
+    setPONumber(event.target.value);
+    setPONumberError(null);
+  };
+
+  const generateRandomProjectNumber = () => {
+    //const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    //const digits = '0123456789';
+    const combine = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  
+    let projectNumber = '';
+    
+    for (let i = 0; i < 8; i++) {
+      projectNumber += combine.charAt(Math.floor(Math.random() * combine.length));
+    }
+    
+    // for (let i = 0; i < 4; i++) {
+    //   projectNumber += letters.charAt(Math.floor(Math.random() * letters.length));
+    // }
+    
+    // for (let i = 0; i < 2; i++) {
+    //   projectNumber += digits.charAt(Math.floor(Math.random() * digits.length));
+    // }
+    
+    return projectNumber;
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const createdAt = new Date().toISOString();
-    const newPO = { ...poData, createdAt };
+    const prjNumber = generateRandomProjectNumber();
+    const newPO = { ...poData, poNumber,prjNumber, createdAt };
+
+    if (poNumberError) {
+      return;
+    }
 
     // Send purchase order data to the backend
     axios
@@ -38,6 +98,7 @@ function CreatePO(props) {
       .then((response) => {
         console.log('Purchase order created successfully:', response.data);
         props.onPoCreated(newPO.poNumber);
+        
         // Reset the form
         setPoData({
           clientName: '',
@@ -50,6 +111,8 @@ function CreatePO(props) {
           type: '',
           status: ''
         });
+        setPONumber('');
+        setPONumberError(null);
 
     // Format the date to be displayed in a notification:
     const formattedDate = new Date(newPO.createdAt).toLocaleDateString('en-GB', {
@@ -106,11 +169,17 @@ function CreatePO(props) {
             type="text"
             id="poNumber"
             name="poNumber"
-            value={poData.poNumber}
-            onChange={handleChange}
+            value={poNumber}
+            onChange={handlePONumberChange}
             placeholder='Enter Purchase Order Number'
-            className='form-control'
+            className={`form-control ${poNumberError ? 'is-invalid' : ''}`}
           />
+          {
+            poNumberError && 
+            <div className="invalid-feedback">
+              {poNumberError}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="startDate">Start Date</label>

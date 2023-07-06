@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Loading from './components/Loading'; // Import your loading component
+import Loading from './components/Loading'; 
 import Login from './components/Login';
 import Adminpanel from './components/Adminpanel';
 import PageNotFound from './components/PageNotFound';
@@ -11,31 +11,21 @@ import ES from './components/ES';
 import PS from './components/PS';
 
 function App() {
-  const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const username = localStorage.getItem('username');
-    axios
-      .get(`http://localhost:8080/user/${username}`)
-      .then((response) => {
-        const role = response.data.role;
-        setUserRole(role);
-      })
-      .catch((error) => {
-        console.error(`Error fetching user data: ${error}`);
-      })
-      .finally(() => {
-        setIsLoading(false); // Set loading state to false after fetching user data
-      });
+    const role = localStorage.getItem('role');
+    if (role !== '') {
+      setIsLoading(false);
+    }
   }, []);
 
-  const isAdmin = userRole && userRole.toLowerCase() === 'admin';
+  const isAdmin = localStorage.getItem('role')?.toLowerCase() === 'management';
 
   return (
     <div className="App">
       {isLoading ? (
-        <Loading /> // Render the loading component while isLoading is true
+        <Loading /> 
       ) : (
         <Routes>
           <Route path="/" element={<Dashboard />} />
