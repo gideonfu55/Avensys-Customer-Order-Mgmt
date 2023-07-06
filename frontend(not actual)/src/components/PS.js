@@ -203,32 +203,35 @@ function PS() {
         {/* Table of PS PO's */}
         <table className='table table-light table-hover'>
           <thead>
-            <tr>
-              <th scope='col' className='text-center'>
+            <tr className='text-center align-middle'>
+              <th scope='col'>
                 PO #
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
+                Project #
+              </th>
+              <th scope='col'>
                 Client
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 Type
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 Start Date
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 End Date
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 Milestone (%)
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 Total Value
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 Balance Value
               </th>
-              <th scope='col' className='text-center'>
+              <th scope='col'>
                 Status
               </th>
               {role.toLowerCase() === 'finance' && (
@@ -240,16 +243,17 @@ function PS() {
           </thead>
           <tbody>
             {searchedPS.map((po) => (
-              <tr key={po.id}>
-                <td className='text-center'>{po.poNumber}</td>
-                <td className='text-center'>{po.clientName}</td>
-                <td className='text-center'>{po.type}</td>
-                <td className='text-center'>{po.startDate}</td>
-                <td className='text-center'>{po.endDate}</td>
-                <td className='text-center'>{parseFloat(po.milestone).toFixed(2)}</td>
-                <td className='text-center'>{po.totalValue}</td>
-                <td className='text-center'>{po.balValue}</td>
-                <td className='text-center'>{po.status}</td>
+              <tr className='text-center align-middle' key={po.id}>
+                <td>{po.poNumber}</td>
+                <td></td>
+                <td>{po.clientName}</td>
+                <td>{po.type}</td>
+                <td>{po.startDate}</td>
+                <td>{po.endDate}</td>
+                <td>{parseFloat(po.milestone).toFixed(2)}</td>
+                <td>{po.totalValue}</td>
+                <td>{po.balValue}</td>
+                <td>{po.status}</td>
                 {role.toLowerCase() === 'finance' && (
                   <td>
                     <div class="dropdown">
