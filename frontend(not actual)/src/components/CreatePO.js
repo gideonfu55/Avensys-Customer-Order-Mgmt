@@ -108,11 +108,7 @@ function CreatePO(props) {
     // }
     
     return projectNumber;
-
-  const handlePONumberChange = (event) => {
-    setPONumber(event.target.value);
-    setPONumberError(null);
-  };
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -179,7 +175,7 @@ function CreatePO(props) {
       props.onPoCreationError();
     });
   };
-}
+
 
   return (
     <div>
