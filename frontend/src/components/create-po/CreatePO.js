@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import './CreatePO.css'
 
@@ -11,6 +11,7 @@ function CreatePO(props) {
 
   // For document uploads:
   const [file, setFile] = useState(null);
+  const fileInput = useRef();
 
   // For PO validation:
   const [poNumberError, setPONumberError] = useState(null);
@@ -112,6 +113,11 @@ function CreatePO(props) {
     
     return projectNumber;
   }
+
+  const removeFile = () => {
+    setFile(null);
+    fileInput.current.value = null;
+  };
 
   const handleSubmit = (event) => {
 
@@ -330,11 +336,18 @@ function CreatePO(props) {
         <div>
           <label className='me-1' htmlFor="file">File</label>
           <input
+            className='w-50'
             type="file"
             id="file"
             name="file"
+            ref={fileInput}
             onChange={(event) => setFile(event.target.files[0])}
           />
+          {file && (
+            <button type="button" onClick={removeFile}>
+              <i class="fi fi-ss-cross-circle"></i>
+            </button>
+          )}
         </div>
 
         {/* <div>

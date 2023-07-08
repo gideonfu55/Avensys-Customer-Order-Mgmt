@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import './CreateInvoice.css';
 
@@ -18,6 +18,7 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
 
   // For document uploads:
   const [file, setFile] = useState(null);
+  const fileInput = useRef();
 
   const [validationError, setValidationError] = useState('');
 
@@ -33,6 +34,11 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    fileInput.current.value = null;
   };
 
   const handleSubmit = (event) => {
@@ -218,11 +224,18 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
         <div>
           <label className='me-1' htmlFor="file">File</label>
           <input
+            className='w-25'
             type="file"
             id="file"
             name="file"
+            ref={fileInput}
             onChange={(event) => setFile(event.target.files[0])}
           />
+          {file && (
+            <button className='ms-2' type="button" onClick={removeFile}>
+              <i class="fi fi-ss-cross-circle"></i>
+            </button>
+          )}
         </div>
 
         <button type="submit" className="btn btn-primary">
