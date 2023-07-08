@@ -56,4 +56,15 @@
     margin: 0 4px;  
     padding: 8px;
   }
+
+  .view-btn {
+    border: none;
+    outline: none;
+    border-radius: 5px !important;
+  }
+
+  .view-btn:hover {
+    background-color: rgb(88, 225, 249) !important;
+    border-color: rgb(88, 225, 249) !important;
+  }
   

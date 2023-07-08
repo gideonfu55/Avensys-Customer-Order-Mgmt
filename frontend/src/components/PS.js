@@ -247,6 +247,11 @@ function PS() {
                   Actions
                 </th>
               )}
+              {role.toLowerCase() === 'sales' && (
+                <th scope='col' className='text-center'>
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -296,6 +301,13 @@ function PS() {
                         </a>
                       </div>
                     </div>
+                  </td>
+                )}
+                {role.toLowerCase() === 'sales' && (
+                  <td>
+                    <button className='p-1'>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                    </button>
                   </td>
                 )}
               </tr>

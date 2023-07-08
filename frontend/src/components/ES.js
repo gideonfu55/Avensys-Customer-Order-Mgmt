@@ -169,7 +169,7 @@ function ES() {
       <div className='dashboard-content'>
         <div className='es-intro'>
           <h2>
-            <span style={{ fontWeight: '800' }}>Essential Services:</span>{' '}
+            <span style={{ fontWeight: '800' }}>Enterprise Services:</span>{' '}
             <span style={{ fontWeight: '200' }}>Purchase Orders</span>
           </h2>
           <button type='button' className='btn btn-dark' onClick={handleGoBack}>
@@ -251,6 +251,11 @@ function ES() {
                   Actions
                 </th>
               )}
+              {role.toLowerCase() === 'sales' && (
+                <th scope='col' className='text-center'>
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -297,6 +302,13 @@ function ES() {
                         </a>
                       </div>
                     </div>
+                  </td>
+                )}
+                {role.toLowerCase() === 'sales' && (
+                  <td>
+                    <button className='p-1'>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                    </button>
                   </td>
                 )}
               </tr>
