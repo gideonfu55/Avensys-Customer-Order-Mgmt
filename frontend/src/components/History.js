@@ -26,6 +26,14 @@ function History() {
       .then(() => {
         console.log(user.id)
         fetchHistory();  // Refresh the history after marking a notification as read
+        
+        // Also update the current notification locally
+        // setCurrentNotification(prev => (
+        //   {
+        //     ...prev, 
+        //     readByUser: [...prev.readByUser, user.id.toString()]
+        //   }
+        // ));
       })
       .catch(error => {
         console.error(`Error updating notification: ${error}`)
@@ -106,7 +114,9 @@ function History() {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Close</Button>
           {
-            currentNotification && (
+            currentNotification && 
+            !currentNotification.readByUser.includes(user.id.toString()) && 
+            (
               <Button variant="primary" onClick={handleMarkAsRead}>Mark as read</Button>
             )
           }
