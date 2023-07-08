@@ -96,7 +96,7 @@ function CreateProfilePost() {
       <Row>
         <ProfileBio/>
       </Row>
-      <Row class="border border-secondary rounded">
+      <Row className="border border-secondary rounded">
       {/* <Row> */}
       <div className="create-profile-post-container">
         <h3 className="create-profile-post-title">Write something new for your friends to see!</h3>

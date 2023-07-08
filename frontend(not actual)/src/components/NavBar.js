@@ -34,31 +34,31 @@ function NavBar() {
         <ul className='wrapper'>
           <div className='nav-group'>
             <div>
-              <Link to='/dashboard' class="nav-item">
+              <Link to='/dashboard' className="nav-item">
                 <i className="fi fi-sr-house-chimney"></i>
                 <span>Dashboard</span>
               </Link>
             </div>
             {user.role === 'Admin' || user.role === 'Management'
               ? (<div>
-                <Link to='/adminpanel' class="nav-item">
+                <Link to='/adminpanel' className="nav-item">
                   <i className="fi fi-sr-user"></i>
                   <span>Admin Panel</span>
                 </Link>
               </div>)
               : (null)
             }
-            {/* <div class="nav-item">
+            {/* <div className="nav-item">
               <i className="fi fi-br-stats"></i>
               <span>Insights</span>
             </div>
-            <div class="nav-item">
+            <div className="nav-item">
               <i className="fi fi-sr-settings"></i>
               <span>Settings</span>
             </div> */}
           </div>
           <div className='nav-group divider'>
-            <div class="nav-item" onClick={handleLogout}>
+            <div className="nav-item" onClick={handleLogout}>
               <i className="fi fi-br-sign-out-alt"></i>
               <span>Logout</span>
             </div>

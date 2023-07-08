@@ -113,7 +113,7 @@ function CreateUser() {
         <div className='form-group'>
           <label htmlFor="role">Role</label>
           <select
-            class="form-control custom-select"
+            className="form-control custom-select"
             id="role"
             name="role"
             value={userData.role}

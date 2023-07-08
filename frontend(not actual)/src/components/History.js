@@ -89,7 +89,7 @@ function History() {
           <div className='history-card'>
             {n.message}
             <button className='btn' onClick={(event) => deleteHistoryItem(event, n.id)}>
-              <i class="fi fi-rr-cross-small"></i>
+              <i className="fi fi-rr-cross-small"></i>
             </button>
           </div>
         ))

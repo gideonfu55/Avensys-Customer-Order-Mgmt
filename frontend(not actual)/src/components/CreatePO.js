@@ -9,6 +9,9 @@ function CreatePO(props) {
 
   const [poNumber, setPONumber] = useState('');
 
+  // For document uploads:
+  const [file, setFile] = useState(null);
+
   // For PO validation:
   const [poNumberError, setPONumberError] = useState(null);
   const [totalValueError, setTotalValueError] = useState(null);
@@ -111,21 +114,41 @@ function CreatePO(props) {
   }
 
   const handleSubmit = (event) => {
+
     event.preventDefault();
+
     const createdAt = new Date().toISOString();
     const prjNumber = generateRandomProjectNumber();
-    const newPO = { ...poData, poNumber,prjNumber, createdAt };
 
     if (poNumberError) {
       return;
     }
 
+    // Form data
+    const formData = new FormData();
+    formData.append('poNumber', poNumber);
+    formData.append('prjNumber', prjNumber);
+    formData.append('clientName', poData.clientName);
+    formData.append('startDate', poData.startDate);
+    formData.append('endDate', poData.endDate);
+    formData.append('totalValue', poData.totalValue);
+    formData.append('balValue', poData.balValue);
+    formData.append('milestone', poData.milestone);
+    formData.append('type', poData.type);
+    formData.append('status', poData.status);
+    formData.append('createdAt', createdAt);
+    formData.append('file', file);
+
     // Send purchase order data to the backend
     axios
-      .post('http://localhost:8080/api/po/create', newPO)
+      .post('http://localhost:8080/api/po/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      })
       .then((response) => {
         console.log('Purchase order created successfully:', response.data);
-        props.onPoCreated(newPO.poNumber);
+        props.onPoCreated(poData.poNumber);
         
         // Reset the form
         setPoData({
@@ -143,7 +166,7 @@ function CreatePO(props) {
         setPONumberError(null);
 
     // Format the date to be displayed in a notification:
-    const formattedDate = new Date(newPO.createdAt).toLocaleDateString('en-GB', {
+    const formattedDate = new Date(createdAt).toLocaleDateString('en-GB', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
@@ -151,8 +174,8 @@ function CreatePO(props) {
 
     // After a successful PO creation by Sales, create a history item for Finance/Management:
     const notification = {
-      message: `New PO ${newPO.poNumber} created by ${username} on ${formattedDate}`,
-      userRole: `${role}`
+      message: `New PO ${poNumber} created by ${username} on ${formattedDate}`,
+      userRole: role
     };
 
     console.log(role);
@@ -179,7 +202,7 @@ function CreatePO(props) {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className='create-user-model'>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-user-model'>
         <div>
           <label htmlFor="clientName">Client Name</label>
           <input
@@ -253,7 +276,7 @@ function CreatePO(props) {
           }
         </div>
         <div>
-          <label htmlFor="totalValue">Balance Value</label>
+          <label htmlFor="balValue">Balance Value</label>
           <input
             type="number"
             id="balValue"
@@ -302,6 +325,15 @@ function CreatePO(props) {
             <option value="Talent Service">Talent Service</option>
             {/* <option value="Professional Service">Professional Service</option> */}
           </select>
+        </div>
+        <div>
+          <label htmlFor="file">File</label>
+          <input
+            type="file"
+            id="file"
+            name="file"
+            onChange={(event) => setFile(event.target.files[0])}
+          />
         </div>
 
         {/* <div>

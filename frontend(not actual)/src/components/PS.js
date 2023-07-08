@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
 import { Modal, Toast } from 'react-bootstrap';
@@ -256,32 +257,32 @@ function PS() {
                 <td>{po.status}</td>
                 {role.toLowerCase() === 'finance' && (
                   <td>
-                    <div class="dropdown">
-                      <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fi fi-br-menu-dots"></i>
+                    <div className="dropdown">
+                      <button className="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i className="fi fi-br-menu-dots"></i>
                       </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item"
+                      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a className="dropdown-item"
                           onClick={() => {
                             setSelectedPO(po);
                             setShowPOModal(true);
                           }}>
-                          <i class="fi fi-rr-eye"></i> View PO
+                          <i className="fi fi-rr-eye"></i> View PO
                         </a>
-                        <a class="dropdown-item"
+                        <a className="dropdown-item"
                           onClick={() => handleEditPO(po)}>
-                          <i class="fi fi-rr-edit"></i> Edit PO
+                          <i className="fi fi-rr-edit"></i> Edit PO
                         </a>
-                        <a class="dropdown-item"
+                        <a className="dropdown-item"
                           onClick={() => {
                             setSelectedPO(po);
                             setShowInvoiceModal(true);
                           }}>
-                          <i class="fi fi-rr-add-document"></i> Create Invoice
+                          <i className="fi fi-rr-add-document"></i> Create Invoice
                         </a>
-                        <a class="dropdown-item"
+                        <a className="dropdown-item"
                           onClick={() => handleDeletePO(po.id, po.poNumber)}>
-                          <i class="fi fi-rr-trash"></i> Delete PO
+                          <i className="fi fi-rr-trash"></i> Delete PO
                         </a>
                       </div>
                     </div>
