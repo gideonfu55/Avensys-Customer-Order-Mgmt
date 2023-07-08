@@ -102,7 +102,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             value={invoiceData.amount}
             onChange={handleChange}
             placeholder="Enter Amount"
-            placeholder="Enter Amount"
             className="form-control"
           />
           {validationError && <div className="text-danger">{validationError}</div>}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import "./EditPO.css";
 
 function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
 
@@ -48,7 +49,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='edit-po-model'>
       <div className='form-group'>
         <label htmlFor='poNumber'>PO Number</label>
         <input
@@ -58,7 +59,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           name='poNumber'
           value={poData.poNumber}
           onChange={handleChange}
-          required
+          disabled
         />
       </div>
       <div className='form-group'>
@@ -148,7 +149,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           <option value='Cancelled'>Cancelled</option>
         </select>
       </div>
-      <button type='submit' className='btn btn-primary'>
+      <button type='submit' className='btn btn-primary mt-2'>
         Save
       </button>
     </form>

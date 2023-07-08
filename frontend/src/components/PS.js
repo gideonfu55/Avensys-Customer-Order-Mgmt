@@ -306,7 +306,7 @@ function PS() {
                 {role.toLowerCase() === 'sales' && (
                   <td>
                     <button className='p-1'>
-                      <i className="fi fi-rr-file view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
                     </button>
                   </td>
                 )}
