@@ -14,3 +14,9 @@
     flex-direction: column;
     row-gap: 2rem;
 }
+
+/* .modal-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+} */

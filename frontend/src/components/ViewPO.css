@@ -42,3 +42,8 @@ button {
 .update-btn > *, .delete-btn > * {
     pointer-events: all;
 }
+
+.download-btn:hover {
+    background-color: rgb(88, 249, 88) !important;
+    border-color: rgb(88, 249, 88) !important;
+}

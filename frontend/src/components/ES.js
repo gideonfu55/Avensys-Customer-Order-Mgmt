@@ -31,7 +31,6 @@ function ES() {
   // For viewing & downloading the document:
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [numPages, setNumPages] = useState(0);
-  const [documentURL, setDocumentURL] = useState('');
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
   function handleShowPOModalClose() {
@@ -351,7 +350,19 @@ function ES() {
           {/* View PO Document Modal */}
           <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)} size="lg">
             <Modal.Header closeButton>
-              <Modal.Title>View PO Document</Modal.Title>
+              <Modal.Title>
+                View PO Document
+              </Modal.Title>
+              {/* Download PO Button */}
+              {
+                selectedPO && selectedPO.fileUrl ? (
+                  <a href={selectedPO.fileUrl} download>
+                    <button className='download-btn ms-2 p-2'>
+                      <i className="fi fi-sr-download download"></i>  
+                    </button>
+                  </a>
+                ) : null
+              }
             </Modal.Header>
             <Modal.Body>
               {selectedPO && selectedPO.fileUrl ? (

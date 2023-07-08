@@ -25,7 +25,6 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
     // For viewing & downloading the invoice:
     const [showDocumentModal, setShowDocumentModal] = useState(false);
     const [numPages, setNumPages] = useState(0);
-    const [documentURL, setDocumentURL] = useState('');
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
     useEffect(() => {
@@ -40,29 +39,6 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                 console.error("Error fetching data: ", error);
             });
     }, [selectedPO]);
-
-    const handleDeletePO = (id, poNumber) => {
-        if (window.confirm(`Are you sure you want to delete PO ${poNumber}?`)) {
-            axios
-                .delete(`http://localhost:8080/api/po/delete/${id}`)
-                .then((response) => {
-                    setUpdatedPO((prevPO) => {
-                        if (prevPO.id === id) return null;
-                        return prevPO;
-                    });
-                    console.log('Invoice deleted successfully')
-                    toast.success(`PO ${poNumber} deleted successfully!`);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    toast.error(`Error deleting PO ${poNumber}!`);
-                });
-        }
-    };
-
-    const handleEditPO = (po) => {
-        setShowEditModal(true);
-    };
 
     const handleDeleteInvoice = (id, invoiceNumber) => {
         toast.success(`Invoice ${invoiceNumber} updated successfully!`);
@@ -290,7 +266,17 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
             {/* View Invoice Document Modal */}
             <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)} size="lg">
                 <Modal.Header closeButton>
-                <Modal.Title>View Invoice Document</Modal.Title>
+                    <Modal.Title>View Invoice Document</Modal.Title>
+                    {/* Download Invoice Button */}
+                    {
+                        selectedInvoice && selectedInvoice.fileUrl ? (
+                            <a href={selectedInvoice.fileUrl} download>
+                                <button className='download-btn ms-2 p-2'>
+                                    <i className="fi fi-sr-download download"></i>  
+                                </button>
+                            </a>
+                        ) : null
+                    }
                 </Modal.Header>
                 <Modal.Body>
                 {selectedInvoice && selectedInvoice.fileUrl ? (
