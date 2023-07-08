@@ -151,7 +151,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
             <div>
                 <table className='table table-light table-hover'>
                     <thead>
-                        <tr>
+                        <tr className='text-center align-middle'>
                             <th scope="col">PO #</th>
                             <th scope="col">Client</th>
                             <th scope="col">Type</th>
@@ -164,7 +164,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr className='text-center align-middle'>
                             <td>{selectedPO.poNumber}</td>
                             <td>{selectedPO.clientName}</td>
                             <td>{selectedPO.type}</td>
@@ -183,7 +183,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                 <h5>Invoices</h5>
                 <table className='table table-light table-hover'>
                     <thead>
-                        <tr>
+                        <tr className='text-center align-middle'>
                             <th scope="col">Invoice #</th>
                             <th scope="col">PO Number Ref</th>
                             <th scope="col">Amount</th>
@@ -195,7 +195,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                     </thead>
                     <tbody>
                         {invoices.map((invoice) => (
-                            <tr key={invoice.id}>
+                            <tr className='text-center align-middle' key={invoice.id}>
                                 <td>{invoice.invoiceNumber}</td>
                                 <td>{invoice.purchaseOrderRef}</td>
                                 <td>{invoice.amount}</td>
