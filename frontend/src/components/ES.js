@@ -158,8 +158,6 @@ function ES() {
       .catch((error) => {
         console.error(error);
       });
-
-    console.log('ES POs: ', ES);
   });
 
   return (

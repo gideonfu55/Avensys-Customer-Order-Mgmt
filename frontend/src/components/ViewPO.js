@@ -41,7 +41,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
     }, [selectedPO]);
 
     const handleDeleteInvoice = (id, invoiceNumber) => {
-        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
+        toast.success(`Invoice ${invoiceNumber} deleted successfully!`);
         axios
             .delete(`http://localhost:8080/api/invoices/delete/${id}`)
             .then((response) => {
