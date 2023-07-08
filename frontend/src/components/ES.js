@@ -1,15 +1,15 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
-import { Modal, Toast } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
 import EditPO from './EditPO';
 import './ES.css';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -27,6 +27,11 @@ function ES() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('poNumber');
+
+  // For viewing & downloading the document:
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [numPages, setNumPages] = useState(0);
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
   function handleShowPOModalClose() {
     setShowPOModal(false);
@@ -47,19 +52,6 @@ function ES() {
   const handleSearchTypeChange = (e) => {
     setSearchType(e.target.value);
   };
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
-      .then((response) => {
-        setES(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    console.log('ES POs: ', ES);
-  }, []);
 
   const filteredES = selectedStatus
     ? ES.filter((po) => po.status === selectedStatus && po.type === 'Enterprise Service')
@@ -130,6 +122,7 @@ function ES() {
         console.error(error);
       });
   }
+
   const handleInvoiceUpdate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
 
@@ -143,6 +136,11 @@ function ES() {
       });
   };
 
+  const handleShowDocumentModal = (po) => {
+    setSelectedPO(po);
+    setShowDocumentModal(true);
+  };
+
   const handlePoUpdateError = () => {
     toast.error('Error updating purchase order!');
   };
@@ -151,6 +149,19 @@ function ES() {
     navigate('/dashboard');
   };
 
+  useEffect(() => {
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setES(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    console.log('ES POs: ', ES);
+  });
+
   return (
     <div className='dashboard-body'>
       <ToastContainer />
@@ -158,7 +169,7 @@ function ES() {
       <div className='dashboard-content'>
         <div className='es-intro'>
           <h2>
-            <span style={{ fontWeight: '800' }}>Essential Services:</span>{' '}
+            <span style={{ fontWeight: '800' }}>Enterprise Services:</span>{' '}
             <span style={{ fontWeight: '200' }}>Purchase Orders</span>
           </h2>
           <button type='button' className='btn btn-dark' onClick={handleGoBack}>
@@ -240,6 +251,11 @@ function ES() {
                   Actions
                 </th>
               )}
+              {role.toLowerCase() === 'sales' && (
+                <th scope='col' className='text-center'>
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -257,32 +273,42 @@ function ES() {
                 <td>{po.status}</td>
                 {role.toLowerCase() === 'finance' && (
                   <td>
-                    <div class="dropdown">
-                      <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fi fi-br-menu-dots"></i>
+                    <div className="dropdown">
+                      <button className="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i className="fi fi-br-menu-dots"></i>
                       </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a
-                          class="dropdown-item"
+                          className="dropdown-item"
                           onClick={() => {
                             setSelectedPO(po);
                             setShowPOModal(true);
                           }}>
-                          <i class="fi fi-rr-eye"></i> View PO
+                          <i className="fi fi-rr-eye"></i> View PO
                         </a>
-                        <a class="dropdown-item" onClick={() => handleEditPO(po)}>
-                          <i class="fi fi-rr-edit"></i> Edit PO
+                        <a className="dropdown-item" onClick={() => handleEditPO(po)}>
+                          <i className="fi fi-rr-edit"></i> Edit PO
                         </a>
-                        <a class="dropdown-item" onClick={() => {
+                        <a className="dropdown-item" onClick={() => {
                           setSelectedPO(po);
                           setShowInvoiceModal(true);
-                        }}><i class="fi fi-rr-add-document"></i> Create Invoice
+                        }}><i className="fi fi-rr-add-document"></i> Create Invoice
                         </a>
                         <a className="dropdown-item" onClick={() => handleDeletePO(po.id, po.poNumber)}>
-                          <i class="fi fi-rr-trash"></i> Delete PO
+                          <i className="fi fi-rr-trash"></i> Delete PO
+                        </a>
+                        <a className="dropdown-item" onClick={() => handleShowDocumentModal(po)}>
+                          <i className="fi fi-rr-file"></i> View PO Document
                         </a>
                       </div>
                     </div>
+                  </td>
+                )}
+                {role.toLowerCase() === 'sales' && (
+                  <td>
+                    <button className='p-1'>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                    </button>
                   </td>
                 )}
               </tr>
@@ -332,6 +358,41 @@ function ES() {
               )}
             </Modal.Body>
           </Modal>
+
+          {/* View PO Document Modal */}
+          <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)} size="lg">
+            <Modal.Header closeButton>
+              <Modal.Title>
+                View PO Document
+              </Modal.Title>
+              {/* Download PO Button */}
+              {
+                selectedPO && selectedPO.fileUrl ? (
+                  <a href={selectedPO.fileUrl} download>
+                    <button className='download-btn ms-2 p-2'>
+                      <i className="fi fi-sr-download download"></i>  
+                    </button>
+                  </a>
+                ) : null
+              }
+            </Modal.Header>
+            <Modal.Body>
+              {selectedPO && selectedPO.fileUrl ? (
+                <Document
+                  file={selectedPO.fileUrl}
+                  onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                  onError={(error) => console.log('Error while loading document:', error)}
+                >
+                  {Array.from(new Array(numPages), (el, index) => (
+                    <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                  ))}
+                </Document>
+              ) : (
+                <p>No document available</p>
+              )}
+            </Modal.Body>
+          </Modal>
+
         </div>
       </div>
     </div>

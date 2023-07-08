@@ -10,7 +10,7 @@ public class Invoice {
     private String dateBilled;
     private String dueDate;
     private String status;
-    // private DocumentReference purchaseOrderRef;
+    private String fileUrl;
 
     public Invoice() {
     }
@@ -81,13 +81,13 @@ public class Invoice {
         this.status = status;
     }
 
-    // public DocumentReference getPurchaseOrderRef() {
-    // return purchaseOrderRef;
-    // }
+    public String getFileUrl() {
+        return this.fileUrl;
+    }
 
-    // public void setPurchaseOrderRef(DocumentReference purchaseOrderRef) {
-    // this.purchaseOrderRef = purchaseOrderRef;
-    // }
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
     public void updateWith(Invoice newInvoice) {
         this.invoiceNumber = newInvoice.invoiceNumber != null ? newInvoice.invoiceNumber : this.invoiceNumber;

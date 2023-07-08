@@ -13,12 +13,12 @@ public class PurchaseOrder {
   private String milestone;
   private String type;
   private String status;
+  private String fileUrl;
 
   public PurchaseOrder() {
   }
 
-  public PurchaseOrder(Long id, String poNumber, String prjNumber, String clientName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
-    this.id = id;
+  public PurchaseOrder(String poNumber, String prjNumber, String clientName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status) {
     this.poNumber = poNumber;
     this.prjNumber = prjNumber;
     this.clientName = clientName;
@@ -45,6 +45,14 @@ public class PurchaseOrder {
 
   public void setPoNumber(String poNumber) {
     this.poNumber = poNumber;
+  }
+
+  public String getPrjNumber() {
+    return prjNumber;
+  }
+
+  public void setPrjNumber(String prjNumber) {
+    this.prjNumber = prjNumber;
   }
 
   public String getClientName() {
@@ -111,6 +119,14 @@ public class PurchaseOrder {
     this.status = status;
   }
 
+  public String getFileUrl() {
+    return fileUrl;
+  }
+
+  public void setFileUrl(String fileUrl) {
+    this.fileUrl = fileUrl;
+  }
+
   public void updateWith(PurchaseOrder newPurchaseOrder) {
     this.clientName = newPurchaseOrder.clientName != null ? newPurchaseOrder.clientName : this.clientName;
     this.poNumber = newPurchaseOrder.poNumber != null ? newPurchaseOrder.poNumber : this.poNumber;
@@ -123,13 +139,5 @@ public class PurchaseOrder {
     this.type = newPurchaseOrder.type != null ? newPurchaseOrder.type : this.type;
     this.status = newPurchaseOrder.status != null ? newPurchaseOrder.status : this.status;
   }
-
-public String getPrjNumber() {
-	return prjNumber;
-}
-
-public void setPrjNumber(String prjNumber) {
-	this.prjNumber = prjNumber;
-}
   
 }

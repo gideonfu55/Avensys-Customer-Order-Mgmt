@@ -30,10 +30,20 @@ button {
     border-color: rgb(249, 88, 88) !important;
 }
 
+.view-btn:hover {
+    background-color: rgb(88, 225, 249) !important;
+    border-color: rgb(88, 225, 249) !important;
+}
+
 .update-btn {
     pointer-events: none;
 }
 
 .update-btn > *, .delete-btn > * {
     pointer-events: all;
+}
+
+.download-btn:hover {
+    background-color: rgb(88, 249, 88) !important;
+    border-color: rgb(88, 249, 88) !important;
 }

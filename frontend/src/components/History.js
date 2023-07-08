@@ -26,6 +26,14 @@ function History() {
       .then(() => {
         console.log(user.id)
         fetchHistory();  // Refresh the history after marking a notification as read
+        
+        // Also update the current notification locally
+        // setCurrentNotification(prev => (
+        //   {
+        //     ...prev, 
+        //     readByUser: [...prev.readByUser, user.id.toString()]
+        //   }
+        // ));
       })
       .catch(error => {
         console.error(`Error updating notification: ${error}`)
@@ -86,10 +94,10 @@ function History() {
       <h5 className='mb-4'>{role} History</h5>
       {
         history.map((n) => (
-          <div className='history-card'>
-            {n.message}
+          <div className='history-card' style={{fontWeight: n.readByUser.includes(user.id.toString()) ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
+            <p className='m-0 notification-item'>{n.message}</p>
             <button className='btn' onClick={(event) => deleteHistoryItem(event, n.id)}>
-              <i class="fi fi-rr-cross-small"></i>
+              <i className="fi fi-rr-cross-small"></i>
             </button>
           </div>
         ))
@@ -106,7 +114,9 @@ function History() {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Close</Button>
           {
-            currentNotification && (
+            currentNotification && 
+            !currentNotification.readByUser.includes(user.id.toString()) && 
+            (
               <Button variant="primary" onClick={handleMarkAsRead}>Mark as read</Button>
             )
           }
