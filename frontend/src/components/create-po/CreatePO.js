@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './CreateUser.css'
+import './CreatePO.css'
 
 function CreatePO(props) {
 
@@ -203,7 +203,7 @@ function CreatePO(props) {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-user-model'>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-po-model'>
         <div>
           <label htmlFor="clientName">Client Name</label>
           <input

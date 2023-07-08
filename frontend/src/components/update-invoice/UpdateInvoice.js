@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import './CreateInvoice.css';
+import './UpdateInvoice.css';
 
 function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError, selectedPO }) {
 
@@ -81,7 +81,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   return (
     <div className="invoice-container">
-      <form onSubmit={handleSubmit} className="create-invoice-model">
+      <form onSubmit={handleSubmit} className="update-invoice-model">
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
           <input

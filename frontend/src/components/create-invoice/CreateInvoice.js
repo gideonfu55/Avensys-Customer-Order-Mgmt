@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
+function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
@@ -107,7 +107,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
       let updatedMilestone;
       let updatedStatus;
 
-      if (isPS) {
+      if (isTS) {
         updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
       }
 

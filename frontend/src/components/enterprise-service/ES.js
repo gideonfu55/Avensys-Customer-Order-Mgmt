@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import NavBar from './NavBar';
 import { Modal } from 'react-bootstrap';
-import ViewPO from './ViewPO';
-import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO';
+import ViewPO from '../view-po/ViewPO';
+import CreateInvoice from '../create-invoice/CreateInvoice';
+import EditPO from '../edit-po/EditPO';
 import './ES.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../navbar/NavBar';
 
 
 function ES() {
@@ -320,7 +320,7 @@ function ES() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} isPS={false} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} isTS={false} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -332,7 +332,7 @@ function ES() {
               {showInvoiceModal && (
                 <CreateInvoice
                   selectedPO={selectedPO}
-                  isPS={false}
+                  isTS={false}
                   closeModal={handleShowInvoiceModalClose}
                   onInvUpdated={handleInvoiceUpdate}
                 />

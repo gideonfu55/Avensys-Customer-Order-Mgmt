@@ -3,14 +3,14 @@ import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ViewPO.css'
 import axios from 'axios';
-import EditPO from './EditPO';
-import UpdateInvoice from './UpdateInvoice';
+import EditPO from '../edit-po/EditPO';
+import UpdateInvoice from '../update-invoice/UpdateInvoice';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 
-function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
+function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
 
     const username = localStorage.getItem('username');
     const role = localStorage.getItem('role');
@@ -94,7 +94,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
             setBalValue(updatedBalValue);
 
-            if (isPS) {
+            if (isTS) {
                 updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
             }
         }

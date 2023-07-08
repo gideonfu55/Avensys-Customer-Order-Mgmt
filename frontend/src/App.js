@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import Loading from './components/Loading'; 
-import Login from './components/Login';
-import Adminpanel from './components/Adminpanel';
-import PageNotFound from './components/PageNotFound';
-import Dashboard from './components/Dashboard';
-import ES from './components/ES';
-import PS from './components/PS';
+import Loading from './components/loading-page/Loading';
+import Login from './components/login/Login';
+import Dashboard from './components/dashboard/Dashboard';
+import Adminpanel from './components/admin-panel/Adminpanel';
+import PageNotFound from './components/pagenotfound/PageNotFound';
+import ES from './components/enterprise-service/ES';
+import TS from './components/talent-service/TS';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,7 +33,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path='/ES' element={<ES/>} />
-          <Route path='/PS' element={<PS/>} />
+          <Route path='/PS' element={<TS/>} />
           {isAdmin ? (
             <Route path="/adminpanel" element={<Adminpanel />} />
           ) : null}
