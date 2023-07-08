@@ -86,8 +86,8 @@ function History() {
       <h5 className='mb-4'>{role} History</h5>
       {
         history.map((n) => (
-          <div className='history-card'>
-            {n.message}
+          <div className='history-card' style={{fontWeight: n.readByUser.includes(user.id.toString()) ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
+            <p className='m-0 notification-item'>{n.message}</p>
             <button className='btn' onClick={(event) => deleteHistoryItem(event, n.id)}>
               <i className="fi fi-rr-cross-small"></i>
             </button>
