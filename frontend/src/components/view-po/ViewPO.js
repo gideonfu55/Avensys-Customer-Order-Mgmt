@@ -3,7 +3,7 @@ import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ViewPO.css'
 import axios from 'axios';
-import EditPO from '../edit-po/EditPO';
+import UpdatePO from '../update-po/UpdatePO';
 import UpdateInvoice from '../update-invoice/UpdateInvoice';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -241,7 +241,7 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
                     <Modal.Title>Edit Purchase Order</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {showEditModal && <EditPO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+                    {showEditModal && <UpdatePO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
                 </Modal.Body>
             </Modal>
 

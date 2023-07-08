@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import "./EditPO.css";
+import "./UpdatePO.css";
 
-function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
+function UpdatePO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
@@ -49,7 +48,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className='edit-po-model'>
+    <form onSubmit={handleSubmit} className='update-po-model'>
       <div className='form-group'>
         <label htmlFor='poNumber'>PO Number</label>
         <input
@@ -156,4 +155,4 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
   );
 }
 
-export default EditPO;
+export default UpdatePO;

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import ViewPO from '../view-po/ViewPO';
 import CreateInvoice from '../create-invoice/CreateInvoice';
-import EditPO from '../edit-po/EditPO';
+import UpdatePO from '../update-po/UpdatePO';
 import './TS.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -93,7 +93,7 @@ function TS() {
 
   };
 
-  const handleEditPO = (po) => {
+  const handleUpdatePO = (po) => {
     setSelectedPO(po);
     setShowEditModal(true);
   };
@@ -282,7 +282,7 @@ function TS() {
                           <i className="fi fi-rr-eye"></i> View PO
                         </a>
                         <a className="dropdown-item"
-                          onClick={() => handleEditPO(po)}>
+                          onClick={() => handleUpdatePO(po)}>
                           <i className="fi fi-rr-edit"></i> Edit PO
                         </a>
                         <a className="dropdown-item"
@@ -356,7 +356,7 @@ function TS() {
             </Modal.Header>
             <Modal.Body>
               {showEditModal && (
-                <EditPO
+                <UpdatePO
                   selectedPO={selectedPO}
                   closeModal={() => setShowEditModal(false)}
                   onPoUpdated={handlePoUpdate}
