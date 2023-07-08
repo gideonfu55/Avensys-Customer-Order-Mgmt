@@ -54,24 +54,6 @@ function ES() {
     setSearchType(e.target.value);
   };
 
-  const handleShowDocumentModal = (po) => {
-    setSelectedPO(po);
-    setShowDocumentModal(true);
-  };
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
-      .then((response) => {
-        setES(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    console.log('ES POs: ', ES);
-  });
-
   const filteredES = selectedStatus
     ? ES.filter((po) => po.status === selectedStatus && po.type === 'Enterprise Service')
     : ES.filter((po) => po.type === 'Enterprise Service');
@@ -141,6 +123,7 @@ function ES() {
         console.error(error);
       });
   }
+
   const handleInvoiceUpdate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
 
@@ -154,6 +137,11 @@ function ES() {
       });
   };
 
+  const handleShowDocumentModal = (po) => {
+    setSelectedPO(po);
+    setShowDocumentModal(true);
+  };
+
   const handlePoUpdateError = () => {
     toast.error('Error updating purchase order!');
   };
@@ -161,6 +149,19 @@ function ES() {
   const handleGoBack = () => {
     navigate('/dashboard');
   };
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setES(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    console.log('ES POs: ', ES);
+  });
 
   return (
     <div className='dashboard-body'>
@@ -350,7 +351,7 @@ function ES() {
           {/* View PO Document Modal */}
           <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)} size="lg">
             <Modal.Header closeButton>
-              <Modal.Title>View PO</Modal.Title>
+              <Modal.Title>View PO Document</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {selectedPO && selectedPO.fileUrl ? (

@@ -16,6 +16,9 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
     status: '',
   });
 
+  // For document uploads:
+  const [file, setFile] = useState(null);
+
   const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
@@ -43,8 +46,25 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
     const createdAt = new Date().toISOString();
     const newInvoice = { ...invoiceData, createdAt };
 
+    // Create a new form
+    const formData = new FormData();
+
+    // Append all values to the form
+    for (let name in newInvoice) {
+      formData.append(name, newInvoice[name]);
+    }
+
+    // Append the file to the form
+    if (file) {
+      formData.append('file', file);
+    }
+
     axios
-      .post('http://localhost:8080/api/invoices/create', newInvoice)
+      .post('http://localhost:8080/api/invoices/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      })
       .then((response) => {
         onInvUpdated(newInvoice.invoiceNumber)
         console.log('New invoice created successfully: ', response.data);
@@ -56,6 +76,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
           dueDate: '',
           status: '',
         });
+        setFile(null);  // Clear the file state
         setValidationError('');
 
         // Create history item after invoice is created:
@@ -192,6 +213,16 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
             <option value="Unpaid">Unpaid</option>
             <option value="Paid">Paid</option>
           </select>
+        </div>
+
+        <div>
+          <label className='me-1' htmlFor="file">File</label>
+          <input
+            type="file"
+            id="file"
+            name="file"
+            onChange={(event) => setFile(event.target.files[0])}
+          />
         </div>
 
         <button type="submit" className="btn btn-primary">

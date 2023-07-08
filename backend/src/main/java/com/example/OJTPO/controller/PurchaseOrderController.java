@@ -95,7 +95,7 @@ public class PurchaseOrderController {
       PurchaseOrder purchaseOrderResponse = purchaseOrderService.createPO(purchaseOrder);
 
       if (purchaseOrderResponse != null) {
-        return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.CREATED);
+        return new ResponseEntity<PurchaseOrder>(purchaseOrderResponse, HttpStatus.CREATED);
       } else {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
       }

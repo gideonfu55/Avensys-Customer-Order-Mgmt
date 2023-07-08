@@ -5,8 +5,10 @@ import './ViewPO.css'
 import axios from 'axios';
 import EditPO from './EditPO';
 import UpdateInvoice from './UpdateInvoice';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Document, Page, pdfjs } from 'react-pdf';
+
 
 function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
@@ -19,6 +21,12 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [updatedPO, setUpdatedPO] = useState({ ...selectedPO });
     const [balValue, setBalValue] = useState(selectedPO.balValue);
+
+    // For viewing & downloading the invoice:
+    const [showDocumentModal, setShowDocumentModal] = useState(false);
+    const [numPages, setNumPages] = useState(0);
+    const [documentURL, setDocumentURL] = useState('');
+    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
     useEffect(() => {
         axios
@@ -156,6 +164,11 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
         setShowInvoiceModal(false);
     }
 
+    function handleShowDocumentModal(invoice) {
+        setSelectedInvoice(invoice);
+        setShowDocumentModal(true);
+    }
+
     return (
         <div className='modal-fade'>
             {/* Current PO */}
@@ -232,6 +245,14 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                                     >
                                         <i className="fi fi-sr-trash delete p-1"></i>
                                     </button>
+                                    <button
+                                        className='view-btn p-1'
+                                        onClick={() => {
+                                            handleShowDocumentModal(invoice);
+                                        }}
+                                    >
+                                        <i className="fi fi-sr-eye view p-1"></i>
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -265,8 +286,29 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                     }
                 </Modal.Body>
             </Modal>
-            <div>
-            </div>
+
+            {/* View Invoice Document Modal */}
+            <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)} size="lg">
+                <Modal.Header closeButton>
+                <Modal.Title>View Invoice Document</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                {selectedInvoice && selectedInvoice.fileUrl ? (
+                    <Document
+                    file={selectedInvoice.fileUrl}
+                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                    onError={(error) => console.log('Error while loading document:', error)}
+                    >
+                    {Array.from(new Array(numPages), (el, index) => (
+                        <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                    ))}
+                    </Document>
+                ) : (
+                    <p>No document available</p>
+                )}
+                </Modal.Body>
+            </Modal>
+
         </div>
     )
 }

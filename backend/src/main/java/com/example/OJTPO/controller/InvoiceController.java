@@ -2,14 +2,19 @@ package com.example.OJTPO.controller;
 
 import com.example.OJTPO.model.Invoice;
 import com.example.OJTPO.service.InvoiceService;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -23,29 +28,45 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
+    @Autowired
+    private Storage storage;
+
+    private static String UPLOAD_DIR = "uploads/invoice/";
+
     @PostMapping("/invoices/create")
-    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) throws Exception {
-        Invoice invoiceResponse = invoiceService.createInvoice(invoice);
-        if (invoiceResponse != null) {
-            return new ResponseEntity<>(invoiceResponse, HttpStatus.CREATED);
+    public ResponseEntity<?> createInvoice(@RequestParam("file") MultipartFile file, Invoice invoice) {
+        try {
+
+            // Upload file to Google Cloud Storage and get the download URL
+            String bucketName = "avensys-ojt.appspot.com";
+            String objectName = UPLOAD_DIR + invoice.getInvoiceNumber() + "/" + file.getOriginalFilename();
+
+            BlobId blobId = BlobId.of(bucketName, objectName);
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+            // Upload the file to Google Cloud Storage
+            storage.create(blobInfo, file.getBytes());
+
+            // Get the download URL
+            String fileUrl = String.format("https://storage.googleapis.com/%s/%s", bucketName, objectName);
+
+            // Set the fileUrl field in the invoice
+            invoice.setFileUrl(fileUrl);
+
+            // Save invoice
+            Invoice invoiceResponse = invoiceService.createInvoice(invoice);
+
+            if (invoiceResponse != null) {
+                return new ResponseEntity<Invoice>(invoiceResponse, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
-    
-//    @PostMapping("/invoices/create")
-//    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-//      try {
-//        Invoice createdInvoice = invoiceService.createInvoice(invoice);
-//        return new ResponseEntity<>(createdInvoice, HttpStatus.CREATED);
-//      } catch (IllegalArgumentException e) {
-//        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//      } catch (Exception e) {
-//        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//      }
-//    }
-
-    
-
 
 
     @GetMapping("/invoices/all")

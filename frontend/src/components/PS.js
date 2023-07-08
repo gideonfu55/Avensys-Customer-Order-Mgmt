@@ -54,24 +54,6 @@ function PS() {
     setSearchType(e.target.value);
   };
 
-  const handleShowDocumentModal = (po) => {
-    setSelectedPO(po);
-    setShowDocumentModal(true);
-  };
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
-      .then((response) => {
-        setPS(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    console.log('PS POs: ', PS);
-  });
-
   const filteredPS = selectedStatus
     ? PS.filter((po) => po.status === selectedStatus && po.type === 'Talent Service')
     : PS.filter((po) => po.type === 'Talent Service');
@@ -153,6 +135,11 @@ function PS() {
       });
   };
 
+  const handleShowDocumentModal = (po) => {
+    setSelectedPO(po);
+    setShowDocumentModal(true);
+  };
+
   const handlePoUpdateError = () => {
     toast.error('Error updating purchase order!');
   };
@@ -160,6 +147,19 @@ function PS() {
   const handleGoBack = () => {
     navigate('/dashboard');
   };
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
+      .then((response) => {
+        setPS(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    console.log('PS POs: ', PS);
+  });
 
   return (
     <div className='dashboard-body'>

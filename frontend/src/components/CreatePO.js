@@ -163,6 +163,7 @@ function CreatePO(props) {
           status: ''
         });
         setPONumber('');
+        setFile(null);
         setPONumberError(null);
 
     // Format the date to be displayed in a notification:
@@ -327,7 +328,7 @@ function CreatePO(props) {
           </select>
         </div>
         <div>
-          <label htmlFor="file">File</label>
+          <label className='me-1' htmlFor="file">File</label>
           <input
             type="file"
             id="file"
