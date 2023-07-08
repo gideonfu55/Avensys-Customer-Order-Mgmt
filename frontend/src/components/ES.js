@@ -70,7 +70,7 @@ function ES() {
       });
 
     console.log('ES POs: ', ES);
-  }, []);
+  });
 
   const filteredES = selectedStatus
     ? ES.filter((po) => po.status === selectedStatus && po.type === 'Enterprise Service')

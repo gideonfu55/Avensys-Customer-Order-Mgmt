@@ -1,16 +1,15 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
 import NavBar from './NavBar';
-import { Modal, Toast } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import ViewPO from './ViewPO';
 import CreateInvoice from './CreateInvoice';
 import EditPO from './EditPO';
 import './ES.css';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPlus, faFilter, faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -28,6 +27,12 @@ function PS() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('poNumber');
+
+  // For viewing & downloading the document:
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [numPages, setNumPages] = useState(0);
+  const [documentURL, setDocumentURL] = useState('');
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
   function handleShowPOModalClose() {
     setShowPOModal(false);
@@ -49,6 +54,11 @@ function PS() {
     setSearchType(e.target.value);
   };
 
+  const handleShowDocumentModal = (po) => {
+    setSelectedPO(po);
+    setShowDocumentModal(true);
+  };
+
   useEffect(() => {
     axios
       .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
@@ -60,7 +70,7 @@ function PS() {
       });
 
     console.log('PS POs: ', PS);
-  }, []);
+  });
 
   const filteredPS = selectedStatus
     ? PS.filter((po) => po.status === selectedStatus && po.type === 'Talent Service')
@@ -284,39 +294,11 @@ function PS() {
                           onClick={() => handleDeletePO(po.id, po.poNumber)}>
                           <i className="fi fi-rr-trash"></i> Delete PO
                         </a>
+                        <a className="dropdown-item" onClick={() => handleShowDocumentModal(po)}>
+                          <i className="fi fi-rr-file"></i> View PO Document
+                        </a>
                       </div>
                     </div>
-                    {/* <div className='button-container'>
-                    <button
-                      type='button'
-                      className='btn btn-dark'
-                      onClick={() => {
-                        setSelectedPO(po);
-                        setShowPOModal(true);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
-                    <button
-                      type='button'
-                      className='btn btn-dark'
-                      onClick={() => handleEditPO(po)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      className='btn btn-dark'
-                      onClick={() => {
-                        setSelectedPO(po);
-                        setShowInvoiceModal(true);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                    <button className='btn btn-dark' onClick={() => handleDeletePO(po.id, po.poNumber)}>
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </div> */}
                   </td>
                 )}
               </tr>
@@ -374,6 +356,29 @@ function PS() {
               )}
             </Modal.Body>
           </Modal>
+
+          {/* View PO Document Modal */}
+          <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)} size="lg">
+            <Modal.Header closeButton>
+              <Modal.Title>View PO</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {selectedPO && selectedPO.fileUrl ? (
+                <Document
+                  file={selectedPO.fileUrl}
+                  onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                  onError={(error) => console.log('Error while loading document:', error)}
+                >
+                  {Array.from(new Array(numPages), (el, index) => (
+                    <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                  ))}
+                </Document>
+              ) : (
+                <p>No document available</p>
+              )}
+            </Modal.Body>
+          </Modal>
+
         </div>
       </div>
     </div>
