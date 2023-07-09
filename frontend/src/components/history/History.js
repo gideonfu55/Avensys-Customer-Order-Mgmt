@@ -9,6 +9,7 @@ function History() {
   const [history, setHistory] = useState([]);
   const role = localStorage.getItem('role');
   const user = JSON.parse(localStorage.getItem('user'));
+  const [managementUserIDs, setManagementUserIDs] = useState([]); // For checking if a notification has been read by all management users
 
   // For notification modal:
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +18,7 @@ function History() {
   const handleNotificationClick = (notification) => {
     setCurrentNotification(notification);
     setIsModalOpen(true);
-  };
+  }; 
 
   const handleMarkAsRead = () => {
 
@@ -28,12 +29,12 @@ function History() {
         fetchHistory();  // Refresh the history after marking a notification as read
         
         // Also update the current notification locally
-        // setCurrentNotification(prev => (
-        //   {
-        //     ...prev, 
-        //     readByUser: [...prev.readByUser, user.id.toString()]
-        //   }
-        // ));
+        setCurrentNotification(prev => (
+          {
+            ...prev, 
+            readByUser: [...prev.readByUser, user.id.toString()]
+          }
+        ));
       })
       .catch(error => {
         console.error(`Error updating notification: ${error}`)
@@ -85,6 +86,16 @@ function History() {
       fetchHistory();
     }, 60000);
 
+    axios
+      .get('http://localhost:8080/users')
+      .then(response => {
+        const managementUsers = response.data.filter(user => user.role.toLowerCase() === 'management');
+        setManagementUserIDs(managementUsers.map(user => user.id.toString()));
+      })
+      .catch(error => {
+        console.error(`Error fetching management users: ${error}`);
+      });
+
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
   });
@@ -94,11 +105,23 @@ function History() {
       <h5 className='mb-4'>{role} History</h5>
       {
         history.map((n) => (
-          <div className='history-card' style={{fontWeight: n.readByUser.includes(user.id.toString()) ? "normal" : "bold"}} key={n.id} onClick={() => handleNotificationClick(n)}>
+          <div
+            className='history-card' 
+            style={{fontWeight: n.readByUser.includes(user.id.toString()) ? "normal" : "bold"}} 
+            key={n.id}
+            onClick={() => handleNotificationClick(n)}
+          >
             <p className='m-0 notification-item'>{n.message}</p>
-            <button className='btn' onClick={(event) => deleteHistoryItem(event, n.id)}>
-              <i className="fi fi-rr-cross-small"></i>
-            </button>
+
+          {
+            // Conditional rendering only for management role if all management users have read the notification:
+            role.toLowerCase() === 'management' &&
+            managementUserIDs.every(id => n.readByUser.includes(id)) && (
+              <button className='btn' onClick={(event) => deleteHistoryItem(event, n.id)}>
+                <i className="fi fi-rr-cross-small"></i>
+              </button>
+            )
+          }
           </div>
         ))
       }
