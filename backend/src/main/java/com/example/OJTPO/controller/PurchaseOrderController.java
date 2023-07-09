@@ -22,9 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.OJTPO.model.PurchaseOrder;
 import com.example.OJTPO.service.PurchaseOrderService;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
 
 @RestController
 @RequestMapping("/api/po")
@@ -34,72 +31,28 @@ public class PurchaseOrderController {
   @Autowired
   PurchaseOrderService purchaseOrderService;
 
-  @Autowired
-  private Storage storage;
-
-  private static String UPLOAD_DIR = "uploads/po/";
-
   // For sales team to create PO:
   @PostMapping("/create")
   public ResponseEntity<?> createPO (
-    @RequestParam("poNumber") String poNumber,
-    @RequestParam("prjNumber") String prjNumber,
-    @RequestParam("clientName") String clientName,
-    @RequestParam("startDate") String startDate,
-    @RequestParam("endDate") String endDate,
-    @RequestParam("totalValue") double totalValue,
-    @RequestParam("balValue") double balValue,
-    @RequestParam("milestone") String milestone,
-    @RequestParam("type") String type,
-    @RequestParam("status") String status,
-    @RequestParam("file") MultipartFile file
+    @RequestParam("file") MultipartFile file,
+    PurchaseOrder purchaseOrder
   ) {
 
+    String poNumber = purchaseOrder.getPoNumber();
+
+    // Check poNumber
+    if (poNumber == null || poNumber.isEmpty()) {
+      return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
     try {
-      // Check poNumber
-      if (poNumber == null || poNumber.isEmpty()) {
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-      }
-
-      // Upload file to Google Cloud Storage and get the download URL
-      String bucketName = "avensys-ojt.appspot.com";
-      String objectName = UPLOAD_DIR + poNumber + "/" + file.getOriginalFilename();
-
-      BlobId blobId = BlobId.of(bucketName, objectName);
-      BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-
-      // Upload the file to Google Cloud Storage
-      storage.create(blobInfo, file.getBytes());
-
-      // Get the download URL
-      String fileUrl = String.format("https://storage.googleapis.com/%s/%s", bucketName, objectName);
-
-      System.out.println(fileUrl);
-
-      PurchaseOrder purchaseOrder = new PurchaseOrder(
-        poNumber,
-        prjNumber,
-        clientName,
-        startDate,
-        endDate,
-        totalValue,
-        balValue,
-        milestone,
-        type,
-        status
-      );
-
-      // Set fileUrl to purchaseOrder
-      purchaseOrder.setFileUrl(fileUrl);
-
-      PurchaseOrder purchaseOrderResponse = purchaseOrderService.createPO(purchaseOrder);
-
+      CompletableFuture<PurchaseOrder> future = purchaseOrderService.createPO(file, purchaseOrder);
+      PurchaseOrder purchaseOrderResponse = future.get();
       if (purchaseOrderResponse != null) {
-        return new ResponseEntity<PurchaseOrder>(purchaseOrderResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.CREATED);
       } else {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
       }
-
     } catch (Exception e) {
       e.printStackTrace();
       return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -143,16 +96,21 @@ public class PurchaseOrderController {
 
   // For sales/finance team to update PO:
   @PatchMapping("/update/{id}")
-  public ResponseEntity<PurchaseOrder> updatePO(@PathVariable Long id, @RequestBody PurchaseOrder purchaseOrder) {
-    CompletableFuture<PurchaseOrder> future = purchaseOrderService.updatePO(id, purchaseOrder);
+  public ResponseEntity<PurchaseOrder> updatePO(
+    @PathVariable Long id,
+    PurchaseOrder purchaseOrder,
+    @RequestParam("file") MultipartFile file
+  ) {
     try {
+      CompletableFuture<PurchaseOrder> future = purchaseOrderService.updatePO(id, purchaseOrder, file);
       PurchaseOrder purchaseOrderResponse = future.get();
       if (purchaseOrderResponse != null) {
         return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
       } else {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
       }
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (Exception e) {
+      e.printStackTrace();
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

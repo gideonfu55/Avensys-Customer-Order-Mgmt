@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555 " })
-@RequestMapping("/api")
+@RequestMapping("/api/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -28,36 +28,17 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    @Autowired
-    private Storage storage;
-
-    private static String UPLOAD_DIR = "uploads/invoice/";
-
-    @PostMapping("/invoices/create")
-    public ResponseEntity<?> createInvoice(@RequestParam("file") MultipartFile file, Invoice invoice) {
+    @PostMapping("/create")
+    public ResponseEntity<?> createInvoice(
+        @RequestParam("file") MultipartFile file, 
+        Invoice invoice
+    ) {
         try {
-
-            // Upload file to Google Cloud Storage and get the download URL
-            String bucketName = "avensys-ojt.appspot.com";
-            String objectName = UPLOAD_DIR + invoice.getInvoiceNumber() + "/" + file.getOriginalFilename();
-
-            BlobId blobId = BlobId.of(bucketName, objectName);
-            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
-
-            // Upload the file to Google Cloud Storage
-            storage.create(blobInfo, file.getBytes());
-
-            // Get the download URL
-            String fileUrl = String.format("https://storage.googleapis.com/%s/%s", bucketName, objectName);
-
-            // Set the fileUrl field in the invoice
-            invoice.setFileUrl(fileUrl);
-
-            // Save invoice
-            Invoice invoiceResponse = invoiceService.createInvoice(invoice);
+            CompletableFuture<Invoice> future = invoiceService.createInvoice(file, invoice);
+            Invoice invoiceResponse = future.get();
 
             if (invoiceResponse != null) {
-                return new ResponseEntity<Invoice>(invoiceResponse, HttpStatus.CREATED);
+                return new ResponseEntity<>(invoiceResponse, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -69,7 +50,7 @@ public class InvoiceController {
     }
 
 
-    @GetMapping("/invoices/all")
+    @GetMapping("/all")
     public CompletableFuture<List<Invoice>> getAllInvoices() {
         return invoiceService.getAllInvoices().thenApply(invoices -> {
             if (invoices != null) {
@@ -80,7 +61,7 @@ public class InvoiceController {
         });
     }
 
-    @GetMapping("/invoices/{id}")
+    @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<Invoice>> getInvoiceById(@PathVariable Long id) {
         return invoiceService.getInvoiceById(id).thenApply(invoice -> {
             if (invoice != null) {
@@ -91,22 +72,27 @@ public class InvoiceController {
         });
     }
 
-    @PatchMapping("/invoices/update/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id, @RequestBody Invoice invoice) {
-        CompletableFuture<Invoice> future = invoiceService.updateInvoice(id, invoice);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Invoice> updateInvoice (
+        @PathVariable Long id, 
+        Invoice invoice,
+        @RequestParam("file") MultipartFile file
+    ) {
         try {
+            CompletableFuture<Invoice> future = invoiceService.updateInvoice(id, invoice, file);
             Invoice invoiceResponse = future.get();
             if (invoiceResponse != null) {
                 return new ResponseEntity<>(invoiceResponse, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("/invoices/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteInvoice(@PathVariable("id") Long id) {
         CompletableFuture<String> future = invoiceService.deleteInvoice(id);
         try {

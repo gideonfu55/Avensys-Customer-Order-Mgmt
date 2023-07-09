@@ -60,6 +60,7 @@ function CreatePO(props) {
 
     if (name === 'poNumber') {
       setPONumber(value);
+      setPoData((prevState) => ({ ...prevState, poNumber: value }));
       return;
     }
 
@@ -85,11 +86,6 @@ function CreatePO(props) {
 
     // Handle other fields
     setPoData((prevState) => ({ ...prevState, [name]: value }));
-  };
-
-  const handlePONumberChange = (event) => {
-    setPONumber(event.target.value);
-    setPONumberError(null);
   };
 
   const generateRandomProjectNumber = () => {
@@ -125,25 +121,24 @@ function CreatePO(props) {
 
     const createdAt = new Date().toISOString();
     const prjNumber = generateRandomProjectNumber();
+    const newPO = { ...poData, prjNumber, createdAt };
+
+    console.log(newPO);
 
     if (poNumberError) {
       return;
     }
 
-    // Form data
+    // Create and append all form data
     const formData = new FormData();
-    formData.append('poNumber', poNumber);
-    formData.append('prjNumber', prjNumber);
-    formData.append('clientName', poData.clientName);
-    formData.append('startDate', poData.startDate);
-    formData.append('endDate', poData.endDate);
-    formData.append('totalValue', poData.totalValue);
-    formData.append('balValue', poData.balValue);
-    formData.append('milestone', poData.milestone);
-    formData.append('type', poData.type);
-    formData.append('status', poData.status);
-    formData.append('createdAt', createdAt);
-    formData.append('file', file);
+
+    for (let key in newPO) {
+      formData.append(key, newPO[key]);
+    }
+
+    if (file) {
+      formData.append('file', file);
+    }
 
     // Send purchase order data to the backend
     axios
@@ -154,7 +149,7 @@ function CreatePO(props) {
       })
       .then((response) => {
         console.log('Purchase order created successfully:', response.data);
-        props.onPoCreated(poData.poNumber);
+        props.onPoCreated(newPO.poNumber);
         
         // Reset the form
         setPoData({
@@ -229,7 +224,7 @@ function CreatePO(props) {
             id="poNumber"
             name="poNumber"
             value={poNumber}
-            onChange={handlePONumberChange}
+            onChange={handleChange}
             placeholder='Enter Purchase Order Number'
             className={`form-control ${poNumberError ? 'is-invalid' : ''}`}
           />
@@ -330,7 +325,6 @@ function CreatePO(props) {
             <option value="" disabled>Select Type</option>
             <option value="Enterprise Service">Enterprise Service</option>
             <option value="Talent Service">Talent Service</option>
-            {/* <option value="Professional Service">Professional Service</option> */}
           </select>
         </div>
         <div>
@@ -345,7 +339,7 @@ function CreatePO(props) {
           />
           {file && (
             <button type="button" onClick={removeFile}>
-              <i class="fi fi-ss-cross-circle"></i>
+              <i className="fi fi-ss-cross-circle"></i>
             </button>
           )}
         </div>

@@ -283,7 +283,7 @@ function TS() {
                         </a>
                         <a className="dropdown-item"
                           onClick={() => handleUpdatePO(po)}>
-                          <i className="fi fi-rr-edit"></i> Edit PO
+                          <i className="fi fi-rr-edit"></i> Update PO
                         </a>
                         <a className="dropdown-item"
                           onClick={() => {
@@ -349,10 +349,10 @@ function TS() {
             </Modal.Body>
           </Modal>
 
-          {/* Edit PO Modal */}
+          {/* Update PO Modal */}
           <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
             <Modal.Header closeButton>
-              <Modal.Title>Edit Purchase Order</Modal.Title>
+              <Modal.Title>Update Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {showEditModal && (
