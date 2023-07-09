@@ -242,7 +242,7 @@ function TS() {
               <th scope='col'>
                 Status
               </th>
-              {role.toLowerCase() === 'finance' && (
+              {(role.toLowerCase() === 'finance' || role.toLowerCase() === 'management') && (
                 <th scope='col' className='text-center'>
                   Actions
                 </th>
@@ -267,6 +267,17 @@ function TS() {
                 <td>{po.totalValue}</td>
                 <td>{po.balValue}</td>
                 <td>{po.status}</td>
+
+                {/* View for Sales Users */}
+                {role.toLowerCase() === 'sales' && (
+                  <td>
+                    <button className='p-1'>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                    </button>
+                  </td>
+                )}
+
+                {/* View for Finance Users */}
                 {role.toLowerCase() === 'finance' && (
                   <td>
                     <div className="dropdown">
@@ -303,13 +314,32 @@ function TS() {
                     </div>
                   </td>
                 )}
-                {role.toLowerCase() === 'sales' && (
+
+                {/* View for Management Users */}
+                {role.toLowerCase() === 'management' && (
                   <td>
-                    <button className='p-1'>
-                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
-                    </button>
+                    <div className="dropdown">
+                      <button className="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i className="fi fi-br-menu-dots"></i>
+                      </button>
+                      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a
+                          className="dropdown-item"
+                          onClick={() => {
+                            setSelectedPO(po);
+                            setShowPOModal(true);
+                          }}>
+                          <i className="fi fi-rr-eye"></i> View PO
+                        </a>
+                        <a className="dropdown-item" onClick={() => handleShowDocumentModal(po)}>
+                          <i className="fi fi-rr-file"></i> View PO Document
+                        </a>
+                      </div>
+                    </div>
                   </td>
                 )}
+
+
               </tr>
             ))}
           </tbody>

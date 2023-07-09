@@ -202,34 +202,53 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
                                 <td>{invoice.dateBilled}</td>
                                 <td>{invoice.dueDate}</td>
                                 <td>{invoice.status}</td>
-                                <td>
-                                    <button
-                                        type='button'
-                                        className='update-btn p-1'
-                                        onClick={() => {
-                                            setSelectedInvoice(invoice)
-                                            setShowInvoiceModal(true)
-                                        }}
-                                    >
-                                        <i className="fi fi-sr-file-edit p-1"></i>
-                                    </button>
-                                    <button
-                                        className='delete-btn p-1'
-                                        onClick={() => {
-                                            handleDeleteInvoice(invoice.id, invoice.invoiceNumber)
-                                        }}
-                                    >
-                                        <i className="fi fi-sr-trash delete p-1"></i>
-                                    </button>
-                                    <button
-                                        className='view-btn p-1'
-                                        onClick={() => {
-                                            handleShowDocumentModal(invoice);
-                                        }}
-                                    >
-                                        <i className="fi fi-sr-eye view p-1"></i>
-                                    </button>
-                                </td>
+
+                                {/* View for Finance Users */}
+                                {role.toLowerCase() === 'finance' && (
+                                    <td>
+                                        <button
+                                            type='button'
+                                            className='update-btn p-1'
+                                            onClick={() => {
+                                                setSelectedInvoice(invoice)
+                                                setShowInvoiceModal(true)
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-file-edit p-1"></i>
+                                        </button>
+                                        <button
+                                            className='delete-btn p-1'
+                                            onClick={() => {
+                                                handleDeleteInvoice(invoice.id, invoice.invoiceNumber)
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-trash delete p-1"></i>
+                                        </button>
+                                        <button
+                                            className='view-btn p-1'
+                                            onClick={() => {
+                                                handleShowDocumentModal(invoice);
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-eye view p-1"></i>
+                                        </button>
+                                    </td>
+                                )}
+
+                                {/* View for Management Users */}
+                                {role.toLowerCase() === 'management' && (
+                                    <td>
+                                        <button
+                                            className='view-btn p-1'
+                                            onClick={() => {
+                                                handleShowDocumentModal(invoice);
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-eye view p-1"></i>
+                                        </button>
+                                    </td>
+                                )}
+                                
                             </tr>
                         ))}
                     </tbody>
