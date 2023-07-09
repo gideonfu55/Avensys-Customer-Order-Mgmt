@@ -78,26 +78,27 @@ function History() {
 
   }
 
-  // - To fetch notifications by role periodically (every 60s):
+  const fetchManagementUserIDs = async() => {
+    try {
+      const { data: users } =   await axios.get('http://localhost:8080/users');
+      const managementUserIDs = users.filter(user => user.role.toLowerCase() === 'management').map(user => user.id.toString());
+      setManagementUserIDs(managementUserIDs);
+    } catch (error) {
+      console.error(`Error fetching management user IDs: ${error}`);
+    }
+  };
+
+  // - To fetch notifications by role when page loads:
   useEffect(() => {
     fetchHistory();
+    fetchManagementUserIDs();
 
-    const intervalId = setInterval(() => {
-      fetchHistory();
-    }, 60000);
-
-    axios
-      .get('http://localhost:8080/users')
-      .then(response => {
-        const managementUsers = response.data.filter(user => user.role.toLowerCase() === 'management');
-        setManagementUserIDs(managementUsers.map(user => user.id.toString()));
-      })
-      .catch(error => {
-        console.error(`Error fetching management users: ${error}`);
-      });
+    // const intervalId = setInterval(() => {
+    //   fetchHistory();
+    // }, 60000);
 
     // Clean up interval on component unmount
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   });
 
   return (
