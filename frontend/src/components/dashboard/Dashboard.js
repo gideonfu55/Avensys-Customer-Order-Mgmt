@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import { Modal } from 'react-bootstrap';
-import NavBar from './NavBar';
-import CreatePO from './CreatePO';
+import CreatePO from '../create-po/CreatePO';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import History from './History';
+import History from '../history/History';
+import NavBar from '../navbar/NavBar.js';
+
 
 function Dashboard() {
   const [user, setUser] = useState(null);

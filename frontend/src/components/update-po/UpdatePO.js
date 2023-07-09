@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import "./UpdatePO.css";
 
-function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
+function UpdatePO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
 
   const [poData, setPOData] = useState(selectedPO);
+
+  // For updating and uploading a new PO:
+  const [file, setFile] = useState(null);
+  const fileInput = useRef();
+
+  // For validation errors:
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,10 +24,57 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    fileInput.current.value = null;
+  };
+
+  // For validation errors:
+  useEffect(() => {
+
+    const newErrors = {};
+
+    if (poData.milestone < 0 || poData.milestone > 100) {
+      newErrors.milestone = 'Milestone must be between 0 and 100';
+    }
+
+    if (poData.totalValue <= 0) {
+      newErrors.totalValue = 'Total value must be greater than 0';
+    }
+
+    if (poData.balValue < 0 || poData.balValue > poData.totalValue) {
+      newErrors.balValue = 'Balance value must be between 0 and total value';
+    }
+
+    setErrors(newErrors);
+
+  }, [poData]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Create formData and append form values:
+    const formData = new FormData();
+    
+    for (let name in poData) {
+      formData.append(name, poData[name]);
+    }
+
+    // Append file to formData:
+    if (file) {
+      formData.append('file', file);
+    }
+
     axios
-      .patch(`http://localhost:8080/api/po/update/${poData.id}`, poData)
+      .patch(`http://localhost:8080/api/po/update/${poData.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       .then((response) => {
         onPoUpdated(poData.poNumber);
 
@@ -48,7 +102,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='update-po-model'>
       <div className='form-group'>
         <label htmlFor='poNumber'>PO Number</label>
         <input
@@ -58,7 +112,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           name='poNumber'
           value={poData.poNumber}
           onChange={handleChange}
-          required
+          disabled
         />
       </div>
       <div className='form-group'>
@@ -108,6 +162,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           onChange={handleChange}
           required
         />
+        {errors.milestone && <div className="text-danger">{errors.milestone}</div>}
       </div>
       <div className='form-group'>
         <label htmlFor='totalValue'>Total Value</label>
@@ -120,6 +175,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           onChange={handleChange}
           required
         />
+        {errors.totalValue && <div className="text-danger">{errors.totalValue}</div>}
       </div>
       <div className='form-group'>
         <label htmlFor='balValue'>Balance Value</label>
@@ -132,6 +188,7 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           onChange={handleChange}
           required
         />
+        {errors.balValue && <div className="text-danger">{errors.balValue}</div>}
       </div>
       <div className='form-group'>
         <label htmlFor='status'>Status</label>
@@ -148,11 +205,33 @@ function EditPO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           <option value='Cancelled'>Cancelled</option>
         </select>
       </div>
-      <button type='submit' className='btn btn-primary'>
+      <div className='form-group'>
+        <label htmlFor='file'>New PO File</label>
+        <div className='d-flex'>
+          <input
+            className='form-control-file w-25'
+            type='file'
+            id='file'
+            name='file'
+            ref={fileInput}
+            onChange={handleFileChange}
+          />
+          {file && (
+            <button type="button" onClick={removeFile}>
+              <i class="fi fi-ss-cross-circle"></i>
+            </button>
+          )}
+        </div>
+      </div>
+      <button 
+        type='submit' 
+        className='btn btn-primary mt-2'
+        disabled={ errors && Object.keys(errors).length > 0 }
+      >
         Save
       </button>
     </form>
   );
 }
 
-export default EditPO;
+export default UpdatePO;

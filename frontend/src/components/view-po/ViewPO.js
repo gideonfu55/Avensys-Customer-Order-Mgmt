@@ -3,14 +3,14 @@ import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ViewPO.css'
 import axios from 'axios';
-import EditPO from './EditPO';
-import UpdateInvoice from './UpdateInvoice';
+import UpdatePO from '../update-po/UpdatePO';
+import UpdateInvoice from '../update-invoice/UpdateInvoice';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 
-function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
+function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
 
     const username = localStorage.getItem('username');
     const role = localStorage.getItem('role');
@@ -41,7 +41,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
     }, [selectedPO]);
 
     const handleDeleteInvoice = (id, invoiceNumber) => {
-        toast.success(`Invoice ${invoiceNumber} updated successfully!`);
+        toast.success(`Invoice ${invoiceNumber} deleted successfully!`);
         axios
             .delete(`http://localhost:8080/api/invoices/delete/${id}`)
             .then((response) => {
@@ -94,7 +94,7 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
 
             setBalValue(updatedBalValue);
 
-            if (isPS) {
+            if (isTS) {
                 updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
             }
         }
@@ -109,10 +109,17 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
             status: updatedStatus
         };
 
+        console.log(patchData)
+
         axios
-            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+            .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             .then((response) => {
                 console.log('Purchase order updated successfully:', response.data);
+                console.log(response.data)
                 setUpdatedPO(response.data)
                 onInvUpdated()
             })
@@ -136,11 +143,11 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
         toast.error('Error updating invoice!');
     };
 
-    function handleShowInvoiceModalClose() {
+    const handleShowInvoiceModalClose = () => {
         setShowInvoiceModal(false);
     }
 
-    function handleShowDocumentModal(invoice) {
+    const handleShowDocumentModal = (invoice) => {
         setSelectedInvoice(invoice);
         setShowDocumentModal(true);
     }
@@ -202,46 +209,65 @@ function ViewPO({ selectedPO, onInvUpdated, isPS, closeModal }) {
                                 <td>{invoice.dateBilled}</td>
                                 <td>{invoice.dueDate}</td>
                                 <td>{invoice.status}</td>
-                                <td>
-                                    <button
-                                        type='button'
-                                        className='update-btn p-1'
-                                        onClick={() => {
-                                            setSelectedInvoice(invoice)
-                                            setShowInvoiceModal(true)
-                                        }}
-                                    >
-                                        <i className="fi fi-sr-file-edit p-1"></i>
-                                    </button>
-                                    <button
-                                        className='delete-btn p-1'
-                                        onClick={() => {
-                                            handleDeleteInvoice(invoice.id, invoice.invoiceNumber)
-                                        }}
-                                    >
-                                        <i className="fi fi-sr-trash delete p-1"></i>
-                                    </button>
-                                    <button
-                                        className='view-btn p-1'
-                                        onClick={() => {
-                                            handleShowDocumentModal(invoice);
-                                        }}
-                                    >
-                                        <i className="fi fi-sr-eye view p-1"></i>
-                                    </button>
-                                </td>
+
+                                {/* View for Finance Users */}
+                                {role.toLowerCase() === 'finance' && (
+                                    <td>
+                                        <button
+                                            type='button'
+                                            className='update-btn p-1'
+                                            onClick={() => {
+                                                setSelectedInvoice(invoice)
+                                                setShowInvoiceModal(true)
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-file-edit p-1"></i>
+                                        </button>
+                                        <button
+                                            className='delete-btn p-1'
+                                            onClick={() => {
+                                                handleDeleteInvoice(invoice.id, invoice.invoiceNumber)
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-trash delete p-1"></i>
+                                        </button>
+                                        <button
+                                            className='view-btn p-1'
+                                            onClick={() => {
+                                                handleShowDocumentModal(invoice);
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-eye view p-1"></i>
+                                        </button>
+                                    </td>
+                                )}
+
+                                {/* View for Management Users */}
+                                {role.toLowerCase() === 'management' && (
+                                    <td>
+                                        <button
+                                            className='view-btn p-1'
+                                            onClick={() => {
+                                                handleShowDocumentModal(invoice);
+                                            }}
+                                        >
+                                            <i className="fi fi-sr-eye view p-1"></i>
+                                        </button>
+                                    </td>
+                                )}
+                                
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-            {/* Edit PO Modal */}
+            {/* Update PO Modal */}
             <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Purchase Order</Modal.Title>
+                    <Modal.Title>Update Purchase Order</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {showEditModal && <EditPO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
+                    {showEditModal && <UpdatePO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
                 </Modal.Body>
             </Modal>
 

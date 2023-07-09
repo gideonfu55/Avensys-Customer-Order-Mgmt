@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import './CreateInvoice.css';
 
-function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
+function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
@@ -18,6 +18,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
 
   // For document uploads:
   const [file, setFile] = useState(null);
+  const fileInput = useRef();
 
   const [validationError, setValidationError] = useState('');
 
@@ -33,6 +34,11 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    fileInput.current.value = null;
   };
 
   const handleSubmit = (event) => {
@@ -107,7 +113,7 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
       let updatedMilestone;
       let updatedStatus;
 
-      if (isPS) {
+      if (isTS) {
         updatedMilestone = ((selectedPO.totalValue - updatedBalValue) / selectedPO.totalValue) * 100;
       }
 
@@ -121,8 +127,14 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
         status: updatedStatus
       };
 
+      console.log(patchData)
+
       axios
-        .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+        .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        })
         .then((response) => {
           console.log('Purchase order updated successfully:', response.data);
 
@@ -218,11 +230,18 @@ function CreateInvoice({ selectedPO, closeModal, isPS, onInvUpdated }) {
         <div>
           <label className='me-1' htmlFor="file">File</label>
           <input
+            className='w-25'
             type="file"
             id="file"
             name="file"
+            ref={fileInput}
             onChange={(event) => setFile(event.target.files[0])}
           />
+          {file && (
+            <button className='ms-2' type="button" onClick={removeFile}>
+              <i class="fi fi-ss-cross-circle"></i>
+            </button>
+          )}
         </div>
 
         <button type="submit" className="btn btn-primary">

@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import NavBar from './NavBar';
 import { Modal } from 'react-bootstrap';
-import ViewPO from './ViewPO';
-import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO';
+import ViewPO from '../view-po/ViewPO';
+import CreateInvoice from '../create-invoice/CreateInvoice';
+import UpdatePO from '../update-po/UpdatePO';
 import './ES.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../navbar/NavBar';
 
 
 function ES() {
@@ -33,15 +33,15 @@ function ES() {
   const [numPages, setNumPages] = useState(0);
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-  function handleShowPOModalClose() {
+  const handleShowPOModalClose = () => {
     setShowPOModal(false);
   }
 
-  function handleShowInvoiceModalClose() {
+  const handleShowInvoiceModalClose = () => {
     setShowInvoiceModal(false);
   }
 
-  function handleStatusChange(e) {
+  const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   }
 
@@ -93,7 +93,7 @@ function ES() {
     }
   };
 
-  const handleEditPO = (po) => {
+  const handleUpdatePO = (po) => {
     setSelectedPO(po);
     setShowEditModal(true);
   };
@@ -123,7 +123,7 @@ function ES() {
       });
   }
 
-  const handleInvoiceUpdate = (invoiceNumber) => {
+  const handleInvoiceCreate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
 
     axios
@@ -158,9 +158,7 @@ function ES() {
       .catch((error) => {
         console.error(error);
       });
-
-    console.log('ES POs: ', ES);
-  });
+  }, []);
 
   return (
     <div className='dashboard-body'>
@@ -246,7 +244,7 @@ function ES() {
               <th scope='col'>
                 Status
               </th>
-              {role.toLowerCase() === 'finance' && (
+              {(role.toLowerCase() === 'finance' || role.toLowerCase() === 'management') && (
                 <th scope='col' className='text-center'>
                   Actions
                 </th>
@@ -271,6 +269,17 @@ function ES() {
                 <td>{po.totalValue}</td>
                 <td>{po.balValue}</td>
                 <td>{po.status}</td>
+
+                {/* View for Sales Users */}
+                {role.toLowerCase() === 'sales' && (
+                  <td>
+                    <button className='p-1'>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                    </button>
+                  </td>
+                )}
+
+                {/* View for Finance Users */}
                 {role.toLowerCase() === 'finance' && (
                   <td>
                     <div className="dropdown">
@@ -286,8 +295,8 @@ function ES() {
                           }}>
                           <i className="fi fi-rr-eye"></i> View PO
                         </a>
-                        <a className="dropdown-item" onClick={() => handleEditPO(po)}>
-                          <i className="fi fi-rr-edit"></i> Edit PO
+                        <a className="dropdown-item" onClick={() => handleUpdatePO(po)}>
+                          <i className="fi fi-rr-edit"></i> Update PO
                         </a>
                         <a className="dropdown-item" onClick={() => {
                           setSelectedPO(po);
@@ -304,13 +313,31 @@ function ES() {
                     </div>
                   </td>
                 )}
-                {role.toLowerCase() === 'sales' && (
+
+                {/* View for Management Users */}
+                {role.toLowerCase() === 'management' && (
                   <td>
-                    <button className='p-1'>
-                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
-                    </button>
+                    <div className="dropdown">
+                      <button className="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i className="fi fi-br-menu-dots"></i>
+                      </button>
+                      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a
+                          className="dropdown-item"
+                          onClick={() => {
+                            setSelectedPO(po);
+                            setShowPOModal(true);
+                          }}>
+                          <i className="fi fi-rr-eye"></i> View PO
+                        </a>
+                        <a className="dropdown-item" onClick={() => handleShowDocumentModal(po)}>
+                          <i className="fi fi-rr-file"></i> View PO Document
+                        </a>
+                      </div>
+                    </div>
                   </td>
                 )}
+
               </tr>
             ))}
           </tbody>
@@ -322,7 +349,7 @@ function ES() {
             <Modal.Header closeButton>
               <Modal.Title>Purchase Order</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} isPS={false} closeModal={handleShowPOModalClose} />}</Modal.Body>
+            <Modal.Body>{showPOModal && <ViewPO selectedPO={selectedPO} onInvUpdated={handleInvUpdate} isTS={false} closeModal={handleShowPOModalClose} />}</Modal.Body>
           </Modal>
 
           {/* Create Invoice Modal */}
@@ -334,22 +361,22 @@ function ES() {
               {showInvoiceModal && (
                 <CreateInvoice
                   selectedPO={selectedPO}
-                  isPS={false}
+                  isTS={false}
                   closeModal={handleShowInvoiceModalClose}
-                  onInvUpdated={handleInvoiceUpdate}
+                  onInvUpdated={handleInvoiceCreate}
                 />
               )}
             </Modal.Body>
           </Modal>
 
-          {/* Edit PO Modal */}
+          {/* Update PO Modal */}
           <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
             <Modal.Header closeButton>
-              <Modal.Title>Edit Purchase Order</Modal.Title>
+              <Modal.Title>Update Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {showEditModal && (
-                <EditPO
+                <UpdatePO
                   selectedPO={selectedPO}
                   closeModal={() => setShowEditModal(false)}
                   onPoUpdated={handlePoUpdate}

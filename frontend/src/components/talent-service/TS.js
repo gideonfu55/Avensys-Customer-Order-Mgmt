@@ -1,25 +1,25 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import NavBar from './NavBar';
 import { Modal } from 'react-bootstrap';
-import ViewPO from './ViewPO';
-import CreateInvoice from './CreateInvoice';
-import EditPO from './EditPO';
-import './ES.css';
+import ViewPO from '../view-po/ViewPO';
+import CreateInvoice from '../create-invoice/CreateInvoice';
+import UpdatePO from '../update-po/UpdatePO';
+import './TS.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../navbar/NavBar';
 
 
-function PS() {
+function TS() {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
   const navigate = useNavigate();
 
-  const [PS, setPS] = useState([]);
+  const [TS, setTS] = useState([]);
   const [showPOModal, setShowPOModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -33,15 +33,15 @@ function PS() {
   const [numPages, setNumPages] = useState(0);
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-  function handleShowPOModalClose() {
+  const handleShowPOModalClose = () => {
     setShowPOModal(false);
   }
 
-  function handleShowInvoiceModalClose() {
+  const handleShowInvoiceModalClose = () => {
     setShowInvoiceModal(false);
   }
 
-  function handleStatusChange(e) {
+  const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   }
 
@@ -53,20 +53,20 @@ function PS() {
     setSearchType(e.target.value);
   };
 
-  const filteredPS = selectedStatus
-    ? PS.filter((po) => po.status === selectedStatus && po.type === 'Talent Service')
-    : PS.filter((po) => po.type === 'Talent Service');
+  const filteredTS = selectedStatus
+    ? TS.filter((po) => po.status === selectedStatus && po.type === 'Talent Service')
+    : TS.filter((po) => po.type === 'Talent Service');
 
-  const searchedPS = searchTerm
-    ? filteredPS.filter((po) => po[searchType].toString().toLowerCase().includes(searchTerm.toLowerCase()))
-    : filteredPS;
+  const searchedTS = searchTerm
+    ? filteredTS.filter((po) => po[searchType].toString().toLowerCase().includes(searchTerm.toLowerCase()))
+    : filteredTS;
 
   const handleDeletePO = (id, poNumber) => {
     if (window.confirm(`Are you sure you want to delete purchase order ${poNumber}?`)) {
       axios
         .delete(`http://localhost:8080/api/po/delete/${id}`)
         .then((response) => {
-          setPS((prevPS) => prevPS.filter((po) => po.id !== id));
+          setTS((prevTS) => prevTS.filter((po) => po.id !== id));
 
           // Create delete notification:
           const notification = {
@@ -93,7 +93,7 @@ function PS() {
 
   };
 
-  const handleEditPO = (po) => {
+  const handleUpdatePO = (po) => {
     setSelectedPO(po);
     setShowEditModal(true);
   };
@@ -104,7 +104,7 @@ function PS() {
     axios
       .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
       .then((response) => {
-        setPS(response.data);
+        setTS(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -115,7 +115,7 @@ function PS() {
     axios
       .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
       .then((response) => {
-        setPS(response.data);
+        setTS(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -127,7 +127,7 @@ function PS() {
     axios
       .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
       .then((response) => {
-        setPS(response.data);
+        setTS(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -151,12 +151,12 @@ function PS() {
     axios
       .get('http://localhost:8080/api/po/all', { maxRedirects: 5 })
       .then((response) => {
-        setPS(response.data);
+        setTS(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  });
+  }, []);
 
   return (
     <div className='dashboard-body'>
@@ -208,7 +208,7 @@ function PS() {
           </form>
         </div>
 
-        {/* Table of PS PO's */}
+        {/* Table of TS PO's */}
         <table className='table table-light table-hover'>
           <thead>
             <tr className='text-center align-middle'>
@@ -242,7 +242,7 @@ function PS() {
               <th scope='col'>
                 Status
               </th>
-              {role.toLowerCase() === 'finance' && (
+              {(role.toLowerCase() === 'finance' || role.toLowerCase() === 'management') && (
                 <th scope='col' className='text-center'>
                   Actions
                 </th>
@@ -255,7 +255,7 @@ function PS() {
             </tr>
           </thead>
           <tbody>
-            {searchedPS.map((po) => (
+            {searchedTS.map((po) => (
               <tr className='text-center align-middle' key={po.id}>
                 <td>{po.poNumber}</td>
                 <td>{po.prjNumber}</td>
@@ -267,6 +267,17 @@ function PS() {
                 <td>{po.totalValue}</td>
                 <td>{po.balValue}</td>
                 <td>{po.status}</td>
+
+                {/* View for Sales Users */}
+                {role.toLowerCase() === 'sales' && (
+                  <td>
+                    <button className='p-1'>
+                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
+                    </button>
+                  </td>
+                )}
+
+                {/* View for Finance Users */}
                 {role.toLowerCase() === 'finance' && (
                   <td>
                     <div className="dropdown">
@@ -282,8 +293,8 @@ function PS() {
                           <i className="fi fi-rr-eye"></i> View PO
                         </a>
                         <a className="dropdown-item"
-                          onClick={() => handleEditPO(po)}>
-                          <i className="fi fi-rr-edit"></i> Edit PO
+                          onClick={() => handleUpdatePO(po)}>
+                          <i className="fi fi-rr-edit"></i> Update PO
                         </a>
                         <a className="dropdown-item"
                           onClick={() => {
@@ -303,13 +314,32 @@ function PS() {
                     </div>
                   </td>
                 )}
-                {role.toLowerCase() === 'sales' && (
+
+                {/* View for Management Users */}
+                {role.toLowerCase() === 'management' && (
                   <td>
-                    <button className='p-1'>
-                      <i className="fi fi-rr-eye view-btn p-1" onClick={() => handleShowDocumentModal(po)}></i>
-                    </button>
+                    <div className="dropdown">
+                      <button className="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i className="fi fi-br-menu-dots"></i>
+                      </button>
+                      <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a
+                          className="dropdown-item"
+                          onClick={() => {
+                            setSelectedPO(po);
+                            setShowPOModal(true);
+                          }}>
+                          <i className="fi fi-rr-eye"></i> View PO
+                        </a>
+                        <a className="dropdown-item" onClick={() => handleShowDocumentModal(po)}>
+                          <i className="fi fi-rr-file"></i> View PO Document
+                        </a>
+                      </div>
+                    </div>
                   </td>
                 )}
+
+
               </tr>
             ))}
           </tbody>
@@ -326,7 +356,7 @@ function PS() {
                 <ViewPO
                   selectedPO={selectedPO}
                   onInvUpdated={handleInvUpdate}
-                  isPS={true}
+                  isTS={true}
                   closeModal={handleShowPOModalClose} />
               }
             </Modal.Body>
@@ -341,7 +371,7 @@ function PS() {
               {showInvoiceModal && (
                 <CreateInvoice
                   selectedPO={selectedPO}
-                  isPS={true}
+                  isTS={true}
                   closeModal={handleShowInvoiceModalClose}
                   onInvUpdated={handleInvoiceUpdate}
                 />
@@ -349,14 +379,14 @@ function PS() {
             </Modal.Body>
           </Modal>
 
-          {/* Edit PO Modal */}
+          {/* Update PO Modal */}
           <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
             <Modal.Header closeButton>
-              <Modal.Title>Edit Purchase Order</Modal.Title>
+              <Modal.Title>Update Purchase Order</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {showEditModal && (
-                <EditPO
+                <UpdatePO
                   selectedPO={selectedPO}
                   closeModal={() => setShowEditModal(false)}
                   onPoUpdated={handlePoUpdate}
@@ -406,4 +436,4 @@ function PS() {
   );
 }
 
-export default PS;
+export default TS;

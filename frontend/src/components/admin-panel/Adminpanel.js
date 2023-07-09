@@ -1,10 +1,13 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import NavBar from './NavBar.js';
+
 import './Adminpanel.css';
+import CreateUser from '../create-user/CreateUser';
+import UpdateUser from '../update-user/UpdateUser'
 import { Modal } from 'react-bootstrap';
-import UpdateUser from './UpdateUser';
-import CreateUser from './CreateUser'; // Import the CreateUser component
 import axios from 'axios';
+import NavBar from '../navbar/NavBar';
+
 
 function Adminpanel() {
   const [user, setAllUser] = useState([]);
@@ -40,16 +43,16 @@ function Adminpanel() {
   };
   
 
-  function updateUser(user) {
+  const updateUser = (user) => {
     setSelectedUser(user);
     setShowUserModal(true);
   }
 
-  function handleUserModalClose() {
+  const handleUserModalClose = () => {
     setShowUserModal(false);
   }
 
-  function handleCreateUserModalClose() {
+  const handleCreateUserModalClose = () => {
     setShowCreateUserModal(false);
   }
 

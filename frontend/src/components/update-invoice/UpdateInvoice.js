@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import './CreateInvoice.css';
+import React, { useEffect, useRef, useState } from 'react';
+import './UpdateInvoice.css';
 
 function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoiceUpdateError, selectedPO }) {
 
@@ -15,6 +15,10 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
     dueDate: '',
     status: ''
   });
+
+  // For updating and uploading a new invoice:
+  const [file, setFile] = useState(null);
+  const fileInput = useRef();
 
   const [validationError, setValidationError] = useState('');
 
@@ -37,6 +41,15 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
     setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    fileInput.current.value = null;
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -50,8 +63,22 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
       return;
     }
 
+    const formData = new FormData();
+
+    for (let key in invoiceData) {
+      formData.append(key, invoiceData[key]);
+    }
+
+    if (file) {
+      formData.append('file', file);
+    }
+
     axios
-      .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, invoiceData)
+      .patch(`http://localhost:8080/api/invoices/update/${selectedInvoice.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       .then((response) => {
         onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
         setValidationError('');
@@ -81,7 +108,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   return (
     <div className="invoice-container">
-      <form onSubmit={handleSubmit} className="create-invoice-model">
+      <form onSubmit={handleSubmit} className="update-invoice-model">
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
           <input
@@ -101,7 +128,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             name="amount"
             value={invoiceData.amount}
             onChange={handleChange}
-            placeholder="Enter Amount"
             placeholder="Enter Amount"
             className="form-control"
           />
@@ -159,6 +185,23 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             <option value="Unpaid">Unpaid</option>
             <option value="Paid">Paid</option>
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="file">New Invoice File</label>
+          <input
+            className="form-control-file ms-1 w-25"
+            type="file"
+            id="file"
+            name="file"
+            ref={fileInput}
+            onChange={handleFileChange}
+          />
+          {file && (
+            <button type="button" onClick={removeFile}>
+              <i class="fi fi-ss-cross-circle"></i>
+            </button>
+          )}
         </div>
 
         <button type="submit" className="btn btn-primary">

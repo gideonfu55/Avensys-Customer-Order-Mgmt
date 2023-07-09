@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import './CreateUser.css'
+import './CreatePO.css'
 
 function CreatePO(props) {
 
@@ -11,6 +11,7 @@ function CreatePO(props) {
 
   // For document uploads:
   const [file, setFile] = useState(null);
+  const fileInput = useRef();
 
   // For PO validation:
   const [poNumberError, setPONumberError] = useState(null);
@@ -59,6 +60,7 @@ function CreatePO(props) {
 
     if (name === 'poNumber') {
       setPONumber(value);
+      setPoData((prevState) => ({ ...prevState, poNumber: value }));
       return;
     }
 
@@ -86,11 +88,6 @@ function CreatePO(props) {
     setPoData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handlePONumberChange = (event) => {
-    setPONumber(event.target.value);
-    setPONumberError(null);
-  };
-
   const generateRandomProjectNumber = () => {
     //const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     //const digits = '0123456789';
@@ -113,31 +110,35 @@ function CreatePO(props) {
     return projectNumber;
   }
 
+  const removeFile = () => {
+    setFile(null);
+    fileInput.current.value = null;
+  };
+
   const handleSubmit = (event) => {
 
     event.preventDefault();
 
     const createdAt = new Date().toISOString();
     const prjNumber = generateRandomProjectNumber();
+    const newPO = { ...poData, prjNumber, createdAt };
+
+    console.log(newPO);
 
     if (poNumberError) {
       return;
     }
 
-    // Form data
+    // Create and append all form data
     const formData = new FormData();
-    formData.append('poNumber', poNumber);
-    formData.append('prjNumber', prjNumber);
-    formData.append('clientName', poData.clientName);
-    formData.append('startDate', poData.startDate);
-    formData.append('endDate', poData.endDate);
-    formData.append('totalValue', poData.totalValue);
-    formData.append('balValue', poData.balValue);
-    formData.append('milestone', poData.milestone);
-    formData.append('type', poData.type);
-    formData.append('status', poData.status);
-    formData.append('createdAt', createdAt);
-    formData.append('file', file);
+
+    for (let key in newPO) {
+      formData.append(key, newPO[key]);
+    }
+
+    if (file) {
+      formData.append('file', file);
+    }
 
     // Send purchase order data to the backend
     axios
@@ -148,7 +149,7 @@ function CreatePO(props) {
       })
       .then((response) => {
         console.log('Purchase order created successfully:', response.data);
-        props.onPoCreated(poData.poNumber);
+        props.onPoCreated(newPO.poNumber);
         
         // Reset the form
         setPoData({
@@ -203,7 +204,7 @@ function CreatePO(props) {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-user-model'>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-po-model'>
         <div>
           <label htmlFor="clientName">Client Name</label>
           <input
@@ -223,7 +224,7 @@ function CreatePO(props) {
             id="poNumber"
             name="poNumber"
             value={poNumber}
-            onChange={handlePONumberChange}
+            onChange={handleChange}
             placeholder='Enter Purchase Order Number'
             className={`form-control ${poNumberError ? 'is-invalid' : ''}`}
           />
@@ -324,17 +325,23 @@ function CreatePO(props) {
             <option value="" disabled>Select Type</option>
             <option value="Enterprise Service">Enterprise Service</option>
             <option value="Talent Service">Talent Service</option>
-            {/* <option value="Professional Service">Professional Service</option> */}
           </select>
         </div>
         <div>
           <label className='me-1' htmlFor="file">File</label>
           <input
+            className='w-50'
             type="file"
             id="file"
             name="file"
+            ref={fileInput}
             onChange={(event) => setFile(event.target.files[0])}
           />
+          {file && (
+            <button type="button" onClick={removeFile}>
+              <i className="fi fi-ss-cross-circle"></i>
+            </button>
+          )}
         </div>
 
         {/* <div>
