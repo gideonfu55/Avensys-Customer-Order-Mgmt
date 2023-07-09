@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import './History.css'
 import { Modal } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button'
@@ -58,7 +58,7 @@ function History() {
       })
   }
 
-  function fetchHistory() {
+  const fetchHistory = useCallback(() => {
     let userRole = 'all'
 
     if (role.toLowerCase() === 'sales') {
@@ -76,30 +76,26 @@ function History() {
         console.error(`Error fetching notifications: ${error}`);
       });
 
-  }
+  }, [role]);
 
-  const fetchManagementUserIDs = async() => {
+  const fetchManagementUserIDs = useCallback(async() => {
     try {
-      const { data: users } =   await axios.get('http://localhost:8080/users');
-      const managementUserIDs = users.filter(user => user.role.toLowerCase() === 'management').map(user => user.id.toString());
+      const { data: users } = await axios.get('http://localhost:8080/users');
+      const managementUserIDs = users
+        .filter(user => user.role.toLowerCase() === 'management')
+        .map(user => user.id.toString());
       setManagementUserIDs(managementUserIDs);
     } catch (error) {
       console.error(`Error fetching management user IDs: ${error}`);
     }
-  };
+  }, []); // No dependencies here, so the function is only created once.
 
   // - To fetch notifications by role when page loads:
   useEffect(() => {
     fetchHistory();
     fetchManagementUserIDs();
+  }, [fetchHistory, fetchManagementUserIDs]); // fetchHistory is now memoized and won't cause the useEffect to trigger unless its dependencies change
 
-    // const intervalId = setInterval(() => {
-    //   fetchHistory();
-    // }, 60000);
-
-    // Clean up interval on component unmount
-    // return () => clearInterval(intervalId);
-  });
 
   return (
     <div className="notification-container">

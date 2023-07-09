@@ -156,7 +156,7 @@ function TS() {
       .catch((error) => {
         console.error(error);
       });
-  });
+  }, []);
 
   return (
     <div className='dashboard-body'>

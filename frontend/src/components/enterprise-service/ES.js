@@ -158,7 +158,7 @@ function ES() {
       .catch((error) => {
         console.error(error);
       });
-  });
+  }, []);
 
   return (
     <div className='dashboard-body'>
