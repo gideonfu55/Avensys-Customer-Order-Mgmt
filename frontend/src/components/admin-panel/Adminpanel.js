@@ -43,16 +43,16 @@ function Adminpanel() {
   };
   
 
-  function updateUser(user) {
+  const updateUser = (user) => {
     setSelectedUser(user);
     setShowUserModal(true);
   }
 
-  function handleUserModalClose() {
+  const handleUserModalClose = () => {
     setShowUserModal(false);
   }
 
-  function handleCreateUserModalClose() {
+  const handleCreateUserModalClose = () => {
     setShowCreateUserModal(false);
   }
 

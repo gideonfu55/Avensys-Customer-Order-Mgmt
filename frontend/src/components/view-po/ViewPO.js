@@ -136,11 +136,11 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
         toast.error('Error updating invoice!');
     };
 
-    function handleShowInvoiceModalClose() {
+    const handleShowInvoiceModalClose = () => {
         setShowInvoiceModal(false);
     }
 
-    function handleShowDocumentModal(invoice) {
+    const handleShowDocumentModal = (invoice) => {
         setSelectedInvoice(invoice);
         setShowDocumentModal(true);
     }

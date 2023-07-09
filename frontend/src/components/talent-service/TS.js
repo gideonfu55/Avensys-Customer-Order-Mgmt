@@ -33,15 +33,15 @@ function TS() {
   const [numPages, setNumPages] = useState(0);
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-  function handleShowPOModalClose() {
+  const handleShowPOModalClose = () => {
     setShowPOModal(false);
   }
 
-  function handleShowInvoiceModalClose() {
+  const handleShowInvoiceModalClose = () => {
     setShowInvoiceModal(false);
   }
 
-  function handleStatusChange(e) {
+  const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
   }
 
