@@ -69,7 +69,7 @@ public class InvoiceController {
     public ResponseEntity<Invoice> updateInvoice (
         @PathVariable Long id, 
         Invoice invoice,
-        @RequestParam("file") MultipartFile file
+        @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         try {
             CompletableFuture<Invoice> future = invoiceService.updateInvoice(id, invoice, file);

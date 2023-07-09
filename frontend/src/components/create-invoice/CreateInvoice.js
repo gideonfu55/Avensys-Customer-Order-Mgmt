@@ -127,8 +127,14 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
         status: updatedStatus
       };
 
+      console.log(patchData)
+
       axios
-        .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData)
+        .patch(`http://localhost:8080/api/po/update/${selectedPO.id}`, patchData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        })
         .then((response) => {
           console.log('Purchase order updated successfully:', response.data);
 

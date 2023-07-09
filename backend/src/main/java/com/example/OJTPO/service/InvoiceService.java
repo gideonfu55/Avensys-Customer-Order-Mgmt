@@ -140,10 +140,12 @@ public class InvoiceService {
     MultipartFile file
   ) throws Exception {
 
-    String fileUrl = getFileUrl(file, newInvoice);
+    if (file != null) {
+      String fileUrl = getFileUrl(file, newInvoice);
 
-    // Set the fileUrl field in the invoice
-    newInvoice.setFileUrl(fileUrl);
+      // Set the fileUrl field in the invoice
+      newInvoice.setFileUrl(fileUrl);
+    }
 
     String idString = String.valueOf(id);
     if (idString == null || idString.equals("null")) {

@@ -96,7 +96,7 @@ public class PurchaseOrderController {
   public ResponseEntity<PurchaseOrder> updatePO(
     @PathVariable Long id,
     PurchaseOrder purchaseOrder,
-    @RequestParam("file") MultipartFile file
+    @RequestParam(value = "file", required = false) MultipartFile file
   ) {
     try {
       CompletableFuture<PurchaseOrder> future = purchaseOrderService.updatePO(id, purchaseOrder, file);

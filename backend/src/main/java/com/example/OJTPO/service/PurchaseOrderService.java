@@ -156,10 +156,13 @@ public class PurchaseOrderService {
     MultipartFile file
   ) throws Exception {
 
-    String fileUrl = getFileUrl(file, newPurchaseOrder);
+    if (file != null) {
+      String fileUrl = getFileUrl(file, newPurchaseOrder);
 
-    // Set the fileUrl field in the purchase order
-    newPurchaseOrder.setFileUrl(fileUrl);
+      // Set the fileUrl field in the purchase order
+      newPurchaseOrder.setFileUrl(fileUrl);
+
+    }
 
     String idString = String.valueOf(id);
     if (idString == null || idString.equals("null")) {
@@ -170,17 +173,23 @@ public class PurchaseOrderService {
 
     getPOReference().child(idString)
       .addListenerForSingleValueEvent(new ValueEventListener() {
+
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+
           if (dataSnapshot.exists()) {
             PurchaseOrder existingPO = dataSnapshot.getValue(PurchaseOrder.class);
+
             existingPO.updateWith(newPurchaseOrder);
+
             ApiFuture<Void> future = getPOReference().child(idString).setValueAsync(existingPO);
+
             ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
               @Override
               public void onSuccess(Void result) {
                 completableFuture.complete(existingPO);
               }
+
               @Override
               public void onFailure(Throwable t) {
                 completableFuture.completeExceptionally(t);
@@ -199,7 +208,6 @@ public class PurchaseOrderService {
 
     return completableFuture;
   }
-
 
   // Delete Purchase Order:
   public CompletableFuture<String> deletePO(Long id) {

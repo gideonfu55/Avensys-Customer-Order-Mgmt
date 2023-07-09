@@ -123,7 +123,7 @@ function ES() {
       });
   }
 
-  const handleInvoiceUpdate = (invoiceNumber) => {
+  const handleInvoiceCreate = (invoiceNumber) => {
     toast.success(`Invoice ${invoiceNumber} created successfully!`);
 
     axios
@@ -363,7 +363,7 @@ function ES() {
                   selectedPO={selectedPO}
                   isTS={false}
                   closeModal={handleShowInvoiceModalClose}
-                  onInvUpdated={handleInvoiceUpdate}
+                  onInvUpdated={handleInvoiceCreate}
                 />
               )}
             </Modal.Body>

@@ -8,8 +8,8 @@ public class PurchaseOrder {
   private String clientName;
   private String startDate;
   private String endDate;
-  private double totalValue;
-  private double balValue;
+  private Double totalValue;
+  private Double balValue;
   private String milestone;
   private String type;
   private String status;
@@ -19,7 +19,7 @@ public class PurchaseOrder {
   public PurchaseOrder() {
   }
 
-  public PurchaseOrder(String poNumber, String prjNumber, String clientName, String startDate, String endDate, double totalValue, double balValue, String milestone, String type, String status, String createAt) {
+  public PurchaseOrder(String poNumber, String prjNumber, String clientName, String startDate, String endDate, Double totalValue, Double balValue, String milestone, String type, String status, String createAt) {
     this.poNumber = poNumber;
     this.prjNumber = prjNumber;
     this.clientName = clientName;
@@ -81,19 +81,19 @@ public class PurchaseOrder {
     this.endDate = endDate;
   }
 
-  public double getTotalValue() {
+  public Double getTotalValue() {
     return this.totalValue;
   }
 
-  public void setTotalValue(double totalValue) {
+  public void setTotalValue(Double totalValue) {
     this.totalValue = totalValue;
   }
 
-  public double getBalValue() {
+  public Double getBalValue() {
     return this.balValue;
   }
 
-  public void setBalValue(double balValue) {
+  public void setBalValue(Double balValue) {
     this.balValue = balValue;
   }
 
@@ -143,12 +143,11 @@ public class PurchaseOrder {
     this.prjNumber= newPurchaseOrder.prjNumber != null ? newPurchaseOrder.prjNumber : this.prjNumber;
     this.startDate = newPurchaseOrder.startDate != null ? newPurchaseOrder.startDate : this.startDate;
     this.endDate = newPurchaseOrder.endDate != null ? newPurchaseOrder.endDate : this.endDate;
-    this.totalValue = newPurchaseOrder.totalValue != 0 ? newPurchaseOrder.totalValue : this.totalValue;
-    this.balValue = newPurchaseOrder.balValue >= 0 ? newPurchaseOrder.balValue : this.balValue;
+    this.totalValue = newPurchaseOrder.totalValue != null ? newPurchaseOrder.totalValue : this.totalValue;
+    this.balValue = newPurchaseOrder.balValue != null ? newPurchaseOrder.balValue : this.balValue;
     this.milestone = newPurchaseOrder.milestone != null ? newPurchaseOrder.milestone : this.milestone;
     this.type = newPurchaseOrder.type != null ? newPurchaseOrder.type : this.type;
     this.status = newPurchaseOrder.status != null ? newPurchaseOrder.status : this.status;
-    this.fileUrl = newPurchaseOrder.fileUrl != null ? newPurchaseOrder.fileUrl : this.fileUrl;
   }
   
 }
