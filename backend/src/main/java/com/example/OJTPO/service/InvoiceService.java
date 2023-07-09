@@ -204,6 +204,23 @@ public class InvoiceService {
           ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
+
+              // Check if the invoice has a fileUrl
+              if (dataSnapshot.child("fileUrl").getValue() == null) {
+                completableFuture.complete("Invoice with id " + idString + " has been deleted.");
+                return;
+              }
+
+              // Delete the invoice's file from Google Cloud Storage
+              String bucketName = "avensys-ojt.appspot.com";
+              String fileUrl = dataSnapshot.child("fileUrl").getValue(String.class);
+              int startOfObjectName = fileUrl.indexOf(bucketName) + bucketName.length() + 1;
+              String objectName = fileUrl.substring(startOfObjectName);
+
+              BlobId blobId = BlobId.of(bucketName, objectName);
+              System.out.println(blobId);
+              storage.delete(blobId);
+
               completableFuture.complete("Invoice with id " + idString + " has been deleted.");
             }
 
