@@ -25,10 +25,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createInvoice(
-        @RequestParam("file") MultipartFile file, 
-        Invoice invoice
-    ) {
+    public ResponseEntity<?> createInvoice(@RequestParam("file") MultipartFile file, Invoice invoice) {
         try {
             CompletableFuture<Invoice> future = invoiceService.createInvoice(file, invoice);
             Invoice invoiceResponse = future.get();

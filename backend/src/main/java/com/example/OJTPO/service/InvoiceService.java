@@ -44,10 +44,7 @@ public class InvoiceService {
   private static String UPLOAD_DIR = "uploads/invoice/";
 
   // Create new Invoice:
-  public CompletableFuture<Invoice> createInvoice(
-    MultipartFile file,
-    Invoice invoice
-  ) throws Exception {
+  public CompletableFuture<Invoice> createInvoice(MultipartFile file, Invoice invoice) throws Exception {
 
     String fileUrl = getFileUrl(file, invoice);
 
@@ -92,21 +89,21 @@ public class InvoiceService {
     final List<Invoice> invoices = new ArrayList<>();
 
     getInvoiceReference()
-        .addListenerForSingleValueEvent(new ValueEventListener() {
-          @Override
-          public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
-              Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
-              invoices.add(invoice);
-            }
-            future.complete(invoices);
+      .addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+            Invoice invoice = invoiceSnapshot.getValue(Invoice.class);
+            invoices.add(invoice);
           }
+          future.complete(invoices);
+        }
 
-          @Override
-          public void onCancelled(DatabaseError databaseError) {
-            future.completeExceptionally(databaseError.toException());
-          }
-        });
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          future.completeExceptionally(databaseError.toException());
+        }
+      });
 
     return future;
   }
@@ -120,18 +117,18 @@ public class InvoiceService {
     }
 
     getInvoiceReference().child(idString)
-        .addListenerForSingleValueEvent(new ValueEventListener() {
-          @Override
-          public void onDataChange(DataSnapshot dataSnapshot) {
-            Invoice invoice = dataSnapshot.getValue(Invoice.class);
-            future.complete(invoice);
-          }
+      .addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          Invoice invoice = dataSnapshot.getValue(Invoice.class);
+          future.complete(invoice);
+        }
 
-          @Override
-          public void onCancelled(DatabaseError databaseError) {
-            future.completeExceptionally(databaseError.toException());
-          }
-        });
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          future.completeExceptionally(databaseError.toException());
+        }
+      });
 
     return future;
   }

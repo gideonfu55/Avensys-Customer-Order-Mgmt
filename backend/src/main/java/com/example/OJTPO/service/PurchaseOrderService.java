@@ -44,10 +44,7 @@ public class PurchaseOrderService {
   private static String UPLOAD_DIR = "uploads/po/";
 
   // Create new Purchase Order:
-  public CompletableFuture<PurchaseOrder> createPO(
-    MultipartFile file,
-    PurchaseOrder purchaseOrder
-  ) throws Exception {
+  public CompletableFuture<PurchaseOrder> createPO(MultipartFile file, PurchaseOrder purchaseOrder) throws Exception {
 
     String fileUrl = getFileUrl(file, purchaseOrder);
 

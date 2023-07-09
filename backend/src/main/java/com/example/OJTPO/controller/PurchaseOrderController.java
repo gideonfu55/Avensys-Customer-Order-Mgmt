@@ -33,10 +33,7 @@ public class PurchaseOrderController {
 
   // For sales team to create PO:
   @PostMapping("/create")
-  public ResponseEntity<?> createPO (
-    @RequestParam("file") MultipartFile file,
-    PurchaseOrder purchaseOrder
-  ) {
+  public ResponseEntity<?> createPO (@RequestParam("file") MultipartFile file, PurchaseOrder purchaseOrder) {
 
     String poNumber = purchaseOrder.getPoNumber();
 
