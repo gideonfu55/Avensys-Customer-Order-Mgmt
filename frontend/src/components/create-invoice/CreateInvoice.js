@@ -265,7 +265,7 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
           />
           {file && (
             <button className='ms-2' type="button" onClick={removeFile}>
-              <i class="fi fi-ss-cross-circle"></i>
+              <i className="fi fi-ss-cross-circle"></i>
             </button>
           )}
           {fileError && 

@@ -122,7 +122,7 @@ public class PurchaseOrderController {
         return new ResponseEntity<String>(purchaseOrderResponse, HttpStatus.NO_CONTENT);
       }
       return new ResponseEntity<>("Purchase Order not found", HttpStatus.NOT_FOUND);
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (Exception e) {
       return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
