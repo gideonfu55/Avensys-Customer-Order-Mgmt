@@ -41,6 +41,9 @@ public class InvoiceService {
   @Autowired
   private Storage storage;
 
+  @Autowired
+  private PurchaseOrderService purchaseOrderService;
+
   private static String UPLOAD_DIR = "uploads/invoice/";
 
   // Create new Invoice:
@@ -238,6 +241,49 @@ public class InvoiceService {
       public void onCancelled(DatabaseError databaseError) {
         completableFuture.completeExceptionally(databaseError.toException());
       }
+    });
+
+    return completableFuture;
+  }
+
+  // Delete Invoices Record & Document with no matching PO:
+  public CompletableFuture<String> deleteInvoicesWithoutMatchingPO() {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+    String bucketName = "avensys-ojt.appspot.com";
+
+    purchaseOrderService.getAllPoNumbers().thenAccept(poNumbers -> {
+      getInvoiceReference().addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+            String purchaseOrderRef = invoiceSnapshot.child("purchaseOrderRef").getValue(String.class);
+            if (!poNumbers.contains(purchaseOrderRef)) {
+
+              // Delete associated Invoice documents from Firebase Storage
+              if (invoiceSnapshot.child("fileUrl").getValue(String.class) != null) {
+                String fileUrl = invoiceSnapshot.child("fileUrl").getValue(String.class);
+                int startOfObjectName = fileUrl.indexOf(bucketName) + bucketName.length() + 1;
+                String objectName = fileUrl.substring(startOfObjectName);
+
+                BlobId blobId = BlobId.of(bucketName, objectName);
+                storage.delete(blobId);
+              }
+              // Remove the invoice from Firebase Realtime Database
+              invoiceSnapshot.getRef().removeValueAsync();
+            }
+          }
+          
+          completableFuture.complete("Deleted all invoices without a matching Purchase Order.");
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          completableFuture.completeExceptionally(databaseError.toException());
+        }
+      });
+    }).exceptionally(e -> {
+      completableFuture.completeExceptionally(e);
+      return null;
     });
 
     return completableFuture;
