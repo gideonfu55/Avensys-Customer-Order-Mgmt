@@ -99,4 +99,16 @@ public class InvoiceController {
         }
     }
 
+    // For admin to delete all invoices without a corresponding Purchase Order Number in DB
+    @DeleteMapping("/deleteOrphanInvoices")
+    public ResponseEntity<String> deleteInvoicesWithoutMatchingPO() {
+        try {
+            CompletableFuture<String> future = invoiceService.deleteInvoicesWithoutMatchingPO();
+            String response = future.get();
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

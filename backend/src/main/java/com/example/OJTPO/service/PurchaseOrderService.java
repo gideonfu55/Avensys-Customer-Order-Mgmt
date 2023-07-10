@@ -154,6 +154,30 @@ public class PurchaseOrderService {
     return future;
   }
 
+  // Get all PO Numbers:
+  public CompletableFuture<List<String>> getAllPoNumbers() {
+    CompletableFuture<List<String>> completableFuture = new CompletableFuture<>();
+
+    getPOReference().addListenerForSingleValueEvent(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        List<String> poNumbers = new ArrayList<>();
+        for (DataSnapshot poSnapshot : dataSnapshot.getChildren()) {
+          String poNumber = poSnapshot.child("poNumber").getValue(String.class);
+          poNumbers.add(poNumber);
+        }
+        completableFuture.complete(poNumbers);
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+        completableFuture.completeExceptionally(databaseError.toException());
+      }
+    });
+
+    return completableFuture;
+  }
+
   // Update Purchase Order:
   public CompletableFuture<PurchaseOrder> updatePO (
     Long id, 
