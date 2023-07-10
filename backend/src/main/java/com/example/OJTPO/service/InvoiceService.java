@@ -162,9 +162,17 @@ public class InvoiceService {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
           if (dataSnapshot.exists()) {
+
+            // Get the existing invoice
             Invoice existingInvoice = dataSnapshot.getValue(Invoice.class);
+
+            System.out.println(newInvoice.getFileUrl());
             existingInvoice.updateWith(newInvoice);
+
+            // Update the invoice in the database
             ApiFuture<Void> future = getInvoiceReference().child(idString).setValueAsync(existingInvoice);
+            
+            // Add a callback to handle success / failure
             ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
               @Override
               public void onSuccess(Void result) {
@@ -181,6 +189,7 @@ public class InvoiceService {
           }
         }
 
+        // Handle database error
         @Override
         public void onCancelled(DatabaseError databaseError) {
           completableFuture.completeExceptionally(databaseError.toException());
