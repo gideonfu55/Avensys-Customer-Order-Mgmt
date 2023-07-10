@@ -148,6 +148,7 @@ public class PurchaseOrder {
     this.milestone = newPurchaseOrder.milestone != null ? newPurchaseOrder.milestone : this.milestone;
     this.type = newPurchaseOrder.type != null ? newPurchaseOrder.type : this.type;
     this.status = newPurchaseOrder.status != null ? newPurchaseOrder.status : this.status;
+    this.fileUrl = newPurchaseOrder.fileUrl != null ? newPurchaseOrder.fileUrl : this.fileUrl;
   }
   
 }

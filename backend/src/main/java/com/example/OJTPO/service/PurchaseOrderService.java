@@ -209,6 +209,7 @@ public class PurchaseOrderService {
           if (dataSnapshot.exists()) {
             PurchaseOrder existingPO = dataSnapshot.getValue(PurchaseOrder.class);
 
+            System.out.println(newPurchaseOrder.getFileUrl());
             existingPO.updateWith(newPurchaseOrder);
 
             ApiFuture<Void> future = getPOReference().child(idString).setValueAsync(existingPO);

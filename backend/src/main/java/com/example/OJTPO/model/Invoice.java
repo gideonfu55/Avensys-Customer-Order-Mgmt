@@ -96,5 +96,6 @@ public class Invoice {
         this.dateBilled = newInvoice.dateBilled != null ? newInvoice.dateBilled : this.dateBilled;
         this.dueDate = newInvoice.dueDate != null ? newInvoice.dueDate : this.dueDate;
         this.status = newInvoice.status != null ? newInvoice.status : this.status;
+        this.fileUrl = newInvoice.fileUrl != null ? newInvoice.fileUrl : this.fileUrl;
     }
 }
