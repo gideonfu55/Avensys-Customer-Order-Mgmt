@@ -253,7 +253,6 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
         <div>
           <label className='me-1' htmlFor="file">File</label>
           <input
-            className='w-25'
             type="file"
             id="file"
             name="file"

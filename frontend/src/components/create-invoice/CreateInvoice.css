@@ -1,9 +1,25 @@
-.create-invoice-model {
-  display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
+.invoice-container {
+  height: 80vh;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: -3rem;
 }
 
-/* .invoice-container {
-  width: 50%;
-} */
+.create-invoice-model {
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.8rem;
+  overflow: auto;
+}
+
+.create-invoice-model::-webkit-scrollbar {
+  display: none;
+}
+
+@media screen and (min-width: 1300px) {
+  .invoice-container {
+    height: 90%;
+    margin-bottom: 0;
+  }
+}

@@ -33,7 +33,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path='/ES' element={<ES/>} />
-          <Route path='/PS' element={<TS/>} />
+          <Route path='/TS' element={<TS/>} />
           {isAdmin ? (
             <Route path="/adminpanel" element={<Adminpanel />} />
           ) : null}

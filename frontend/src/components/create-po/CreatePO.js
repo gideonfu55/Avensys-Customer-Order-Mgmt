@@ -226,7 +226,7 @@ function CreatePO(props) {
 
 
   return (
-    <div>
+    <div className='po-container'>
       <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-po-model'>
         <div>
           <label htmlFor="clientName">Client Name</label>
@@ -405,7 +405,7 @@ function CreatePO(props) {
         
         <button 
           type="submit"
-          className='btn btn-primary'
+          className='btn btn-primary mt-1'
           disabled={
             !allFieldsFilled ||
             totalValueError || 

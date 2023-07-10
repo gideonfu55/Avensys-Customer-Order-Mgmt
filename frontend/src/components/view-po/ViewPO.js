@@ -261,18 +261,9 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
                     </tbody>
                 </table>
             </div>
-            {/* Update PO Modal */}
-            <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
-                <Modal.Header closeButton>
-                    <Modal.Title>Update Purchase Order</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {showEditModal && <UpdatePO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
-                </Modal.Body>
-            </Modal>
 
             {/* Update Invoice Modal */}
-            <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
+            <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='w-75'>
                 <Modal.Header closeButton>
                     <Modal.Title>Update Invoice</Modal.Title>
                 </Modal.Header>

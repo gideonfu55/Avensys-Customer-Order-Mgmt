@@ -113,7 +113,7 @@ function Dashboard() {
             </div>
             <div className='ts-po'>
               <h1>Talent Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
-              <Link to='/ps'><button className='btn btn-dark'>View More</button></Link>
+              <Link to='/ts'><button className='btn btn-dark'>View More</button></Link>
             </div>
           </div>
         </div>

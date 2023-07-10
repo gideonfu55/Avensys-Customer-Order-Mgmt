@@ -363,7 +363,7 @@ function TS() {
           </Modal>
 
           {/* Create Invoice Modal */}
-          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal w-50'>
+          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='w-75'>
             <Modal.Header closeButton>
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
@@ -380,7 +380,7 @@ function TS() {
           </Modal>
 
           {/* Update PO Modal */}
-          <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
+          <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='w-75'>
             <Modal.Header closeButton>
               <Modal.Title>Update Purchase Order</Modal.Title>
             </Modal.Header>

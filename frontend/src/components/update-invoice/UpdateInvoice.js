@@ -58,11 +58,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
       return;
     }
 
-    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
-      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
-      return;
-    }
-
     const formData = new FormData();
 
     for (let key in invoiceData) {
@@ -107,7 +102,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
   };
 
   return (
-    <div className="invoice-container">
+    <div className="update-invoice-container">
       <form onSubmit={handleSubmit} className="update-invoice-model">
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
@@ -131,7 +126,6 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             placeholder="Enter Amount"
             className="form-control"
           />
-          {validationError && <div className="text-danger">{validationError}</div>}
           {validationError && <div className="text-danger">{validationError}</div>}
         </div>
         <div>
@@ -190,7 +184,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
         <div>
           <label htmlFor="file">New Invoice File</label>
           <input
-            className="form-control-file ms-1 w-25"
+            className="form-control-file ms-1"
             type="file"
             id="file"
             name="file"
