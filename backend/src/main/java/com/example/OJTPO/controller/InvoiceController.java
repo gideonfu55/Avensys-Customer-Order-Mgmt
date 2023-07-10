@@ -99,7 +99,7 @@ public class InvoiceController {
         }
     }
 
-    // For admin to delete all invoices without a corresponding Purchase Order
+    // For admin to delete all invoices without a corresponding Purchase Order Number in DB
     @DeleteMapping("/deleteOrphanInvoices")
     public ResponseEntity<String> deleteInvoicesWithoutMatchingPO() {
         try {

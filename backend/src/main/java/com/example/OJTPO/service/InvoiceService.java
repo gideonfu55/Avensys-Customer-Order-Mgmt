@@ -246,7 +246,7 @@ public class InvoiceService {
     return completableFuture;
   }
 
-  // Delete Invoices Record & Document with no matching PO:
+  // Delete Invoices Record & Document with no current matching PO in DB:
   public CompletableFuture<String> deleteInvoicesWithoutMatchingPO() {
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
     String bucketName = "avensys-ojt.appspot.com";
