@@ -57,7 +57,7 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
     }
 
     setAllFieldsFilled(filled);
-  }, [invoiceData, file]);
+  }, [invoiceData]);
 
   const handleSubmit = (event) => {
     event.preventDefault();

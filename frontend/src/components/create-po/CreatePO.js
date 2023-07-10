@@ -39,7 +39,6 @@ function CreatePO(props) {
       if (poNumber) {
         try {
           const response = await axios.get(`http://localhost:8080/api/po/check/${poNumber}`);
-  
           if (response.data) {
             setPONumberError('Purchase order number already exists');
           } else {
@@ -52,7 +51,7 @@ function CreatePO(props) {
         setPONumberError(null);  
       }
     };
-  
+
     validatePONumber();
   }, [poNumber]);
 
@@ -125,14 +124,14 @@ function CreatePO(props) {
 
     // Check all fields in poData
     for (let key in poData) {
-      if (poData[key] === '' || poData[key] === null || poData[key] === undefined) {
+      if (key !== 'prjNumber' && (poData[key] === '' || poData[key] === null || poData[key] === undefined)) {
         filled = false;
         break;
       }
     }
 
     setAllFieldsFilled(filled);
-  }, [poData, file]);
+  }, [poData]);
 
   const handleSubmit = (event) => {
 
@@ -259,6 +258,15 @@ function CreatePO(props) {
             </div>
           }
         </div>
+        {/* <div className='visually-hidden'>
+          <label htmlFor="prjNumber">Project Number</label>
+          <input
+            type="text"
+            id="prjNumber"
+            name="prjNumber"
+            onChange={handleChange}
+          />
+        </div> */}
         <div>
           <label htmlFor="startDate">Start Date</label>
           <input
