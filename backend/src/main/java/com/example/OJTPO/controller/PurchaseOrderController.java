@@ -122,21 +122,18 @@ public class PurchaseOrderController {
         return new ResponseEntity<String>(purchaseOrderResponse, HttpStatus.NO_CONTENT);
       }
       return new ResponseEntity<>("Purchase Order not found", HttpStatus.NOT_FOUND);
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (Exception e) {
       return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   // For checking if the PO is unique:
   @GetMapping("/check/{poNumber}")
-  public ResponseEntity<?> checkPONumberExists(@PathVariable String poNumber) {
+  public ResponseEntity<Boolean> checkPONumberExists(@PathVariable String poNumber) {
     CompletableFuture<Boolean> future = purchaseOrderService.checkPONumberExists(poNumber);
     try {
       Boolean purchaseOrderResponse = future.get();
-      if (purchaseOrderResponse) {
-        return new ResponseEntity<>(true, HttpStatus.OK);
-      }
-      return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(purchaseOrderResponse, HttpStatus.OK);
     } catch (InterruptedException | ExecutionException e) {
       return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
     }

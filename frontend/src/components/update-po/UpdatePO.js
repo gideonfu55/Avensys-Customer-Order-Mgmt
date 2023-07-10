@@ -218,7 +218,7 @@ function UpdatePO({ selectedPO, closeModal, onPoUpdated, onPoUpdateError }) {
           />
           {file && (
             <button type="button" onClick={removeFile}>
-              <i class="fi fi-ss-cross-circle"></i>
+              <i className="fi fi-ss-cross-circle"></i>
             </button>
           )}
         </div>

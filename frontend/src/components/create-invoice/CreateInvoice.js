@@ -21,6 +21,8 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
   const fileInput = useRef();
 
   const [validationError, setValidationError] = useState('');
+  const [fileError, setFileError] = useState('');
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
   useEffect(() => {
     if (selectedPO) {
@@ -39,13 +41,34 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
   const removeFile = () => {
     setFile(null);
     fileInput.current.value = null;
+    setFileError('');
   };
+
+   // For checking if all fields are filled:
+  useEffect(() => {
+    let filled = true;
+
+    // Check all fields in poData
+    for (let key in invoiceData) {
+      if (invoiceData[key] === '' || invoiceData[key] === null || invoiceData[key] === undefined) {
+        filled = false;
+        break;
+      }
+    }
+
+    setAllFieldsFilled(filled);
+  }, [invoiceData]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
       setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      return;
+    }
+
+    if (!file) {
+      setFileError('Please select an invoice to upload before submitting');
       return;
     }
 
@@ -235,16 +258,31 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             id="file"
             name="file"
             ref={fileInput}
-            onChange={(event) => setFile(event.target.files[0])}
+            onChange={(event) => {
+              setFile(event.target.files[0])
+              setFileError('')
+            }}
           />
           {file && (
             <button className='ms-2' type="button" onClick={removeFile}>
-              <i class="fi fi-ss-cross-circle"></i>
+              <i className="fi fi-ss-cross-circle"></i>
             </button>
           )}
+          {fileError && 
+            <div className="text-danger mt-1">
+              {fileError}
+            </div>
+          }
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        <button 
+          type="submit" 
+          className="btn btn-primary"
+          disabled={
+            !allFieldsFilled ||
+            fileError
+          }
+        >
           Create Invoice
         </button>
       </form>

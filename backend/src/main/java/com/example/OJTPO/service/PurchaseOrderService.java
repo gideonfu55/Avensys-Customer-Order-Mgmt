@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class PurchaseOrderService {
 
   private DatabaseReference getPOReference() {
     return getDatabaseInstance().child("PurchaseOrders");
+  }
+
+  private DatabaseReference getInvoiceReference() {
+    return getDatabaseInstance().child("Invoices");
   }
 
   private DatabaseReference getLastPOId() {
@@ -211,9 +216,20 @@ public class PurchaseOrderService {
 
   // Delete Purchase Order:
   public CompletableFuture<String> deletePO(Long id) {
+
     String idString = String.valueOf(id);
     if (idString == null || idString.equals("null")) {
       throw new IllegalArgumentException("Purchase Order id cannot be null");
+    }
+
+    // Getting poNumber from the PO to be deleted for fetching corresponding invoices with purchaseOrderRef that matches:
+    String poNumber;
+
+    try {
+      poNumber = getPOById(id).get().getPoNumber();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace(); // log the exception properly
+      throw new RuntimeException("Failed to get PO by id", e);
     }
 
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
@@ -226,6 +242,47 @@ public class PurchaseOrderService {
           ApiFutures.addCallback(future, new ApiFutureCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
+
+              String bucketName = "avensys-ojt.appspot.com";
+
+              // Check if the PO has a fileUrl
+              if (dataSnapshot.child("fileUrl").getValue(String.class) != null) {
+
+                // Delete the PO's file from Google Cloud Storage
+                String fileUrl = dataSnapshot.child("fileUrl").getValue(String.class);
+                int startOfObjectName = fileUrl.indexOf(bucketName) + bucketName.length() + 1;
+                String objectName = fileUrl.substring(startOfObjectName);
+
+                BlobId blobId = BlobId.of(bucketName, objectName);
+                storage.delete(blobId);
+              }
+
+              // Remove associated Invoices
+              getInvoiceReference().orderByChild("purchaseOrderRef").equalTo(poNumber)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                  @Override
+                  public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+                      // Delete associated Invoice documents from Firebase Storage
+                      if (invoiceSnapshot.child("fileUrl").getValue(String.class) != null) {
+                        String fileUrl = invoiceSnapshot.child("fileUrl").getValue(String.class);
+                        int startOfObjectName = fileUrl.indexOf(bucketName) + bucketName.length() + 1;
+                        String objectName = fileUrl.substring(startOfObjectName);
+
+                        BlobId blobId = BlobId.of(bucketName, objectName);
+                        storage.delete(blobId);
+                      }
+                      // Remove the invoice from Firebase Realtime Database
+                      invoiceSnapshot.getRef().removeValueAsync();
+                    }
+                  }
+
+                  @Override
+                  public void onCancelled(DatabaseError databaseError) {
+                    completableFuture.completeExceptionally(databaseError.toException());
+                  }
+                });
+
               completableFuture.complete("Purchase Order with id " + idString + " has been deleted.");
             }
 
@@ -239,6 +296,7 @@ public class PurchaseOrderService {
         }
       }
 
+      // Implement onCancelled to handle connection issues
       @Override
       public void onCancelled(DatabaseError databaseError) {
         completableFuture.completeExceptionally(databaseError.toException());

@@ -18,6 +18,8 @@ function CreatePO(props) {
   const [totalValueError, setTotalValueError] = useState(null);
   const [balValueError, setBalValueError] = useState(null);
   const [milestoneError, setMilestoneError] = useState(null);
+  const [fileError, setFileError] = useState('');
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
   const [poData, setPoData] = useState({
     poNumber: '',
@@ -37,7 +39,6 @@ function CreatePO(props) {
       if (poNumber) {
         try {
           const response = await axios.get(`http://localhost:8080/api/po/check/${poNumber}`);
-  
           if (response.data) {
             setPONumberError('Purchase order number already exists');
           } else {
@@ -50,7 +51,7 @@ function CreatePO(props) {
         setPONumberError(null);  
       }
     };
-  
+
     validatePONumber();
   }, [poNumber]);
 
@@ -113,7 +114,24 @@ function CreatePO(props) {
   const removeFile = () => {
     setFile(null);
     fileInput.current.value = null;
+    // Set fileError state to an empty string when file is removed
+    setFileError('');
   };
+
+  // For checking if all fields are filled:
+  useEffect(() => {
+    let filled = true;
+
+    // Check all fields in poData
+    for (let key in poData) {
+      if (key !== 'prjNumber' && (poData[key] === '' || poData[key] === null || poData[key] === undefined)) {
+        filled = false;
+        break;
+      }
+    }
+
+    setAllFieldsFilled(filled);
+  }, [poData]);
 
   const handleSubmit = (event) => {
 
@@ -126,6 +144,11 @@ function CreatePO(props) {
     console.log(newPO);
 
     if (poNumberError) {
+      return;
+    }
+
+    if (!file) {
+      setFileError('Please select a PO to upload before submitting');
       return;
     }
 
@@ -235,6 +258,15 @@ function CreatePO(props) {
             </div>
           }
         </div>
+        {/* <div className='visually-hidden'>
+          <label htmlFor="prjNumber">Project Number</label>
+          <input
+            type="text"
+            id="prjNumber"
+            name="prjNumber"
+            onChange={handleChange}
+          />
+        </div> */}
         <div>
           <label htmlFor="startDate">Start Date</label>
           <input
@@ -335,13 +367,22 @@ function CreatePO(props) {
             id="file"
             name="file"
             ref={fileInput}
-            onChange={(event) => setFile(event.target.files[0])}
+            onChange={(event) => {
+              setFile(event.target.files[0]);
+              // Clear file error when a file is selected:
+              setFileError('');
+            }}
           />
           {file && (
             <button type="button" onClick={removeFile}>
               <i className="fi fi-ss-cross-circle"></i>
             </button>
           )}
+          {fileError && 
+            <div className='text-danger mt-1'>
+              {fileError}
+            </div>
+          }
         </div>
 
         {/* <div>
@@ -365,7 +406,14 @@ function CreatePO(props) {
         <button 
           type="submit"
           className='btn btn-primary'
-          disabled={ totalValueError || balValueError || milestoneError || poNumberError }
+          disabled={
+            !allFieldsFilled ||
+            totalValueError || 
+            balValueError || 
+            milestoneError || 
+            poNumberError ||
+            fileError
+          }
         >
           Create Purchase Order
         </button>
