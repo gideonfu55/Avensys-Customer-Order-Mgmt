@@ -10,11 +10,12 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555 " })
-@RequestMapping("/api")
+@RequestMapping("/api/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -23,32 +24,26 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    @PostMapping("/invoices/create")
-    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) throws Exception {
-        Invoice invoiceResponse = invoiceService.createInvoice(invoice);
-        if (invoiceResponse != null) {
-            return new ResponseEntity<>(invoiceResponse, HttpStatus.CREATED);
+    @PostMapping("/create")
+    public ResponseEntity<?> createInvoice(@RequestParam("file") MultipartFile file, Invoice invoice) {
+        try {
+            CompletableFuture<Invoice> future = invoiceService.createInvoice(file, invoice);
+            Invoice invoiceResponse = future.get();
+
+            if (invoiceResponse != null) {
+                return new ResponseEntity<>(invoiceResponse, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
-    
-//    @PostMapping("/invoices/create")
-//    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-//      try {
-//        Invoice createdInvoice = invoiceService.createInvoice(invoice);
-//        return new ResponseEntity<>(createdInvoice, HttpStatus.CREATED);
-//      } catch (IllegalArgumentException e) {
-//        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//      } catch (Exception e) {
-//        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//      }
-//    }
-
-    
 
 
-
-    @GetMapping("/invoices/all")
+    @GetMapping("/all")
     public CompletableFuture<List<Invoice>> getAllInvoices() {
         return invoiceService.getAllInvoices().thenApply(invoices -> {
             if (invoices != null) {
@@ -59,7 +54,7 @@ public class InvoiceController {
         });
     }
 
-    @GetMapping("/invoices/{id}")
+    @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<Invoice>> getInvoiceById(@PathVariable Long id) {
         return invoiceService.getInvoiceById(id).thenApply(invoice -> {
             if (invoice != null) {
@@ -70,22 +65,27 @@ public class InvoiceController {
         });
     }
 
-    @PatchMapping("/invoices/update/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id, @RequestBody Invoice invoice) {
-        CompletableFuture<Invoice> future = invoiceService.updateInvoice(id, invoice);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Invoice> updateInvoice (
+        @PathVariable Long id, 
+        Invoice invoice,
+        @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
         try {
+            CompletableFuture<Invoice> future = invoiceService.updateInvoice(id, invoice, file);
             Invoice invoiceResponse = future.get();
             if (invoiceResponse != null) {
                 return new ResponseEntity<>(invoiceResponse, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("/invoices/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteInvoice(@PathVariable("id") Long id) {
         CompletableFuture<String> future = invoiceService.deleteInvoice(id);
         try {
@@ -95,6 +95,18 @@ public class InvoiceController {
             }
             return new ResponseEntity<>("Invoice not found", HttpStatus.NOT_FOUND);
         } catch (InterruptedException | ExecutionException e) {
+            return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // For admin to delete all invoices without a corresponding Purchase Order Number in DB
+    @DeleteMapping("/deleteOrphanInvoices")
+    public ResponseEntity<String> deleteInvoicesWithoutMatchingPO() {
+        try {
+            CompletableFuture<String> future = invoiceService.deleteInvoicesWithoutMatchingPO();
+            String response = future.get();
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
             return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

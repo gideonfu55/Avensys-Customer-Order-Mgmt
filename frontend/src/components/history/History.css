@@ -1,0 +1,31 @@
+.notification-container {
+  /* Other styles here... */
+  overflow-y: auto;
+  max-height: 90%; /* Adjust as necessary */
+}
+
+.notification-container::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+.delete-btn {
+  height: 2.5rem;
+}
+
+.notification-item {
+  cursor: pointer;
+}
+
+.history-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1rem;
+  margin: .7rem 0rem .7rem 0rem;
+  border-radius: .7rem;
+}
+
+.history-card .btn:hover {
+  color: maroon;
+}

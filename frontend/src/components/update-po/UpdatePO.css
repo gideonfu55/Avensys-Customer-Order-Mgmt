@@ -1,0 +1,13 @@
+.update-po-model {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+label {
+  margin-bottom: -0.6rem;
+}
+
+input {
+  margin-top: 0;
+}
