@@ -265,7 +265,7 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             className="form-control"
           />
           {invoiceNumberError &&
-            <div className="text-danger mt-0">
+            <div className="text-danger mt-1">
               {invoiceNumberError}
             </div>
           }
@@ -282,7 +282,7 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             className="form-control"
           />
           {amountError && 
-            <div className="text-danger mt-0">{amountError}</div>
+            <div className="text-danger mt-1">{amountError}</div>
           }
         </div>
         <div>

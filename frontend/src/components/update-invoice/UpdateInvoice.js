@@ -177,7 +177,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             className="form-control"
           />
           {amountError &&
-            <div className="text-danger mt-0">{amountError}</div>
+            <div className="text-danger mt-1">{amountError}</div>
           }
         </div>
         <div>
