@@ -224,7 +224,7 @@ public class InvoiceService {
               }
 
               // Delete the invoice's file from Google Cloud Storage
-              String bucketName = "avensys-ojt.appspot.com";
+              String bucketName = "avensys-po-mgmt.appspot.com";
               String fileUrl = dataSnapshot.child("fileUrl").getValue(String.class);
               int startOfObjectName = fileUrl.indexOf(bucketName) + bucketName.length() + 1;
               String objectName = fileUrl.substring(startOfObjectName);
@@ -258,7 +258,7 @@ public class InvoiceService {
   // Delete Invoices Record & Document with no current matching PO in DB:
   public CompletableFuture<String> deleteInvoicesWithoutMatchingPO() {
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
-    String bucketName = "avensys-ojt.appspot.com";
+    String bucketName = "avensys-po-mgmt.appspot.com";
 
     purchaseOrderService.getAllPoNumbers().thenAccept(poNumbers -> {
       getInvoiceReference().addListenerForSingleValueEvent(new ValueEventListener() {
@@ -302,7 +302,7 @@ public class InvoiceService {
   private String getFileUrl(MultipartFile file, Invoice invoice) throws IOException {
 
     // Upload file to Google Cloud Storage and get the download URL
-    String bucketName = "avensys-ojt.appspot.com";
+    String bucketName = "avensys-po-mgmt.appspot.com";
     String objectName = UPLOAD_DIR + invoice.getInvoiceNumber() + "/" + file.getOriginalFilename();
 
     BlobId blobId = BlobId.of(bucketName, objectName);

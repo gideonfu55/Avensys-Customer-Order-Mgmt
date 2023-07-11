@@ -17,7 +17,7 @@ public class FirebaseStorageConfig {
   public Storage storage() throws IOException {
     StorageOptions storageOptions =
       StorageOptions.newBuilder()
-        .setProjectId("avensys-ojt")
+        .setProjectId("avensys-po-mgmt")
         .setCredentials(GoogleCredentials.fromStream(
           new FileInputStream("./firebase-key.json")
         ))
