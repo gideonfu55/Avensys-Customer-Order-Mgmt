@@ -307,7 +307,12 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             className="form-control mb-0 pb-0"
           />
         </div>
-        {dueDateError && <div className="text-danger m-0 p-0">{dueDateError}</div>}
+        {
+          dueDateError && 
+          <div className="text-danger m-0 p-0">
+            {dueDateError}
+          </div>
+        }
         <div>
           <label htmlFor="status">Payment Status</label>
           <select
