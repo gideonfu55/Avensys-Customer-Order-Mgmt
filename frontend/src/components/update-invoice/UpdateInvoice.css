@@ -16,6 +16,11 @@
   display: none;
 }
 
+input:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
 /* .invoice-container {
   width: 50%;
 } */

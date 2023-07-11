@@ -34,11 +34,12 @@ function CreatePO(props) {
     status: 'Ongoing'
   })
 
+  // Check if PO Number already exists in the DB:
   useEffect(() => {
     const validatePONumber = async () => {
       if (poNumber) {
         try {
-          const response = await axios.get(`http://localhost:8080/api/po/check/${poNumber}`);
+          const response = await axios.get(`http://localhost:8080/api/po/checkPoNum/${poNumber}`);
           if (response.data) {
             setPONumberError('Purchase order number already exists');
           } else {
@@ -48,13 +49,14 @@ function CreatePO(props) {
           console.error('Error checking PO number:', error);
         }
       } else {
-        setPONumberError(null);  
+        setPONumberError(null);
       }
     };
 
     validatePONumber();
   }, [poNumber]);
 
+  // Handle form changes to update poData and validation errors:
   const handleChange = (event) => {
 
     const { name, value } = event.target;

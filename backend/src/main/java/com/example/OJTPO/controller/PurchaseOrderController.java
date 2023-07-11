@@ -128,7 +128,7 @@ public class PurchaseOrderController {
   }
 
   // For checking if the PO is unique:
-  @GetMapping("/check/{poNumber}")
+  @GetMapping("/checkPoNum/{poNumber}")
   public ResponseEntity<Boolean> checkPONumberExists(@PathVariable String poNumber) {
     CompletableFuture<Boolean> future = purchaseOrderService.checkPONumberExists(poNumber);
     try {

@@ -11,6 +11,11 @@
     max-height: 800px;
 }
 
+.submit-modal-style {
+    right: 15%;
+    width: 120%;
+}
+
 button {
     background: none;
     border: none;

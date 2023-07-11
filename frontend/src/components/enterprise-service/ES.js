@@ -353,7 +353,7 @@ function ES() {
           </Modal>
 
           {/* Create Invoice Modal */}
-          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='w-75'>
+          <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} contentClassName="submit-modal-style" dialogClassName='w-75'>
             <Modal.Header closeButton>
               <Modal.Title>Create Invoice</Modal.Title>
             </Modal.Header>
@@ -370,7 +370,7 @@ function ES() {
           </Modal>
 
           {/* Update PO Modal */}
-          <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='w-75'>
+          <Modal show={showEditModal} onHide={() => setShowEditModal(false)} contentClassName="submit-modal-style" dialogClassName='w-75'>
             <Modal.Header closeButton>
               <Modal.Title>Update Purchase Order</Modal.Title>
             </Modal.Header>

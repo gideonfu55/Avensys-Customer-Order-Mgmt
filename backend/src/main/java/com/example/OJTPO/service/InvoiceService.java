@@ -316,4 +316,28 @@ public class InvoiceService {
     return fileUrl;
   }
 
+  // Check if an invoice number already exists in the database:
+  public CompletableFuture<Boolean> checkInvNum(String invoiceNumber) {
+    CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+    getInvoiceReference().orderByChild("invoiceNumber").equalTo(invoiceNumber)
+      .addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          if (dataSnapshot.exists()) {
+            completableFuture.complete(true);
+          } else {
+            completableFuture.complete(false);
+          }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          completableFuture.completeExceptionally(databaseError.toException());
+        }
+      });
+
+    return completableFuture;
+  }
+
 }
