@@ -20,7 +20,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
   const [file, setFile] = useState(null);
   const fileInput = useRef();
 
-  const [validationError, setValidationError] = useState('');
+  // For form validation:
+  const [amountError, setAmountError] = useState('');
+  const [dueDateError, setDueDateError] = useState('');
+  const [fileError, setFileError] = useState('');
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
   useEffect(() => {
     if (selectedInvoice) {
@@ -38,6 +42,13 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+
+    if (name === 'amount') {
+      setAmountError('');
+    } else if (name === 'dueDate') {
+      setDueDateError('');
+    }
+
     setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
   };
 
@@ -50,16 +61,46 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
     fileInput.current.value = null;
   };
 
+  // For checking if all fields are filled:
+  useEffect(() => {
+    let filled = true;
+
+    // Check all fields in poData
+    for (let key in invoiceData) {
+      if (invoiceData[key] === '' || invoiceData[key] === null || invoiceData[key] === undefined) {
+        filled = false;
+        break;
+      }
+    }
+
+    setAllFieldsFilled(filled);
+  }, [invoiceData]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
-      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
-      return;
-    }
+    // Validations before submitting:
+    let hasErrors = false;
 
     if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
-      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
+      setAmountError('Amount cannot exceed the balance value of the selected purchase order.');
+      hasErrors = true;
+    } else if (parseFloat(invoiceData.amount) <= 0) {
+      setAmountError('Amount must be greater than 0.');
+      hasErrors = true;
+    } else if (!Number.isFinite(parseFloat(invoiceData.amount))) {
+      setAmountError('Amount must be a number.');
+      hasErrors = true;
+    } else {
+      setAmountError('');
+    }
+
+    if (new Date(invoiceData.dueDate) < new Date(invoiceData.dateBilled)) {
+      setDueDateError('Due date cannot be earlier than date billed.');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
       return;
     }
 
@@ -81,7 +122,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
       })
       .then((response) => {
         onInvoiceUpdated(invoiceData, selectedInvoice.amount, selectedInvoice.status)
-        setValidationError('');
+        setFile(null);
+        setAmountError('');
+        setDueDateError('');
+        setFileError('');
+        setAllFieldsFilled(false);
 
         // Create notification after Invoice is updated:
         const notification = {
@@ -107,7 +152,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
   };
 
   return (
-    <div className="invoice-container">
+    <div className="update-invoice-container">
       <form onSubmit={handleSubmit} className="update-invoice-model">
         <div>
           <label htmlFor="invoiceNumber">Invoice Number</label>
@@ -131,8 +176,9 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             placeholder="Enter Amount"
             className="form-control"
           />
-          {validationError && <div className="text-danger">{validationError}</div>}
-          {validationError && <div className="text-danger">{validationError}</div>}
+          {amountError &&
+            <div className="text-danger mt-1">{amountError}</div>
+          }
         </div>
         <div>
           <label htmlFor="purchaseOrderRef">Purchase Order Reference</label>
@@ -143,9 +189,9 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             value={invoiceData.purchaseOrderRef}
             onChange={handleChange}
             className="form-control"
+            disabled
           />
         </div>
-
         <div>
           <label htmlFor="dateBilled">Date Billed</label>
           <input
@@ -166,8 +212,11 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
             name="dueDate"
             value={invoiceData.dueDate}
             onChange={handleChange}
-            className="form-control"
+            className="form-control mb-0"
           />
+          {dueDateError && 
+            <div className="text-danger mt-0">{dueDateError}</div>
+          }
         </div>
 
         <div>
@@ -190,7 +239,7 @@ function UpdateInvoice({ selectedInvoice, closeModal, onInvoiceUpdated, onInvoic
         <div>
           <label htmlFor="file">New Invoice File</label>
           <input
-            className="form-control-file ms-1 w-25"
+            className="form-control-file ms-1"
             type="file"
             id="file"
             name="file"

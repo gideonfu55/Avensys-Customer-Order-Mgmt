@@ -111,4 +111,16 @@ public class InvoiceController {
         }
     }
 
+    // For checking if Invoice Number is unique:
+    @GetMapping("/checkInvNum/{invoiceNumber}")
+    public ResponseEntity<Boolean> checkInvNum(@PathVariable String invoiceNumber) {
+        CompletableFuture<Boolean> future = invoiceService.checkInvNum(invoiceNumber);
+        try {
+            Boolean response = future.get();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

@@ -15,12 +15,11 @@ function CreatePO(props) {
 
   // For PO validation:
   const [poNumberError, setPONumberError] = useState(null);
-  const [totalValueError, setTotalValueError] = useState(null);
-  const [balValueError, setBalValueError] = useState(null);
-  const [milestoneError, setMilestoneError] = useState(null);
-  const [fileError, setFileError] = useState('');
+  const [fileError, setFileError] = useState(null);
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
+  const [errors, setErrors] = useState({});
 
+  // For form data and submission:
   const [poData, setPoData] = useState({
     poNumber: '',
     prjNumber: '',
@@ -34,11 +33,12 @@ function CreatePO(props) {
     status: 'Ongoing'
   })
 
+  // Check if PO Number already exists in the DB:
   useEffect(() => {
     const validatePONumber = async () => {
       if (poNumber) {
         try {
-          const response = await axios.get(`http://localhost:8080/api/po/check/${poNumber}`);
+          const response = await axios.get(`http://localhost:8080/api/po/checkPoNum/${poNumber}`);
           if (response.data) {
             setPONumberError('Purchase order number already exists');
           } else {
@@ -48,13 +48,14 @@ function CreatePO(props) {
           console.error('Error checking PO number:', error);
         }
       } else {
-        setPONumberError(null);  
+        setPONumberError(null);
       }
     };
 
     validatePONumber();
   }, [poNumber]);
 
+  // Handle form changes to update poData and validation errors:
   const handleChange = (event) => {
 
     const { name, value } = event.target;
@@ -62,26 +63,6 @@ function CreatePO(props) {
     if (name === 'poNumber') {
       setPONumber(value);
       setPoData((prevState) => ({ ...prevState, poNumber: value }));
-      return;
-    }
-
-    if (name === 'milestone') {
-      if (value >= 0 && value <= 100) {
-        setPoData((prevState) => ({ ...prevState, milestone: value }));
-        setMilestoneError(null);
-      } else {
-        setMilestoneError('Milestone must be a number between 0 and 100');
-      }
-      return;
-    }
-
-    if (name === 'totalValue' || name === 'balValue') {
-      if (value >= 0) {
-        setPoData((prevState) => ({ ...prevState, [name]: value }));
-        name === 'totalValue' ? setTotalValueError(null) : setBalValueError(null);
-      } else {
-        name === 'totalValue' ? setTotalValueError('Total value must be a positive number') : setBalValueError('Balance value must be a positive number');
-      }
       return;
     }
 
@@ -131,6 +112,37 @@ function CreatePO(props) {
     }
 
     setAllFieldsFilled(filled);
+  }, [poData]);
+
+  // For other field validation:
+  useEffect(() => {
+    const newErrors = {};
+
+    if (poData.milestone === '') {
+      delete newErrors.milestone;
+    } else if (poData.milestone < 0 || poData.milestone > 100) {
+      newErrors.milestone = 'Milestone must be between 0 and 100';
+    }
+
+    if (poData.totalValue === '') {
+      delete newErrors.totalValue;
+    } else if (poData.totalValue <= 0) {
+      newErrors.totalValue = 'Total value must be greater than 0';
+    }
+
+    if (poData.balValue === '') {
+      delete newErrors.balValue;
+    } else if (poData.balValue < 0 || poData.balValue > poData.totalValue) {
+      newErrors.balValue = 'Balance value must be between 0 and total value';
+    }
+
+    if (poData.endDate === '') {
+      delete newErrors.endDate;
+    } else if (new Date(poData.endDate) <= new Date(poData.startDate)) {
+      newErrors.endDate = 'End date must be after start date';
+    }
+    
+    setErrors(newErrors);
   }, [poData]);
 
   const handleSubmit = (event) => {
@@ -226,7 +238,7 @@ function CreatePO(props) {
 
 
   return (
-    <div>
+    <div className='po-container'>
       <form onSubmit={handleSubmit} encType="multipart/form-data" className='create-po-model'>
         <div>
           <label htmlFor="clientName">Client Name</label>
@@ -290,6 +302,11 @@ function CreatePO(props) {
             className='form-control'
             placeholder='Enter End Date'
           />
+          {errors.endDate && 
+            <div className="text-danger">
+              {errors.endDate}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="totalValue">Total Value</label>
@@ -299,13 +316,12 @@ function CreatePO(props) {
             name="totalValue"
             value={poData.totalValue}
             onChange={handleChange}
-            className={`form-control ${totalValueError ? 'is-invalid' : ''}`}
+            className={'form-control'}
             placeholder='Enter Total Value'
           />
-          {
-            totalValueError &&
-            <div className="invalid-feedback">
-              {totalValueError}
+          {errors.totalValue && 
+            <div className="text-danger">
+              {errors.totalValue}
             </div>
           }
         </div>
@@ -317,13 +333,12 @@ function CreatePO(props) {
             name="balValue"
             value={poData.balValue}
             onChange={handleChange}
-            className={`form-control ${balValueError ? 'is-invalid' : ''}`}
+            className={'form-control'}
             placeholder='Enter Balance Value'
           />
-          {
-            balValueError &&
-            <div className="invalid-feedback">
-              {balValueError}
+          {errors.balValue && 
+            <div className="text-danger">
+              {errors.balValue}
             </div>
           }
         </div>
@@ -335,13 +350,12 @@ function CreatePO(props) {
             name="milestone"
             value={poData.milestone}
             onChange={handleChange}
-            className={`form-control ${milestoneError ? 'is-invalid' : ''}`}
+            className={'form-control'}
             placeholder='Enter Milestone'
           />
-          {
-            milestoneError &&
-            <div className="invalid-feedback">
-              {milestoneError}
+          {errors.milestone && 
+            <div className="text-danger">
+              {errors.milestone}
             </div>
           }
         </div>
@@ -405,14 +419,12 @@ function CreatePO(props) {
         
         <button 
           type="submit"
-          className='btn btn-primary'
+          className='btn btn-primary mt-1'
           disabled={
             !allFieldsFilled ||
-            totalValueError || 
-            balValueError || 
-            milestoneError || 
             poNumberError ||
-            fileError
+            fileError ||
+            (errors && Object.keys(errors).length > 0)
           }
         >
           Create Purchase Order

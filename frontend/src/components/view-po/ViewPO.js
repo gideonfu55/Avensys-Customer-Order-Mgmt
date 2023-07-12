@@ -41,6 +41,8 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
     }, [selectedPO]);
 
     const handleDeleteInvoice = (id, invoiceNumber) => {
+        if (window.confirm(`Are you sure you want to delete purchase order ${invoiceNumber}?`)) {
+
         toast.success(`Invoice ${invoiceNumber} deleted successfully!`);
         axios
             .delete(`http://localhost:8080/api/invoices/delete/${id}`)
@@ -67,6 +69,7 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
             .catch((error) => {
                 console.error(error);
             });
+        }
     };
 
     const handleInvoiceUpdate = (invoiceData, amount, status) => {
@@ -261,18 +264,9 @@ function ViewPO({ selectedPO, onInvUpdated, isTS, closeModal }) {
                     </tbody>
                 </table>
             </div>
-            {/* Update PO Modal */}
-            <Modal show={showEditModal} onHide={() => setShowEditModal(false)} dialogClassName='custom-modal w-50'>
-                <Modal.Header closeButton>
-                    <Modal.Title>Update Purchase Order</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {showEditModal && <UpdatePO selectedPO={selectedPO} closeModal={() => setShowEditModal(false)} />}
-                </Modal.Body>
-            </Modal>
 
             {/* Update Invoice Modal */}
-            <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} dialogClassName='custom-modal'>
+            <Modal show={showInvoiceModal} onHide={handleShowInvoiceModalClose} contentClassName="submit-modal-style" dialogClassName="w-75">
                 <Modal.Header closeButton>
                     <Modal.Title>Update Invoice</Modal.Title>
                 </Modal.Header>

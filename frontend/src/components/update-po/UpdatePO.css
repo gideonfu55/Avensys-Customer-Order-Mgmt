@@ -1,7 +1,18 @@
+.update-po-container {
+  height: 80vh;
+  margin-bottom: -3rem;
+}
+
 .update-po-model {
+  height: 90%;
   display: flex;
   flex-direction: column;
-  row-gap: 1rem;
+  row-gap: 0.8rem;
+  overflow: auto;
+}
+
+.update-po-model::-webkit-scrollbar {
+  display: none;
 }
 
 label {

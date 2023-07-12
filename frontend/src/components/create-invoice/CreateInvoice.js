@@ -6,6 +6,7 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
 
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
 
   const [invoiceData, setInvoiceData] = useState({
     purchaseOrderRef: '',
@@ -20,7 +21,10 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
   const [file, setFile] = useState(null);
   const fileInput = useRef();
 
-  const [validationError, setValidationError] = useState('');
+  // For form validation:
+  const [invoiceNumberError, setInvoiceNumberError] = useState('');
+  const [amountError, setAmountError] = useState('');
+  const [dueDateError, setDueDateError] = useState('');
   const [fileError, setFileError] = useState('');
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
@@ -33,8 +37,43 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
     }
   }, [selectedPO]);
 
+  // Check if invoice number already exists in DB:
+  useEffect(() => {
+    const validateInvoiceNumber = async () => {
+      if (invoiceNumber) {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/invoices/checkInvNum/${invoiceNumber}`);
+          if (response.data) {
+            setInvoiceNumberError('Invoice Number already exists.');
+          } else {
+            setInvoiceNumberError(null);
+          }
+        } catch (error) {
+          console.error('Error checking invoice number:', error);
+        }
+      } else {
+        setInvoiceNumberError(null);
+      }
+    };
+    validateInvoiceNumber();
+  }, [invoiceNumber]);
+
   const handleChange = (event) => {
+
     const { name, value } = event.target;
+
+    if (name === 'invoiceNumber') {
+      setInvoiceNumber(value);
+      setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
+      return;
+    }
+
+    if (name === 'amount') {
+      setAmountError('');
+    } else if (name === 'dueDate') {
+      setDueDateError('');
+    }
+
     setInvoiceData((prevState) => ({ ...prevState, [name]: value }));
   };
 
@@ -62,13 +101,37 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    // Validations before submission can be made
+    let hasErrors = false;
+
     if (parseFloat(invoiceData.amount) > selectedPO.balValue) {
-      setValidationError('Amount cannot exceed the balance value of the selected purchase order.');
-      return;
+      setAmountError('Amount cannot exceed the balance value of the selected purchase order.');
+      hasErrors = true;
+    } else if (parseFloat(invoiceData.amount) <= 0) {
+      setAmountError('Amount must be greater than 0.');
+      hasErrors = true;
+    } else if (!Number.isFinite(parseFloat(invoiceData.amount))) {
+      setAmountError('Amount must be a number.');
+      hasErrors = true;
+    } else {
+      setAmountError('');
+    }
+
+    if (new Date(invoiceData.dueDate) < new Date(invoiceData.dateBilled)) {
+      setDueDateError('Due Date cannot be before Date Billed.');
+      hasErrors = true;
+    } else {
+      setDueDateError('');
     }
 
     if (!file) {
       setFileError('Please select an invoice to upload before submitting');
+      hasErrors = true;
+    } else {
+      setFileError('');
+    }
+
+    if (hasErrors || invoiceNumberError) {
       return;
     }
 
@@ -106,7 +169,11 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
           status: '',
         });
         setFile(null);  // Clear the file state
-        setValidationError('');
+        setInvoiceNumberError('');
+        setAmountError('');
+        setDueDateError('');
+        setFileError('');
+        setAllFieldsFilled(false);
 
         // Create history item after invoice is created:
         const formattedDate = new Date().toLocaleDateString('en-GB');
@@ -197,6 +264,11 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             placeholder="Enter Invoice Number"
             className="form-control"
           />
+          {invoiceNumberError &&
+            <div className="text-danger mt-1">
+              {invoiceNumberError}
+            </div>
+          }
         </div>
         <div>
           <label htmlFor="amount">Amount</label>
@@ -209,7 +281,9 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             placeholder="Enter Amount"
             className="form-control"
           />
-          {validationError && <div className="text-danger">{validationError}</div>}
+          {amountError && 
+            <div className="text-danger mt-1">{amountError}</div>
+          }
         </div>
         <div>
           <label htmlFor="dateBilled">Date Billed</label>
@@ -230,9 +304,15 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
             name="dueDate"
             value={invoiceData.dueDate}
             onChange={handleChange}
-            className="form-control"
+            className="form-control mb-0 pb-0"
           />
         </div>
+        {
+          dueDateError && 
+          <div className="text-danger m-0 p-0">
+            {dueDateError}
+          </div>
+        }
         <div>
           <label htmlFor="status">Payment Status</label>
           <select
@@ -253,7 +333,6 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
         <div>
           <label className='me-1' htmlFor="file">File</label>
           <input
-            className='w-25'
             type="file"
             id="file"
             name="file"
@@ -280,6 +359,9 @@ function CreateInvoice({ selectedPO, closeModal, isTS, onInvUpdated }) {
           className="btn btn-primary"
           disabled={
             !allFieldsFilled ||
+            invoiceNumberError ||
+            amountError ||
+            dueDateError ||
             fileError
           }
         >

@@ -268,7 +268,7 @@ public class PurchaseOrderService {
             @Override
             public void onSuccess(Void result) {
 
-              String bucketName = "avensys-ojt.appspot.com";
+              String bucketName = "avensys-po-mgmt.appspot.com";
 
               // Check if the PO has a fileUrl
               if (dataSnapshot.child("fileUrl").getValue(String.class) != null) {
@@ -358,7 +358,7 @@ public class PurchaseOrderService {
   // Method for returning fileUrl when uploading a file to Firebase Storage:
   private String getFileUrl(MultipartFile file, PurchaseOrder purchaseOrder) throws IOException {
     // Upload file to Google Cloud Storage and get the download URL
-    String bucketName = "avensys-ojt.appspot.com";
+    String bucketName = "avensys-po-mgmt.appspot.com";
     String objectName = UPLOAD_DIR + purchaseOrder.getPoNumber() + "/" + file.getOriginalFilename();
 
     BlobId blobId = BlobId.of(bucketName, objectName);
