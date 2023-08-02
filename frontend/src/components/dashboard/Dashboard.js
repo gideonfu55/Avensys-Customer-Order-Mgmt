@@ -22,7 +22,6 @@ function Dashboard() {
 
   useEffect(() => {
     const username = localStorage.getItem('username');
-
     axios
       .get(`http://localhost:8080/user/${username}`)
       .then(response => {
@@ -93,67 +92,70 @@ function Dashboard() {
   }
 
   localStorage.setItem('role', user.role);
+  console.log(user.role)
 
   return (
     <div className='dashboard-body'>
       <ToastContainer />
       <NavBar />
-      <div className='dashboard-content'>
-        <div className='dashboard-content-inner'>
-          <div className='dashboard-details'>
-            <h1>Welcome back,  {user.username}!</h1>
-            <div className='highlight-container'>
-              <div className='ongoing-card'>
-                <h1 className="title">{outstandingCount}</h1>
-                <div className="content">
-                  <span>Ongoing Projects</span>
-                </div>
-              </div>
-
-              <div className='ongoing-card'>
-                <h5 className="title mb-3">{formatCurrency(outstandingAmount)}</h5>
-                <div className="content">
-                  <span>Total Amount Outstanding</span>
-                </div>
-              </div>
-
-              <div className='ongoing-card'>
-                <h5 className="title mb-3">95%</h5>
-                <div className="content">
-                  <span>Pending Payments</span>
-                </div>
-              </div>
-              
-              {user.role.toLowerCase() === 'sales' && (
-                <div className='createpo-card'>
-
-                  <div className='po-creation-card'>
-                    <p>Ready to create a purchase order?</p>
-                    <button className='btn btn-light' type='button' onClick={handleCreatePO}>Create PO</button>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* PO Trend Component: Pie Chart for PO Status and Barchart for Period of Selected Status */}
-            <POTrend />
-
-            <div className='notification-container'>
-              <History />
-            </div>
+      <div className='d-flex flex-column'>
+        <nav className='custom-nav'>
+          <div className='navbar-brand'>
+            Hello, {user.username}!
           </div>
-          <div className='po-tables' >
-            <div className='es-po'>
-              <h1>Enterprise Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
-              <Link to='/es'><button type='button' className='btn btn-dark'>View More</button></Link>
+          <ul className='navbar-nav mr-auto'>
+            <li className='nav-item'>
+              <a className='nav-link'>{user.email}</a>
+            </li>
+          </ul>
+        </nav>
+        <div className='dashboard-content'>
+          <div className='dashboard-content-inner'>
+            <div className='dashboard-details'>
+              <div className='highlight-container'>
+                <div className='ongoing-card text-center'>
+                  <b>Total PO</b>
+                  <h1 className="title font-weight-bold">{outstandingCount}</h1>
+                </div>
+                <div className='ongoing-card text-center'>
+                  <b>Total Amount Outstanding</b>
+                  <h3 className="title font-weight-bold mt-2">{formatCurrency(outstandingAmount)}</h3>
+                </div>
+                <div className='ongoing-card text-center'>
+                  <b>Pending Payments</b>
+                  <h1 className="title font-weight-bold">95%</h1>
+                </div>
+                {user.role.toLowerCase() === 'sales' && (
+                  <div className='createpo-card'>
+                    <div className='po-creation-card'>
+                      <p>Ready to create a purchase order?</p>
+                      <button className='btn btn-light' type='button' onClick={handleCreatePO}>Create PO</button>
+                    </div>
+                  </div>
+                )} 
+              </div>
+
+              {/* PO Trend Component: Pie Chart for PO Status and Barchart for Period of Selected Status */}
+              <POTrend />
+
+              <div className='notification-container'>
+                <History />
+              </div> 
             </div>
-            <div className='ts-po'>
-              <h1>Talent Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
-              <Link to='/ts'><button className='btn btn-dark'>View More</button></Link>
-            </div>
+            <div className='po-tables' >
+              <div className='es-po'>
+                <h1>Enterprise Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
+                <Link to='/es'><button type='button' className='btn btn-dark'>View More</button></Link>
+              </div>
+              <div className='ts-po'>
+                <h1>Talent Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
+                <Link to='/ts'><button className='btn btn-dark'>View More</button></Link>
+              </div>
+            </div> 
           </div>
         </div>
       </div>
+
 
       {loadModal && (
         <Modal show={showPOForm} onHide={handlePOFormClose}>
