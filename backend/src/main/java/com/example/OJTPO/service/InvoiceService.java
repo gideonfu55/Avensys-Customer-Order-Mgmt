@@ -259,7 +259,7 @@ public class InvoiceService {
   public CompletableFuture<String> deleteInvoicesWithoutMatchingPO() {
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
     String bucketName = "avensys-po-mgmt.appspot.com";
-
+    
     purchaseOrderService.getAllPoNumbers().thenAccept(poNumbers -> {
       getInvoiceReference().addListenerForSingleValueEvent(new ValueEventListener() {
         @Override

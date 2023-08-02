@@ -129,6 +129,31 @@ public class PurchaseOrderService {
     return future;
   }
 
+  // Get list of all Purchase Orders by status:
+  public CompletableFuture<List<PurchaseOrder>> getPOsByStatus(String status) {
+    CompletableFuture<List<PurchaseOrder>> future = new CompletableFuture<>();
+    final List<PurchaseOrder> poList = new ArrayList<>();
+
+    getPOReference().orderByChild("status").equalTo(status)
+      .addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+            PurchaseOrder purchaseOrder = postSnapshot.getValue(PurchaseOrder.class);
+            poList.add(purchaseOrder);
+          }
+          future.complete(poList);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+          future.completeExceptionally(databaseError.toException());
+        }
+      });
+
+    return future;
+  }
+
   // Get Purchase Order by Id:
   public CompletableFuture<PurchaseOrder> getPOById(Long id) {
     CompletableFuture<PurchaseOrder> future = new CompletableFuture<>();

@@ -79,6 +79,18 @@ public class PurchaseOrderController {
     });
   }
 
+  // Get all POs by status for dashboard view:
+  @GetMapping("/all/{status}")
+  public CompletableFuture<List<PurchaseOrder>> getPOsByStatus(@PathVariable String status) {
+    return purchaseOrderService.getPOsByStatus(status).thenApply(purchaseOrders -> {
+      if (!purchaseOrders.isEmpty()) {
+        return purchaseOrders;
+      } else {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No purchase orders found");
+      }
+    });
+  }
+
   // Get PO by id for sales/finance team to view PO:
   @GetMapping("/{id}")
   public CompletableFuture<ResponseEntity<PurchaseOrder>> getPOById(@PathVariable Long id) {

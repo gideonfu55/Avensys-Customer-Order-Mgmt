@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import History from '../history/History';
 import NavBar from '../navbar/NavBar.js';
+import POTrend from '../po-trend/POTrend';
 
 
 function Dashboard() {
@@ -17,6 +18,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const [loadModal, setLoadModal] = useState(false);
   const [outstandingCount, setOutstandingCount] = useState(0);
+  const [outstandingAmount, setOutstandingAmount] = useState(0);
 
   useEffect(() => {
     const username = localStorage.getItem('username');
@@ -41,6 +43,9 @@ function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
+  // UseEffect for:
+  // 1.) finding number of ongoing/outstanding POs & 
+  // 2.) finding total amount outstanding for all ongoing POs:
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/po/all")
@@ -49,6 +54,10 @@ function Dashboard() {
         if (Array.isArray(data)) {
           const outstandingCount = data.filter(po => po.status.toLowerCase() === "ongoing").length;
           setOutstandingCount(outstandingCount);
+          console.log(response.data)
+
+          const outstandingAmount = data.filter(po => po.status.toLowerCase() === "ongoing").reduce((total, po) => total + po.balValue, 0);
+          setOutstandingAmount(outstandingAmount);
         }
       })
       .catch(error => {
@@ -72,6 +81,13 @@ function Dashboard() {
     toast.error(`Error creating purchase order. Please check again.`);
   };
 
+  const formatCurrency = value => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'SGD'
+    }).format(value);
+  }
+
   if (!user) {
     return <p>Loading...</p>;
   }
@@ -92,7 +108,23 @@ function Dashboard() {
                 <div className="content">
                   <span>Ongoing Projects</span>
                 </div>
-              </div>{user.role.toLowerCase() === 'sales' && (
+              </div>
+
+              <div className='ongoing-card'>
+                <h5 className="title mb-3">{formatCurrency(outstandingAmount)}</h5>
+                <div className="content">
+                  <span>Total Amount Outstanding</span>
+                </div>
+              </div>
+
+              <div className='ongoing-card'>
+                <h5 className="title mb-3">95%</h5>
+                <div className="content">
+                  <span>Pending Payments</span>
+                </div>
+              </div>
+              
+              {user.role.toLowerCase() === 'sales' && (
                 <div className='createpo-card'>
 
                   <div className='po-creation-card'>
@@ -102,6 +134,10 @@ function Dashboard() {
                 </div>
               )}
             </div>
+            
+            {/* PO Trend Component: Pie Chart for PO Status and Barchart for Period of Selected Status */}
+            <POTrend />
+
             <div className='notification-container'>
               <History />
             </div>
@@ -117,56 +153,6 @@ function Dashboard() {
             </div>
           </div>
         </div>
-
-
-
-
-        {/* Highlights */}
-        {/* <div className='highlight-overview'>
-          <h5>Overview</h5>
-          <div className='highlights'>
-
-            <div className="highlight-1">
-              <h1 className="title">{outstandingCount}</h1>
-              <div className="content">
-                <span>Ongoing Projects</span>
-              </div>
-            </div>
-
-            <div className='highlight-3'>
-              <History />
-            </div>
-          </div>
-        </div> */}
-        {/* Add PO Button */}
-        {/* {user.role.toLowerCase() === 'sales' && (
-            <div className='po-creation-card'>
-              <p>Ready to create a purchase order?</p>
-              <button className='btn btn-dark' type='button' onClick={handleCreatePO}>Create PO</button>
-            </div>
-          )} */}
-        {/* View Different Tables */}
-        {/* <div className='po-types'>
-          <h5>View Tables</h5>
-          <div className='po-tables'>
-            <div className='po-table-1'>
-              <h1><b>Enterprise Service</b> Purchase Orders</h1>
-              <Link to='/ES'>
-                <button className='btn btn-dark' type='button'>
-                  View More
-                </button>
-              </Link>
-            </div>
-            <div className='po-table-2'>
-              <h1><b>Talent Service</b> Purchase Orders</h1>
-              <Link to='/PS'>
-                <button className='btn btn-dark' type='button'>
-                  View More
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       {loadModal && (
