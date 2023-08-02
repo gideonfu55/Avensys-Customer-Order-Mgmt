@@ -22,7 +22,6 @@ function App() {
   }, []);
 
   const isAdmin = localStorage.getItem('role')?.toLowerCase() === 'management';
-
   return (
     <div className="App">
       {isLoading ? (

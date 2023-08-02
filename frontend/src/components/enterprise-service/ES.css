@@ -7,13 +7,13 @@
     background-color: #202020;
   }
   
-  .dashboard-content {
+  /* .dashboard-content {
     background-color: white;
     display: flex;
     flex-direction: column;
     row-gap: 2rem;
     padding: 2rem;
-  }
+  } */
   
   .es-intro {
     display: flex;

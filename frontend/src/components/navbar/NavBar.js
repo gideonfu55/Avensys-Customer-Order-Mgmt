@@ -11,60 +11,119 @@ function NavBar() {
 
   const handleLogout = async () => {
     window.location.href = '/login';
-    await new Promise(resolve => setTimeout(resolve, 100)); 
+    await new Promise(resolve => setTimeout(resolve, 100));
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     localStorage.removeItem('user');
   };
-  
+
 
   useEffect(() => {
 
     const username = localStorage.getItem('username');
 
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    if(loggedUser) {
+    if (loggedUser) {
       setUser(loggedUser);
     }
   }, [location]);
 
   return (
     location.pathname !== '/login' && location.pathname !== '/register' && user && (
-      <div className='side-nav'>
-        <ul className='wrapper'>
-          <div className='nav-group'>
-            <div>
-              <Link to='/dashboard' className="nav-item">
-                <i className="fi fi-sr-house-chimney"></i>
-                <span>Dashboard</span>
-              </Link>
+      <nav className='navbar'>
+        <span className='oms-logo align-self-center'><span style={{ 'color': '#000000' }}>O</span>MS</span>
+        <hr/>
+        <div className='side-nav'>
+          <Link to='/' style={{ textDecoration: 'none' }}>
+            <div className='p-2'>
+              <i class="fi fi-sr-apps"></i>
+              <span>Dashboard</span>
             </div>
-            {user.role === 'Admin' || user.role === 'Management'
-              ? (<div>
-                <Link to='/adminpanel' className="nav-item">
-                  <i className="fi fi-sr-user"></i>
-                  <span>Admin Panel</span>
-                </Link>
-              </div>)
-              : (null)
-            }
-            {/* <div className="nav-item">
-              <i className="fi fi-br-stats"></i>
-              <span>Insights</span>
+          </Link>
+
+          <Link style={{ textDecoration: 'none' }}>
+            <div className='p-2'>
+              <i class="fi fi-sr-head-side-thinking"></i>
+              <span>Purchase Orders</span>
             </div>
-            <div className="nav-item">
-              <i className="fi fi-sr-settings"></i>
+          </Link>
+
+          <Link style={{ textDecoration: 'none' }}>
+            <div className='p-2'>
+              <i class="fi fi-sr-users-alt"></i>
+              <span>PO Types</span>
+            </div>
+          </Link>
+
+          <Link style={{ textDecoration: 'none' }}>
+            <div className='p-2'>
+              <i class="fi fi-br-chat-arrow-grow"></i>
+              <span>Reports</span>
+            </div>
+          </Link>
+
+          <Link style={{ textDecoration: 'none' }}>
+            <div className='p-2'>
+              <i class="fi fi-sr-user"></i>
+              <span>Users</span>
+            </div>
+          </Link>
+
+          <hr />
+
+          <Link style={{ textDecoration: 'none' }}>
+            <div className='p-2'>
+              <i class="fi fi-sr-settings"></i>
               <span>Settings</span>
-            </div> */}
-          </div>
-          <div className='nav-group divider'>
-            <div className="nav-item" onClick={handleLogout}>
-              <i className="fi fi-br-sign-out-alt"></i>
+            </div>
+          </Link>
+
+          {user.role === 'Admin' | user.role === 'Management' ?
+            (<Link to='/adminpanel' style={{ textDecoration: 'none' }}>
+              <div className='p-2'>
+                <i class="fi fi-sr-shield-check"></i>
+                <span>Admin Panel</span>
+              </div>
+            </Link>) :
+            (null)}
+
+          <Link style={{ textDecoration: 'none' }}>
+            <div className='p-2' onClick={handleLogout}>
+              <i class="fi fi-br-sign-out-alt"></i>
               <span>Logout</span>
             </div>
-          </div>
-        </ul>
-      </div>
+          </Link>
+        </div>
+
+      </nav>
+
+      // <div className='side-nav'>
+      //   <ul className='wrapper'>
+      //     <div className='nav-group'>
+      //       <div>
+      //         <Link to='/dashboard' className="nav-item">
+      //           <i className="fi fi-sr-house-chimney"></i>
+      //           <span>Dashboard</span>
+      //         </Link>
+      //       </div>
+      //       {user.role === 'Admin' || user.role === 'Management'
+      //         ? (<div>
+      //           <Link to='/adminpanel' className="nav-item">
+      //             <i className="fi fi-sr-user"></i>
+      //             <span>Admin Panel</span>
+      //           </Link>
+      //         </div>)
+      //         : (null)
+      //       }
+      //     </div>
+      //     <div className='nav-group divider'>
+      //       <div className="nav-item" onClick={handleLogout}>
+      //         <i className="fi fi-br-sign-out-alt"></i>
+      //         <span>Logout</span>
+      //       </div>
+      //     </div>
+      //   </ul>
+      // </div>
     )
   );
 }

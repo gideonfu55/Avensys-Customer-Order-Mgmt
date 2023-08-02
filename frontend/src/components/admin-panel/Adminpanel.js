@@ -22,13 +22,13 @@ function Adminpanel() {
 
   const loadUsers = () => {
     axios.get('http://localhost:8080/users')
-    .then((response) => {
-      console.log(response.data);
-      setAllUser(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
+      .then((response) => {
+        console.log(response.data);
+        setAllUser(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
   }
 
   const deleteUser = (username) => {
@@ -41,7 +41,7 @@ function Adminpanel() {
         console.error(error);
       });
   };
-  
+
 
   const updateUser = (user) => {
     setSelectedUser(user);
@@ -64,7 +64,7 @@ function Adminpanel() {
           <h3>Admin Panel</h3>
           <div className='create-user-card'>
             Got a new user to add? Create a new user account here.
-            <button onClick={() => setShowCreateUserModal(true)} className='btn btn-dark'>
+            <button onClick={() => setShowCreateUserModal(true)} className='btn' style={{ backgroundColor: '#1567ff', color: 'white' }}>
               Create User
             </button>
           </div>

@@ -1,23 +1,6 @@
-.admin-container {
-  overflow-x: auto;
-  background-color: white;
-  padding: 2rem;
-  width: 90vw;
-  height: 90vh;
-  max-height: 90vh;
-  border-radius: 1rem;
-  margin: 0px 30px;
-  overflow: auto;
-  align-self: center;
-  box-shadow: inset 0 0 10px #00000053;
-
-  display: flex;
-  flex-direction: column;
-  row-gap: 2rem;
-}
-
-.dashboard-content::-webkit-scrollbar {
-  width: 0.5em;
+.dashboard-content {
+  width: 100%;
+  height: 100vh;
 }
 
 /* Admin Table */
@@ -31,7 +14,7 @@
 }
 
 .admin-table th {
-  background-color: #202020;
+  background-color: #1567ff;
   color: #fff;
   font-weight: 500;
   padding: 20px;
@@ -90,8 +73,9 @@
   flex-direction: column;
   row-gap: 2rem;
   border-radius: 1rem;
-  background-color: #f1f1f1;
+  background-color: #fefefe;
   padding: 2rem;
+  box-shadow: rgba(99, 99, 99, 0.144) 0px 2px 8px 0px;
 }
 
 .user-records {
@@ -112,7 +96,6 @@
   transition: all 0.4s ease-in-out;
   overflow: hidden;
 }
-
 
 .dropdown-item {
   display: flex;
