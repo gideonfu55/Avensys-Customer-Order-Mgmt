@@ -19,7 +19,9 @@ hr {
   background-color: #fefefe;
   color: #1567ff;
   height: 100vh;
+  position: -webkit-sticky;
   position: sticky;
+  top: 0;
 
   border: 1px solid #1567ff;
   box-sizing: border-box;

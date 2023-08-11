@@ -9,16 +9,13 @@
     padding: 1.5rem;
 }
 
+.full-dashboard {
+    width: 100%;
+}
+
 .navbar-brand {
     font-weight: 700;
     font-size: 1.2rem;
-}
-
-html,
-body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
 }
 
 .dashboard-content {

@@ -82,7 +82,7 @@ function Dashboard() {
     <div className='dashboard-body'>
       <ToastContainer />
       <NavBar />
-      <div className='d-flex flex-column'>
+      <div className='full-dashboard'>
         <nav className='custom-nav'>
           <div className='navbar-brand'>
             Hello, {user.username}!
@@ -102,11 +102,11 @@ function Dashboard() {
                   <h1 className="title font-weight-bold">{outstandingCount}</h1>
                 </div>
                 <div className='ongoing-card text-center'>
-                  <b>Total PO</b>
+                  <b>Total Billed Amount</b>
                   <h1 className="title font-weight-bold">{outstandingCount}</h1>
                 </div>
                 <div className='ongoing-card text-center'>
-                  <b>Total PO</b>
+                  <b>Pending Payments</b>
                   <h1 className="title font-weight-bold">{outstandingCount}</h1>
                 </div>
                 {user.role.toLowerCase() === 'sales' && (
@@ -122,7 +122,7 @@ function Dashboard() {
                 <History />
               </div> 
             </div>
-            <div className='po-tables' >
+            {/* <div className='po-tables' >
               <div className='es-po'>
                 <h1>Enterprise Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
                 <Link to='/es'><button type='button' className='btn btn-dark'>View More</button></Link>
@@ -131,7 +131,7 @@ function Dashboard() {
                 <h1>Talent Service <span style={{ fontWeight: 'bold' }}>Purchase Orders</span></h1>
                 <Link to='/ts'><button className='btn btn-dark'>View More</button></Link>
               </div>
-            </div> 
+            </div>  */}
           </div>
         </div>
       </div>
