@@ -28,8 +28,11 @@ import com.example.OJTPO.service.PurchaseOrderService;
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:5555" })
 public class PurchaseOrderController {
 
-  @Autowired
-  PurchaseOrderService purchaseOrderService;
+  final PurchaseOrderService purchaseOrderService;
+
+  public PurchaseOrderController(PurchaseOrderService purchaseOrderService) {
+    this.purchaseOrderService = purchaseOrderService;
+  }
 
   // For sales team to create PO:
   @PostMapping("/create")

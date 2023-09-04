@@ -27,6 +27,12 @@ import com.google.firebase.database.ValueEventListener;
 @Service
 public class PurchaseOrderService {
 
+  private final Storage storage;
+
+  public PurchaseOrderService(Storage storage) {
+    this.storage = storage;
+  }
+
   private DatabaseReference getDatabaseInstance() {
     return FirebaseDatabase.getInstance().getReference();
   }
@@ -43,10 +49,7 @@ public class PurchaseOrderService {
     return getDatabaseInstance().child("lastPOId");
   }
 
-  @Autowired
-  private Storage storage;
-
-  private static String UPLOAD_DIR = "uploads/po/";
+  private static final String UPLOAD_DIR = "uploads/po/";
 
   // Create new Purchase Order:
   public CompletableFuture<PurchaseOrder> createPO(MultipartFile file, PurchaseOrder purchaseOrder) throws Exception {
